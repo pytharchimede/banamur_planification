@@ -1,0 +1,110 @@
+/* Global styles */
+body,
+html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #fdd96c 0%, #000 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+}
+
+.login-container {
+    background: #fffbe6;
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: fadeIn 1s ease-out;
+}
+
+.login-container img {
+    width: 100px;
+    margin-bottom: 1rem;
+}
+
+.login-container h2 {
+    color: #000;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.login-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"] {
+    padding: 0.8rem;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #fdd96c;
+    background: #fff;
+    transition: background 0.3s ease, border-color 0.3s;
+    color: #000;
+}
+
+.login-container input[type="text"]:focus,
+.login-container input[type="password"]:focus {
+    background: #fffbe6;
+    outline: none;
+    border-color: #000;
+}
+
+.login-container button {
+    background: #000;
+    color: #fdd96c;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.1s ease;
+}
+
+.login-container button:hover {
+    background: #333;
+    color: #fdd96c;
+    transform: translateY(-3px);
+}
+
+.login-container button:active {
+    transform: translateY(0);
+}
+
+.login-container .forgot-password {
+    color: #000;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.login-container .forgot-password:hover {
+    color: #fdd96c;
+}
+
+.login-footer {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #b3a369;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

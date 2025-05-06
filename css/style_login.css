@@ -1,0 +1,27 @@
+.message {
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.message.success {
+    background-color: #fffbe6; /* Jaune très clair */
+    color: #000; /* Texte noir */
+    border: 1px solid #fdd96c;
+}
+
+.message.error {
+    background-color: #fdd96c; /* Jaune principal */
+    color: #000; /* Texte noir */
+    border: 1px solid #000;
+}
+
+.spinner {
+    font-size: 1.5rem;
+    color: #000; /* Noir */
+    margin-top: 1rem;
+}
+
+
