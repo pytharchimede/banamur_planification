@@ -68,7 +68,7 @@
             <?php
             include('../logi/connex.php');
 
-            $query = $con->prepare('SELECT * FROM client');
+            $query = $con->prepare('SELECT * FROM client_banamur');
             $query->execute();
             $clients = $query->fetchAll(PDO::FETCH_ASSOC);
 

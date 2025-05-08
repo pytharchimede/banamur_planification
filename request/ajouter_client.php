@@ -12,11 +12,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $date_creat_client = $_POST['date_creat_client'];
 
     // Préparation de la requête d'insertion
-    $query = $con->prepare('INSERT INTO client (code_client, nom_client, localisation_client, commune_client, bp_client, pays_client, date_creat_client) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    $query = $con->prepare('INSERT INTO client_banamur (code_client, nom_client, localisation_client, commune_client, bp_client, pays_client, date_creat_client) VALUES (?, ?, ?, ?, ?, ?, ?)');
     $query->execute([$code_client, $nom_client, $localisation_client, $commune_client, $bp_client, $pays_client, $date_creat_client]);
 
     // Redirection après l'ajout
     header('Location: ../liste_client.php');
     exit();
 }
-?>

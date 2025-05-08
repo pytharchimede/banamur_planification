@@ -12,12 +12,12 @@ class Devis
     public function validerCommerciale($devisId)
     {
         // Préparer la requête pour mettre à jour le champ `validation_commerciale` à 1
-        $sql = "UPDATE devis SET validation_commerciale = 1 WHERE id = :devisId";
+        $sql = "UPDATE devis_banamur SET validation_commerciale = 1 WHERE id = :devisId";
 
         // Préparer l'exécution de la requête
         $stmt = $this->pdo->prepare($sql);
 
-        // Lier l'ID du devis à la requête
+        // Lier l'ID du devis_banamur à la requête
         $stmt->bindParam(':devisId', $devisId, PDO::PARAM_INT);
 
         // Exécuter la requête
@@ -33,12 +33,12 @@ class Devis
     public function validerGenerale($devisId)
     {
         // Préparer la requête pour mettre à jour le champ `validation_commerciale` à 1
-        $sql = "UPDATE devis SET validation_generale = 1 WHERE id = :devisId";
+        $sql = "UPDATE devis_banamur SET validation_generale = 1 WHERE id = :devisId";
 
         // Préparer l'exécution de la requête
         $stmt = $this->pdo->prepare($sql);
 
-        // Lier l'ID du devis à la requête
+        // Lier l'ID du devis_banamur à la requête
         $stmt->bindParam(':devisId', $devisId, PDO::PARAM_INT);
 
         // Exécuter la requête
@@ -54,7 +54,7 @@ class Devis
     // Méthode pour vérifier si la validation commerciale a été effectuée
     public function isValidCommercial($devisId)
     {
-        $sql = "SELECT validation_commerciale FROM devis WHERE id = :devisId";
+        $sql = "SELECT validation_commerciale FROM devis_banamur WHERE id = :devisId";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':devisId', $devisId, PDO::PARAM_INT);
         $stmt->execute();
@@ -65,7 +65,7 @@ class Devis
     // Méthode pour vérifier si la validation générale a été effectuée
     public function isValidGenerale($devisId)
     {
-        $sql = "SELECT validation_generale FROM devis WHERE id = :devisId";
+        $sql = "SELECT validation_generale FROM devis_banamur WHERE id = :devisId";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':devisId', $devisId, PDO::PARAM_INT);
         $stmt->execute();

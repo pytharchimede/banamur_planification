@@ -73,7 +73,7 @@
             <?php
             include('../logi/connex.php');
 
-            $query = $con->prepare('SELECT * FROM offre');
+            $query = $con->prepare('SELECT * FROM offre_banamur');
             $query->execute();
             $offers = $query->fetchAll(PDO::FETCH_ASSOC);
 

@@ -33,24 +33,24 @@ if (isset($_GET['devisId'])) {
 var_dump($devisId);
 
 // Récupérer les données du devis depuis la base de données
-$stmt = $con->prepare("SELECT * FROM devis WHERE id = ?");
+$stmt = $con->prepare("SELECT * FROM devis_banamur WHERE id = ?");
 $stmt->execute([$devisId]);
 $devis = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Récupérer les lignes du devis
-$stmt = $con->prepare("SELECT * FROM ligne_devis WHERE devis_id = ?");
+$stmt = $con->prepare("SELECT * FROM ligne_devis_banamur WHERE devis_id = ?");
 $stmt->execute([$devisId]);
 $lignes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 // Récupérer le client
-$stmt  = $con->prepare("SELECT * FROM client WHERE id_client =:A ");
+$stmt  = $con->prepare("SELECT * FROM client_banamur WHERE id_client =:A ");
 $stmt->execute(array('A' => $devis['client_id']));
 $client = $stmt->fetch();
 
 
 // Récupérer le client
-$stmt  = $con->prepare("SELECT * FROM offre WHERE id_offre =:A ");
+$stmt  = $con->prepare("SELECT * FROM offre_banamur WHERE id_offre =:A ");
 $stmt->execute(array('A' => $devis['offre_id']));
 $offre = $stmt->fetch();
 

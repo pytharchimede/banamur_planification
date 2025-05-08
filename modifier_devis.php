@@ -10,7 +10,7 @@ if (isset($_GET['devisId'])) {
     $id_devis = $_GET['devisId'];
 
     // Requête pour récupérer les détails du devis
-    $query = $con->prepare("SELECT * FROM devis WHERE id = :id");
+    $query = $con->prepare("SELECT * FROM devis_banamur WHERE id = :id");
     $query->execute(['id' => $id_devis]);
     $devis = $query->fetch();
 
@@ -23,14 +23,14 @@ if (isset($_GET['devisId'])) {
 
 
 // Récupérer les clients
-$clients = $con->prepare('SELECT * FROM client');
+$clients = $con->prepare('SELECT * FROM client_banamur');
 $clients->execute();
 
 // Récupérer les offres
-$offres = $con->prepare('SELECT * FROM offre');
+$offres = $con->prepare('SELECT * FROM offre_banamur');
 $offres->execute();
 
-$lignes_devis = $con->prepare('SELECT * FROM ligne_devis WHERE devis_id=:A');
+$lignes_devis = $con->prepare('SELECT * FROM ligne_devis_banamur WHERE devis_id=:A');
 $lignes_devis->execute(array('A' => $id_devis));
 
 ?>

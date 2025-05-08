@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tvaFacturable = isset($_POST['tvaFacturable']) ? $_POST['tvaFacturable'] : '0';
     $publierDevis = isset($_POST['publierDevis']) ? $_POST['publierDevis'] : '0';
     $correspondant = isset($_POST['correspondant']) ? $_POST['correspondant'] : '';
-    
+
     $logo = '';
     // Gestion du logo
     if (isset($_FILES['logo']) && $_FILES['logo']['error'] == UPLOAD_ERR_OK) {
@@ -47,8 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Mise à jour du devis
-    $stmt = $con->prepare("UPDATE devis SET emis_par = ?, destine_a = ?, delai_livraison = ?, date_emission = ?, date_expiration = ?, termes_conditions = ?, pied_de_page = ?, total_ht = ?, total_ttc = ?, logo = ?, client_id = ?, offre_id = ?, tva_facturable = ?, publier_devis = ?, tva = ?, correspondant = ? WHERE id = ?");
-    
+    $stmt = $con->prepare("UPDATE devis _banamur SET emis_par = ?, destine_a = ?, delai_livraison = ?, date_emission = ?, date_expiration = ?, termes_conditions = ?, pied_de_page = ?, total_ht = ?, total_ttc = ?, logo = ?, client_id = ?, offre_id = ?, tva_facturable = ?, publier_devis = ?, tva = ?, correspondant = ? WHERE id = ?");
+
     $stmt->execute([$emisPar, $destineA, $delaiLivraison, $dateEmission, $dateExpiration, $termesConditions, $piedDePage, $totalHT, $totalTTC, $logo, $clientId, $offreId, $tvaFacturable, $publierDevis, $tva, $correspondant, $devisId]);
 
     // Enregistrement des lignes de devis
@@ -81,4 +81,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $_SESSION['devisId'] = $devisId;
 }
-?>

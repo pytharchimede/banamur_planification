@@ -2,7 +2,7 @@
 include 'auth_check.php';
 include('../logi/connex.php');
 
-$devis = $con->prepare('SELECT * FROM devis');
+$devis = $con->prepare('SELECT * FROM devis_banamur');
 $devis->execute();
 
 $nb_devis = $devis->rowcount();
@@ -11,11 +11,11 @@ $index_actuel = $nb_devis + 1;
 $code_devis = 'FI-DEV-PAB-' . $index_actuel;
 
 // Récupérer les clients
-$clients = $con->prepare('SELECT * FROM client');
+$clients = $con->prepare('SELECT * FROM client_banamur');
 $clients->execute();
 
 // Récupérer les offres
-$offres = $con->prepare('SELECT * FROM offre');
+$offres = $con->prepare('SELECT * FROM offre_banamur');
 $offres->execute();
 ?>
 

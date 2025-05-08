@@ -5,7 +5,7 @@ include('../../logi/connex.php');
 // Préparer la requête pour récupérer le nombre de devis par jour
 $query = "
     SELECT DATE(date_emission) AS date, COUNT(*) AS count
-    FROM devis
+    FROM devis_banamur
     WHERE masque = 0
     GROUP BY DATE(date_emission)
     ORDER BY DATE(date_emission) ASC
@@ -28,4 +28,3 @@ echo json_encode([
     'labels' => $labels,
     'data' => $data
 ]);
-?>

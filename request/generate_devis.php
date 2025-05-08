@@ -20,16 +20,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $publierDevis = isset($_POST['publierDevis']) ? $_POST['publierDevis'] : '0';
     $correspondant = isset($_POST['correspondant']) ? $_POST['correspondant'] : '';
 
-    
+
     $logo = '';
-     // Gestion du logo
+    // Gestion du logo
     if (isset($_FILES['logo']) && $_FILES['logo']['error'] == UPLOAD_ERR_OK) {
         $fileTmpPath = $_FILES['logo']['tmp_name'];
         $fileName = $_FILES['logo']['name'];
         $fileNameCmps = explode(".", $fileName);
         $fileExtension = strtolower(end($fileNameCmps));
 
-        // Définir le numéro de devis (à récupérer ou à calculer)
+        // Définir le numéro de devis _banamur (à récupérer ou à calculer)
         $devisQuery = $con->prepare('SELECT COUNT(*) AS count FROM devis');
         $devisQuery->execute();
         $count = $devisQuery->fetchColumn();
@@ -48,25 +48,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit;
         }
     }
-    
-    
+
+
     $devis = $con->prepare('SELECT * FROM devis');
     $devis->execute();
-    
-    $nb_devis = $devis->rowcount();
-    $index_actuel = $nb_devis+1;
-    
-    $numeroDevis = 'FI-DEV-PAB-'.$index_actuel;
-    
 
-    
+    $nb_devis = $devis->rowcount();
+    $index_actuel = $nb_devis + 1;
+
+    $numeroDevis = 'FI-DEV-PAB-' . $index_actuel;
+
+
+
     // Enregistrer le devis
-    $stmt = $con->prepare("INSERT INTO devis (numero_devis, delai_livraison, date_emission, date_expiration, emis_par, destine_a, termes_conditions, pied_de_page, total_ht, total_ttc, logo, client_id, offre_id, tva_facturable, publier_devis, tva, correspondant) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $con->prepare("INSERT INTO devis _banamur (numero_devis, delai_livraison, date_emission, date_expiration, emis_par, destine_a, termes_conditions, pied_de_page, total_ht, total_ttc, logo, client_id, offre_id, tva_facturable, publier_devis, tva, correspondant) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$numeroDevis, $delaiLivraison, $dateEmission, $dateExpiration, $emisPar, $destineA, $termesConditions, $piedDePage, $totalHT, $totalTTC, $logo, $clientId, $offreId, $tvaFacturable, $publierDevis, $tva, $correspondant]);
-    
+
     // Récupérer l'ID du devis nouvellement créé
     $devisId = $con->lastInsertId();
-    
+
     // Enregistrement des lignes de devis
     $designations = $_POST['designation'];
     $prix = $_POST['prix'];
@@ -89,7 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     echo "<h1>Devis enregistré avec succès</h1>";
-    
+
     $_SESSION['devisId'] = $devisId;
 }
-?>

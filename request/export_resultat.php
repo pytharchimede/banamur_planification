@@ -5,24 +5,27 @@ include('../fpdf186/fpdf.php');
 include('../../logi/connex.php');
 require_once("../phpqrcode/qrlib.php");
 
-class PDF extends FPDF {
+class PDF extends FPDF
+{
     // En-tête du PDF
-    function Header() {
+    function Header()
+    {
         $this->SetFont('Arial', 'B', 14);
         $this->Cell(0, 10, 'Liste des Devis', 0, 1, 'C');
         $this->Ln(10);
     }
 
     // Pied de page du PDF
-    function Footer() {
+    function Footer()
+    {
         $this->SetY(-15);
         $this->SetFont('Arial', 'I', 8);
-        $this->Cell(0, 10, 'Page '.$this->PageNo().'/{nb}', 0, 0, 'C');
+        $this->Cell(0, 10, 'Page ' . $this->PageNo() . '/{nb}', 0, 0, 'C');
     }
 }
 
-// Récupération des devis depuis la base de données
-$stmt = $con->prepare("SELECT * FROM devis WHERE masque=0");
+// Récupération des devis _banamur depuis la base de données
+$stmt = $con->prepare("SELECT * FROM devis _banamur WHERE masque=0");
 $stmt->execute();
 $devisList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -44,7 +47,7 @@ $pdf->Cell(30, 10, 'Statut', 1, 1, 'C', true);
 // Ajout des données des devis
 $pdf->SetFont('Arial', '', 10);
 foreach ($devisList as $devis) {
-    
+
     // Récupération des informations du client et de l'offre
     $stmt = $con->prepare("SELECT nom_client FROM client WHERE id_client = ?");
     $stmt->execute([$devis['client_id']]);
@@ -61,9 +64,7 @@ foreach ($devisList as $devis) {
     $pdf->Cell(40, 10, date('d/m/Y', strtotime($devis['date_creation'])), 1);
     $pdf->Cell(40, 10, number_format($devis['montant_total'], 2, ',', ' ') . ' F CFA', 1);
     $pdf->Cell(30, 10, utf8_decode($devis['statut']), 1, 1);
-    
 }
 
 // Sortie du fichier PDF
 $pdf->Output('I', 'liste_devis.pdf');
-?>

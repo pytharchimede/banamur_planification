@@ -11,7 +11,7 @@ class User
 
     public function findUserByEmail($mail_pro)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM user_devis WHERE mail_pro = :mail_pro AND active = 1 ");
+        $stmt = $this->pdo->prepare("SELECT * FROM user_devis_banamur WHERE mail_pro = :mail_pro AND active = 1 ");
         $stmt->execute(['mail_pro' => $mail_pro]);
         return $stmt->fetch();
     }
@@ -41,7 +41,7 @@ class User
     {
         $stmt = $this->pdo->prepare("
         SELECT u.* 
-        FROM user_devis u
+        FROM user_devis_banamur u
         INNER JOIN role_devis r ON u.role_id = r.id_role_devis
         WHERE r.lib_role_devis = :libelle AND u.active = 1
     ");
@@ -53,7 +53,7 @@ class User
     {
         $stmt = $this->pdo->prepare("
         SELECT u.* 
-        FROM user_devis u
+        FROM user_devis_banamur u
         INNER JOIN role_devis r ON u.role_id = r.id_role_devis
         WHERE r.lib_role_devis = :libelle AND u.active = 1
     ");

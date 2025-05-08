@@ -67,7 +67,7 @@
 
         // Initialiser la requête SQL de base
 
-        $sql = 'SELECT * FROM devis WHERE masque=0';
+        $sql = 'SELECT * FROM devis_banamur WHERE masque=0';
 
 
 

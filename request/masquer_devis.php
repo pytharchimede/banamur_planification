@@ -22,13 +22,13 @@ if (isset($_GET['devisId'])) {
 var_dump($devisId);
 
 // Récupérer les données du devis depuis la base de données
-$stmt = $con->prepare("SELECT * FROM devis WHERE id = ?");
+$stmt = $con->prepare("SELECT * FROM devis _banamur WHERE id = ?");
 $stmt->execute([$devisId]);
 
 $nbFind = $stmt->rowcount();
 
-if($nbFind>0){
-    $stmt = $con->prepare("UPDATE devis SET masque=1 WHERE id = ?");
+if ($nbFind > 0) {
+    $stmt = $con->prepare("UPDATE devis _banamur SET masque=1 WHERE id = ?");
     $stmt->execute([$devisId]);
 }
 
@@ -37,4 +37,3 @@ unset($_SESSION['devisId']);
 header('Location: ../liste_devis.php');
 
 exit();
-?>
