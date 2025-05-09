@@ -124,8 +124,8 @@ $pdf->SetFillColor(0, 0, 0);
 $pdf->SetTextColor(255, 255, 255);
 $pdf->SetDrawColor(169, 169, 169);
 
-$pdf->Cell(10, 10, Utils::toMbConvertEncoding('Pos.'), 1, 0, 'C', true);
-$pdf->Cell(65, 10, Utils::toMbConvertEncoding('Description'), 1, 0, 'C', true);
+$pdf->Cell(10, 10, Utils::toMbConvertEncoding('N°'), 1, 0, 'C', true);
+$pdf->Cell(65, 10, Utils::toMbConvertEncoding('Désignation'), 1, 0, 'C', true);
 $pdf->Cell(20, 10, Utils::toMbConvertEncoding('Quantité'), 1, 0, 'C', true);
 $pdf->Cell(25, 10, Utils::toMbConvertEncoding('Unité'), 1, 0, 'C', true);
 $pdf->Cell(30, 10, Utils::toMbConvertEncoding('Prix unitaire'), 1, 0, 'C', true);
@@ -160,7 +160,7 @@ foreach ($lignes as $index => $ligne) {
                 // Fusionne toutes les colonnes sauf la dernière (10+65+20+25+30 = 150mm)
                 $pdf->Cell(150, 10, Utils::toMbConvertEncoding('SOUS-TOTAL ' . strtoupper($currentGroup)), 1, 0, 'C');
                 // Colonne "Prix total" (30mm) pour le montant, bordure complète
-                $pdf->Cell(30, 10, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'R');
+                $pdf->Cell(30, 10, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'C');
                 $pdf->Ln(2);
             }
             // Afficher le titre du groupe si présent
@@ -176,20 +176,19 @@ foreach ($lignes as $index => $ligne) {
     }
 
     // Affichage de la ligne de devis (identique dans les deux cas)
-    $unite = isset($unitesArray[$ligne['unite_id']]) ? $unitesArray[$ligne['unite_id']]['libelle'] . ' (' . $unitesArray[$ligne['unite_id']]['symbole'] . ')' : '';
+    $unite = isset($unitesArray[$ligne['unite_id']]) ? '' . $unitesArray[$ligne['unite_id']]['symbole'] . '' : '';
     $pdf->SetFont('Arial', '', 8);
     $pdf->SetFont('BookAntiqua', '', 8);
-    $pdf->Cell(10, 10, $pos++, 1);
+    $pdf->Cell(10, 10, $pos++, 1, 0, 'C');
     $pdf->SetFont('Arial', 'B', 8);
     $pdf->AddFont('BookAntiqua', 'B', 8);
     $pdf->Cell(65, 10, Utils::toMbConvertEncoding($ligne['designation']), 1);
     $pdf->SetFont('Arial', '', 8);
     $pdf->AddFont('BookAntiqua', '', 8);
-    $pdf->Cell(20, 10, $ligne['quantite'], 1);
-    $pdf->Cell(25, 10, Utils::toMbConvertEncoding($unite), 1);
-    $pdf->Cell(30, 10, number_format($ligne['prix'], 0, ',', ' ') . ' XOF', 1);
-    $pdf->Cell(30, 10, number_format($ligne['total'], 0, ',', ' ') . ' XOF', 1);
-    $pdf->Ln();
+    $pdf->Cell(20, 10, $ligne['quantite'], 1, 0, 'C'); // quantité centrée
+    $pdf->Cell(25, 10, Utils::toMbConvertEncoding($unite), 1, 0, 'C'); // unité centrée
+    $pdf->Cell(30, 10, number_format($ligne['prix'], 0, ',', ' ') . ' XOF', 1, 0, 'C'); // prix unitaire centré
+    $pdf->Cell(30, 10, number_format($ligne['total'], 0, ',', ' ') . ' XOF', 1, 1, 'C'); // total centré
 
     // Additionner au sous-total du groupe
     if ($hasGroup) {
@@ -200,7 +199,7 @@ foreach ($lignes as $index => $ligne) {
             // Fusionne toutes les colonnes sauf la dernière (10+65+20+25+30 = 150mm)
             $pdf->Cell(150, 10, Utils::toMbConvertEncoding('SOUS-TOTAL ' . strtoupper($currentGroup)), 1, 0, 'C');
             // Colonne "Prix total" (30mm) pour le montant, bordure complète
-            $pdf->Cell(30, 10, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'R');
+            $pdf->Cell(30, 10, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'C');
             $pdf->Ln(2);
         }
     }
@@ -208,22 +207,20 @@ foreach ($lignes as $index => $ligne) {
 
 // Ligne Montant HT
 $pdf->SetFont('BookAntiqua', 'B', 10);
-$pdf->Cell(120, 10, Utils::toMbConvertEncoding('MONTANT HT'), 1, 0, 'R');
-$pdf->Cell(60, 10, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1, 1, 'R');
+$pdf->Cell(150, 10, Utils::toMbConvertEncoding('MONTANT HT'), 1, 0, 'C');
+$pdf->Cell(30, 10, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
 
 // Ligne TVA si facturable
 if ($devis['tva_facturable'] == 1) {
-    $pdf->Cell(120, 10, Utils::toMbConvertEncoding('TVA 18%'), 1, 0, 'R');
-    $pdf->Cell(60, 10, number_format($devis['tva'], 0, ',', ' ') . ' XOF', 1, 1, 'R');
+    $pdf->Cell(150, 10, Utils::toMbConvertEncoding('TVA 18%'), 1, 0, 'C');
+    $pdf->Cell(30, 10, number_format($devis['tva'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
 }
 
 // Ligne Montant TTC
-$pdf->Cell(120, 10, Utils::toMbConvertEncoding('MONTANT TTC'), 1, 0, 'R');
-$pdf->Cell(60, 10, number_format($devis['total_ttc'], 0, ',', ' ') . ' XOF', 1, 1, 'R');
-
+$pdf->Cell(150, 10, Utils::toMbConvertEncoding('MONTANT TTC'), 1, 0, 'C');
+$pdf->Cell(30, 10, number_format($devis['total_ttc'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
 
 $pdf->Ln(20);
-
 
 ob_clean();
 
