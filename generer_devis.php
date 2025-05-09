@@ -146,10 +146,12 @@ include('header/header_generer_devis.php');
                 </table>
             </div>
             <!-- Boutons pour ajouter un groupe ou une ligne -->
-            <button type="button" class="btn btn-info mb-2" id="addGroupBtn">
-                <i class="fas fa-layer-group"></i> Ajouter un groupe
-            </button>
-            <button type="button" class="btn btn-success mt-3" id="addRow">+ Ajouter une ligne</button>
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <button type="button" class="btn btn-info" id="addGroupBtn">
+                    <i class="fas fa-layer-group"></i> Ajouter un groupe
+                </button>
+                <button type="button" class="btn btn-success" id="addRow">+ Ajouter une ligne</button>
+            </div>
         </form>
 
         <!-- Additional Info Section -->
