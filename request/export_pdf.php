@@ -14,7 +14,7 @@ class PDF extends FPDF
         $this->Cell(0, 10, '', 0, 1, 'C');
         $this->Ln(10);
 
-        $this->Image('../../img/logo_veritas.jpg', 150, 10, 30);
+        $this->Image('../img/logo_veritas.jpg', 150, 10, 30);
     }
 
     // Méthode pour le pied de page

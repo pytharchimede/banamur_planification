@@ -132,7 +132,7 @@ class Devis
 
         // Enregistrer les lignes de devis
         foreach ($lignes as $ligne) {
-            $sqlLigne = "INSERT INTO ligne_devis (devis_id, designation, prix, quantite, tva, remise, total)
+            $sqlLigne = "INSERT INTO ligne_devis_banamur (devis_id, designation, prix, quantite, tva, remise, total)
                          VALUES (:devis_id, :designation, :prix, :quantite, :tva, :remise, :total)";
             $stmtLigne = $this->pdo->prepare($sqlLigne);
             $ligne['devis_id'] = $devisId;
@@ -169,12 +169,12 @@ class Devis
         $stmt->execute($data);
 
         // Supprimer les anciennes lignes
-        $deleteStmt = $this->pdo->prepare("DELETE FROM ligne_devis WHERE devis_id = :devis_id");
+        $deleteStmt = $this->pdo->prepare("DELETE FROM ligne_devis_banamur WHERE devis_id = :devis_id");
         $deleteStmt->execute(['devis_id' => $devisId]);
 
         // Ajouter les nouvelles lignes
         foreach ($lignes as $ligne) {
-            $sqlLigne = "INSERT INTO ligne_devis (devis_id, designation, prix, quantite, tva, remise, total)
+            $sqlLigne = "INSERT INTO ligne_devis_banamur (devis_id, designation, prix, quantite, tva, remise, total)
                      VALUES (:devis_id, :designation, :prix, :quantite, :tva, :remise, :total)";
             $stmtLigne = $this->pdo->prepare($sqlLigne);
             $ligne['devis_id'] = $devisId;
