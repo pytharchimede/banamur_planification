@@ -157,15 +157,10 @@ foreach ($lignes as $index => $ligne) {
             // Afficher le sous-total du groupe précédent si besoin
             if ($currentGroup !== null) {
                 $pdf->SetFont('BookAntiqua', 'B', 10);
-                // Fusionne toute la ligne (10+65+20+25+30+30 = 180mm)
-                $pdf->Cell(
-                    180,
-                    8,
-                    Utils::toMbConvertEncoding('SOUS-TOTAL ' . strtoupper($currentGroup) . ' : ' . number_format($groupTotal, 0, ',', ' ') . ' XOF'),
-                    1, // Bordure sur tout le tour
-                    1,
-                    'R'
-                );
+                // Fusionne toutes les colonnes sauf la dernière (10+65+20+25+30 = 150mm)
+                $pdf->Cell(150, 10, Utils::toMbConvertEncoding('SOUS-TOTAL ' . strtoupper($currentGroup)), 1, 0, 'C');
+                // Colonne "Prix total" (30mm) pour le montant, bordure complète
+                $pdf->Cell(30, 10, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'R');
                 $pdf->Ln(2);
             }
             // Afficher le titre du groupe si présent
@@ -202,15 +197,10 @@ foreach ($lignes as $index => $ligne) {
         // Si c'est la dernière ligne, afficher le sous-total du groupe si besoin
         if ($index === array_key_last($lignes) && $currentGroup !== null) {
             $pdf->SetFont('BookAntiqua', 'B', 10);
-            // Fusionne toute la ligne (10+65+20+25+30+30 = 180mm)
-            $pdf->Cell(
-                180,
-                8,
-                Utils::toMbConvertEncoding('SOUS-TOTAL ' . strtoupper($currentGroup) . ' : ' . number_format($groupTotal, 0, ',', ' ') . ' XOF'),
-                1, // Bordure sur tout le tour
-                1,
-                'R'
-            );
+            // Fusionne toutes les colonnes sauf la dernière (10+65+20+25+30 = 150mm)
+            $pdf->Cell(150, 10, Utils::toMbConvertEncoding('SOUS-TOTAL ' . strtoupper($currentGroup)), 1, 0, 'C');
+            // Colonne "Prix total" (30mm) pour le montant, bordure complète
+            $pdf->Cell(30, 10, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'R');
             $pdf->Ln(2);
         }
     }
