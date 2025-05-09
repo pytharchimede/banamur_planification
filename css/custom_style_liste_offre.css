@@ -6,22 +6,55 @@
 }
 
 .card {
-    border: 1px solid #dee2e6;
-    border-radius: 0.5rem;
+    border: 2px solid #000;         /* Noir */
+    border-radius: 0.75rem;
+    background: #fffbe6;            /* Jaune très clair */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+    border-color: #fabd02;          /* Jaune vif */
 }
 
 .card-header {
-    background-color: #1d2b57;
-    color: #fff;
+    background-color: #000;         /* Noir */
+    color: #fabd02;                 /* Jaune vif */
     text-align: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+    padding: 1rem 0.5rem;
 }
 
 .card-body {
-    background-color: #f8f9fa;
+    background-color: #fffbe6;      /* Jaune très clair */
+    color: #000;                    /* Noir */
+    padding: 1rem;
+}
+
+.card-body p {
+    color: #000;                    /* Noir */
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.btn-primary,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: #000 !important;
+    border-color: #000 !important;
+    color: #fdd96c !important;
+    box-shadow: none !important;
+}
+
+.btn-primary:hover,
+.btn-primary:active:focus,
+.btn-primary:focus:active {
+    background-color: #fdd96c !important;
+    border-color: #fdd96c !important;
+    color: #000 !important;
 }
