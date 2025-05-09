@@ -1,0 +1,22 @@
+.client-card {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.client-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.client-card .client-name {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #1d2b57;
+}
+
+.client-card .client-info {
+    margin-top: 0.5rem;
+}

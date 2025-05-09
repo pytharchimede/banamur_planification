@@ -1,9 +1,7 @@
 <?php
-session_start();
+require_once 'model/Auth.php';
 
-// Vérifiez si l'utilisateur est connecté
-if (!isset($_SESSION['user_id'])) {
-    // Redirigez vers la page de connexion si non connecté
+if (!Auth::isLoggedIn()) {
     header('Location: login.php');
     exit();
 }

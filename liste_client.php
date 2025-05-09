@@ -1,4 +1,7 @@
-<?php include 'auth_check.php'; ?>
+<?php
+include 'auth_check.php';
+include 'header/header_liste_client.php';
+?>
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -9,30 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .client-card {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .client-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .client-card .client-name {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #1d2b57;
-        }
-
-        .client-card .client-info {
-            margin-top: 0.5rem;
-        }
-    </style>
+    <link rel="stylesheet" href="css/custom_style_client.css">
 </head>
 
 <body>
@@ -65,27 +45,18 @@
         <!-- Grid displaying client cards -->
         <div class="row">
             <!-- PHP code to fetch and display clients from the database -->
-            <?php
-            include('../logi/connex.php');
-
-            $query = $con->prepare('SELECT * FROM client_banamur');
-            $query->execute();
-            $clients = $query->fetchAll(PDO::FETCH_ASSOC);
-
-            foreach ($clients as $client) {
-                echo '
+            <?php foreach ($clients as $client): ?>
                 <div class="col-md-4 mb-4">
                     <div class="client-card p-3 h-100">
-                        <div class="client-name">' . htmlspecialchars($client['nom_client']) . '</div>
-                        <div class="client-info">Code Client : ' . htmlspecialchars($client['code_client']) . '</div>
-                        <div class="client-info">Localisation : ' . htmlspecialchars($client['localisation_client']) . '</div>
-                        <div class="client-info">Commune : ' . htmlspecialchars($client['commune_client']) . '</div>
-                        <div class="client-info">BP : ' . htmlspecialchars($client['bp_client']) . '</div>
-                        <div class="client-info">Pays : ' . htmlspecialchars($client['pays_client']) . '</div>
+                        <div class="client-name"><?= htmlspecialchars($client['nom_client']) ?></div>
+                        <div class="client-info">Code Client : <?= htmlspecialchars($client['code_client']) ?></div>
+                        <div class="client-info">Localisation : <?= htmlspecialchars($client['localisation_client']) ?></div>
+                        <div class="client-info">Commune : <?= htmlspecialchars($client['commune_client']) ?></div>
+                        <div class="client-info">BP : <?= htmlspecialchars($client['bp_client']) ?></div>
+                        <div class="client-info">Pays : <?= htmlspecialchars($client['pays_client']) ?></div>
                     </div>
-                </div>';
-            }
-            ?>
+                </div>
+            <?php endforeach; ?>
         </div>
     </div>
 

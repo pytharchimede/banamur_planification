@@ -1,22 +1,6 @@
 <?php
-include 'auth_check.php';
-include('../logi/connex.php');
+include('header/header_generer_devis.php');
 
-$devis = $con->prepare('SELECT * FROM devis_banamur');
-$devis->execute();
-
-$nb_devis = $devis->rowcount();
-$index_actuel = $nb_devis + 1;
-
-$code_devis = 'FI-DEV-PAB-' . $index_actuel;
-
-// Récupérer les clients
-$clients = $con->prepare('SELECT * FROM client_banamur');
-$clients->execute();
-
-// Récupérer les offres
-$offres = $con->prepare('SELECT * FROM offre_banamur');
-$offres->execute();
 ?>
 
 <!DOCTYPE html>
@@ -57,22 +41,22 @@ $offres->execute();
                 <label for="clientSelect" class="form-label">Sélectionner le client</label>
                 <select class="form-control" id="clientSelect" name="client_id">
                     <option value="" disabled selected>Choisissez un client</option>
-                    <?php while ($client = $clients->fetch(PDO::FETCH_ASSOC)): ?>
+                    <?php foreach ($clients as $client): ?>
                         <option value="<?php echo $client['id_client']; ?>">
                             <?php echo $client['nom_client']; ?>
                         </option>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="col-md-6">
                 <label for="offreSelect" class="form-label">Sélectionner l'offre</label>
                 <select class="form-control" id="offreSelect" name="offre_id">
                     <option value="" disabled selected>Choisissez une offre</option>
-                    <?php while ($offre = $offres->fetch(PDO::FETCH_ASSOC)): ?>
+                    <?php foreach ($offres as $offre): ?>
                         <option value="<?php echo $offre['id_offre']; ?>">
                             <?php echo $offre['num_offre'] . ' - ' . $offre['reference_offre']; ?>
                         </option>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div class="col-md-8">

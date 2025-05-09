@@ -1,44 +1,7 @@
 <?php
 // Inclure les fichiers nécessaires
-require_once 'model/Database.php';
-require_once 'model/User.php';
+require_once 'header/header_add_user.php';
 
-$pdo = Database::getConnection();
-$userModel = new User($pdo);
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $mail_pro = $_POST['mail_pro'];
-    $password = $_POST['password']; // Le mot de passe doit être haché
-    $hashedPassword = hash("sha512", $password);
-
-    $nom = $_POST['nom'];
-    $prenom = $_POST['prenom'];
-    $modifier_devis = isset($_POST['modifier_devis']) ? 1 : 0;
-    $visualiser_devis = isset($_POST['visualiser_devis']) ? 1 : 0;
-    $soumettre_devis = isset($_POST['soumettre_devis']) ? 1 : 0;
-    $masquer_devis = isset($_POST['masquer_devis']) ? 1 : 0;
-    $envoyer_devis = isset($_POST['envoyer_devis']) ? 1 : 0;
-    $valider_devis = isset($_POST['valider_devis']) ? 1 : 0;
-
-    // Préparer la requête d'insertion
-    $stmt = $pdo->prepare("INSERT INTO user_devis (mail_pro, password, nom, prenom, modifier_devis, visualiser_devis, soumettre_devis, masquer_devis, envoyer_devis, valider_devis, active) VALUES (:mail_pro, :password, :nom, :prenom, :modifier_devis, :visualiser_devis, :soumettre_devis, :masquer_devis, :envoyer_devis, :valider_devis, 1)");
-    $stmt->execute([
-        'mail_pro' => $mail_pro,
-        'password' => $hashedPassword,
-        'nom' => $nom,
-        'prenom' => $prenom,
-        'modifier_devis' => $modifier_devis,
-        'visualiser_devis' => $visualiser_devis,
-        'soumettre_devis' => $soumettre_devis,
-        'masquer_devis' => $masquer_devis,
-        'envoyer_devis' => $envoyer_devis,
-        'valider_devis' => $valider_devis,
-    ]);
-
-    // Redirection après l'ajout
-    header('Location: liste_utilisateur.php');
-    exit;
-}
 ?>
 
 <!DOCTYPE html>
@@ -50,110 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Ajouter un Utilisateur</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f4f6f9;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .navbar {
-            background-color: #1d2b57;
-        }
-
-        .navbar-brand img {
-            height: 50px;
-        }
-
-        .nav-link {
-            color: #fff !important;
-        }
-
-        .nav-link.active {
-            color: #ffc107 !important;
-        }
-
-        .container {
-            margin-top: 40px;
-        }
-
-        h1 {
-            color: #1d2b57;
-            font-weight: 600;
-            margin-bottom: 30px;
-        }
-
-        .btn-primary {
-            background-color: #fabd02;
-            border-color: #fabd02;
-        }
-
-        .btn-primary:hover {
-            background-color: #e0a800;
-            border-color: #e0a800;
-        }
-
-        .form-control {
-            border-radius: 15px;
-            padding: 10px;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #1d2b57;
-        }
-
-        .footer {
-            background-color: #1d2b57;
-            color: #fff;
-            padding: 15px 0;
-            text-align: center;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-
-        .navbar-toggler-icon {
-            background-color: #fff;
-        }
-
-        .card-body {
-            padding: 30px;
-        }
-
-        .card-header {
-            background-color: #1d2b57;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .form-switch {
-            display: flex;
-            align-items: center;
-            margin-right: 20px;
-            /* Ajout d'une marge entre les interrupteurs */
-        }
-
-        .form-switch input {
-            width: 40px;
-            /* Augmenter la taille du bouton interrupteur */
-            height: 22px;
-            cursor: pointer;
-        }
-
-        .form-switch label {
-            margin-left: 10px;
-            font-weight: 500;
-        }
-
-        .form-switch-container {
-            display: flex;
-            flex-wrap: wrap;
-            /* Permet aux interrupteurs de passer à la ligne suivante si besoin */
-            gap: 15px;
-            /* Espacement entre les éléments */
-        }
-    </style>
+    <link href="css/custom_style_add_user.css" rel="stylesheet">
 </head>
 
 <body>

@@ -1,9 +1,8 @@
 <?php
 
 session_start();
-include('../fpdf186/fpdf.php');
-include('../../logi/connex.php');
-require_once("../phpqrcode/qrlib.php");
+require_once '../model/Database.php';
+require_once '../model/Devis.php';
 
 // Vérifiez que le devisId est défini dans la session ou dans l'URL
 if (!isset($_SESSION['devisId']) && !isset($_GET['devisId'])) {
@@ -13,27 +12,18 @@ if (!isset($_SESSION['devisId']) && !isset($_GET['devisId'])) {
 // Prioriser l'ID du devis reçu via $_GET
 if (isset($_GET['devisId'])) {
     $devisId = $_GET['devisId'];
-    $_SESSION['devisId'] = $devisId; // Mettre à jour la session avec le nouvel ID
+    $_SESSION['devisId'] = $devisId;
 } else {
     $devisId = $_SESSION['devisId'];
 }
 
-// Déboguer pour vérifier la valeur de $devisId
-var_dump($devisId);
+$pdo = Database::getConnection();
+$devisModel = new Devis($pdo);
 
-// Récupérer les données du devis depuis la base de données
-$stmt = $con->prepare("SELECT * FROM devis _banamur WHERE id = ?");
-$stmt->execute([$devisId]);
-
-$nbFind = $stmt->rowcount();
-
-if ($nbFind > 0) {
-    $stmt = $con->prepare("UPDATE devis _banamur SET masque=1 WHERE id = ?");
-    $stmt->execute([$devisId]);
-}
+// Masquer le devis via la classe
+$devisModel->masquerDevis($devisId);
 
 unset($_SESSION['devisId']);
 
 header('Location: ../liste_devis.php');
-
 exit();

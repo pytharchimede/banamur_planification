@@ -1,0 +1,112 @@
+body {
+    background-color: #fffbe6;
+    font-family: 'Poppins', sans-serif;
+}
+
+.navbar {
+    background-color: #000;
+}
+
+.navbar-brand img {
+    height: 50px;
+}
+
+.nav-link {
+    color: #fdd96c !important;
+}
+
+.nav-link.active {
+    color: #000 !important;
+    background-color: #fdd96c !important;
+    border-radius: 4px;
+}
+
+.container {
+    margin-top: 40px;
+}
+
+h1 {
+    color: #000;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+.btn-primary {
+    background-color: #000;
+    border-color: #000;
+    color: #fdd96c;
+}
+
+.btn-primary:hover {
+    background-color: #333;
+    border-color: #333;
+    color: #fdd96c;
+}
+
+.form-control {
+    border-radius: 15px;
+    padding: 10px;
+    border: 1px solid #fdd96c;
+    color: #000;
+    background-color: #fff;
+}
+
+.form-control:focus {
+    border-color: #000;
+    background-color: #fffbe6;
+    color: #000;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #000;
+}
+
+.footer {
+    background-color: #000;
+    color: #fdd96c;
+    padding: 15px 0;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.navbar-toggler-icon {
+    background-color: #fdd96c;
+}
+
+.card-body {
+    padding: 30px;
+}
+
+.card-header {
+    background-color: #000;
+    color: #fdd96c;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.form-switch {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.form-switch input {
+    width: 40px;
+    height: 22px;
+    cursor: pointer;
+}
+
+.form-switch label {
+    margin-left: 10px;
+    font-weight: 500;
+    color: #000;
+}
+
+.form-switch-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}

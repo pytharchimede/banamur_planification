@@ -9,6 +9,14 @@ class User
         $this->pdo = $pdo;
     }
 
+    public function ajouterUtilisateur($data)
+    {
+        $sql = "INSERT INTO user_devis (mail_pro, password, nom, prenom, modifier_devis, visualiser_devis, soumettre_devis, masquer_devis, envoyer_devis, valider_devis, active)
+            VALUES (:mail_pro, :password, :nom, :prenom, :modifier_devis, :visualiser_devis, :soumettre_devis, :masquer_devis, :envoyer_devis, :valider_devis, 1)";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute($data);
+    }
+
     public function findUserByEmail($mail_pro)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM user_devis_banamur WHERE mail_pro = :mail_pro AND active = 1 ");
@@ -59,5 +67,12 @@ class User
     ");
         $stmt->execute(['libelle' => 'directeur general']);
         return $stmt->fetch();
+    }
+
+    public function desactiverUtilisateur($id)
+    {
+        $sql = "UPDATE user_devis SET active = 0 WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute(['id' => $id]);
     }
 }
