@@ -58,3 +58,13 @@
     border-color: #fdd96c !important;
     color: #000 !important;
 }
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1rem;
+}
+.card.h-100 {
+    min-height: 420px;
+    max-height: 420px;
+}

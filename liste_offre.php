@@ -44,15 +44,45 @@ include 'header/header_liste_offre.php';
 
         <!-- Cards displaying offers -->
         <div class="card-grid">
-            <!-- PHP code to fetch and display offers from the database -->
-            <?php foreach ($offers as $offer): ?>
-                <div class="card">
+            <?php foreach ($offers as $index => $offer):
+                $fichiers = $offreModel->getFichiersByOffre($offer['id_offre']);
+                // Génère un ID unique pour l'accordéon de chaque offre
+                $accordionId = "accordionFiles" . $offer['id_offre'];
+            ?>
+                <div class="card h-100 d-flex flex-column">
                     <div class="card-header">Numéro d'Offre: <?= htmlspecialchars($offer['num_offre']) ?></div>
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column">
                         <p><strong>Date d'Offre:</strong> <?= htmlspecialchars($offer['date_offre']) ?></p>
                         <p><strong>Référence:</strong> <?= htmlspecialchars($offer['reference_offre']) ?></p>
                         <p><strong>Commercial dédié:</strong> <?= htmlspecialchars($offer['commercial_dedie']) ?></p>
                         <p><strong>Date de Création:</strong> <?= htmlspecialchars($offer['date_creat_offre']) ?></p>
+                        <?php if (!empty($fichiers)): ?>
+                            <div class="accordion mt-3" id="<?= $accordionId ?>">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading<?= $accordionId ?>">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?= $accordionId ?>" aria-expanded="false" aria-controls="collapse<?= $accordionId ?>" style="background:#fffbe6;color:#000;">
+                                            <strong>Fichiers joints</strong>
+                                        </button>
+                                    </h2>
+                                    <div id="collapse<?= $accordionId ?>" class="accordion-collapse collapse" aria-labelledby="heading<?= $accordionId ?>" data-bs-parent="#<?= $accordionId ?>">
+                                        <div class="accordion-body" style="background:#fffbe6;">
+                                            <ul style="list-style: none; padding-left: 0; margin-bottom:0;">
+                                                <?php foreach ($fichiers as $fichier): ?>
+                                                    <?php $webPath = str_replace('../', '', $fichier['file_path']); ?>
+                                                    <li>
+                                                        <a href="<?= htmlspecialchars($webPath) ?>" download="<?= htmlspecialchars($fichier['file_name']) ?>" target="_blank" style="color:#000;text-decoration:underline;">
+                                                            <i class="fas fa-paperclip"></i> <?= htmlspecialchars($fichier['file_name']) ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        <!-- Pour forcer la hauteur identique et aligner le bouton en bas si besoin -->
+                        <div class="flex-grow-1"></div>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -68,7 +98,7 @@ include 'header/header_liste_offre.php';
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="request/ajouter_offre.php" method="POST">
+                    <form action="request/ajouter_offre.php" enctype="multipart/form-data" method="POST">
                         <div class="mb-3">
                             <label for="num_offre" class="form-label">Numéro d'Offre</label>
                             <input type="text" class="form-control" id="num_offre" name="num_offre" required>
@@ -88,6 +118,14 @@ include 'header/header_liste_offre.php';
                         <div class="mb-3">
                             <label for="date_creat_offre" class="form-label">Date de Création</label>
                             <input type="date" class="form-control" id="date_creat_offre" name="date_creat_offre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="offre_files" class="form-label">Fichiers relatifs à l'offre</label>
+                            <input type="file" class="form-control" id="offre_files" name="offre_files[]" multiple style="display:none;">
+                            <div id="drop_zone" style="border:2px dashed #fabd02; background:#fffbe6; color:#000; padding:30px; text-align:center; cursor:pointer;">
+                                Glissez-déposez vos fichiers ici ou cliquez pour sélectionner
+                            </div>
+                            <div id="file_list"></div>
                         </div>
                         <button type="submit" class="btn btn-primary">Ajouter l'Offre</button>
                     </form>
@@ -114,6 +152,59 @@ include 'header/header_liste_offre.php';
     <!--Intégration de jquery/Ajax-->
     <script src="../logi/js/jquery_1.7.1_jquery.min.js"></script>
     <script src="js/function.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop_zone');
+        const fileInput = document.getElementById('offre_files');
+        const fileList = document.getElementById('file_list');
+        let filesBuffer = [];
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', e => {
+            e.preventDefault();
+            dropZone.style.background = '#fdd96c';
+        });
+        dropZone.addEventListener('dragleave', e => {
+            e.preventDefault();
+            dropZone.style.background = '#fffbe6';
+        });
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.style.background = '#fffbe6';
+            addFiles(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', () => addFiles(fileInput.files));
+
+        function addFiles(fileListInput) {
+            for (let file of fileListInput) {
+                filesBuffer.push(file);
+            }
+            updateFileList();
+            updateInputFiles();
+        }
+
+        function removeFile(index) {
+            filesBuffer.splice(index, 1);
+            updateFileList();
+            updateInputFiles();
+        }
+
+        function updateFileList() {
+            fileList.innerHTML = '';
+            filesBuffer.forEach((file, idx) => {
+                fileList.innerHTML += `<div style="display:flex;align-items:center;justify-content:space-between;">
+                    <span>${file.name}</span>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeFile(${idx})" style="margin-left:10px;">Supprimer</button>
+                </div>`;
+            });
+        }
+
+        // Met à jour l'input file pour l'envoi du formulaire
+        function updateInputFiles() {
+            const dataTransfer = new DataTransfer();
+            filesBuffer.forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+        }
+    </script>
 </body>
 
 </html>

@@ -14,7 +14,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'date_creat_offre' => $_POST['date_creat_offre'],
     ];
 
+    // Ajout de l'offre et récupération de l'ID
     $offreModel->ajouterOffre($data);
+    $offreId = $pdo->lastInsertId();
+
+    // Gestion des fichiers joints via la classe Offre
+    if (!empty($_FILES['offre_files']['name'][0])) {
+        $offreModel->ajouterFichiersOffre($offreId, $_FILES['offre_files']);
+    }
 
     header('Location: ../liste_offre.php');
     exit();

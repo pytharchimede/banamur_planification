@@ -27,4 +27,30 @@ class Offre
         $stmt->execute(['id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function ajouterFichiersOffre($offreId, $files)
+    {
+        $uploadDir = '../uploads/offres/';
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+        foreach ($files['tmp_name'] as $key => $tmpName) {
+            $fileName = basename($files['name'][$key]);
+            $targetFile = $uploadDir . uniqid() . '_' . $fileName;
+            if (move_uploaded_file($tmpName, $targetFile)) {
+                $stmt = $this->pdo->prepare("INSERT INTO offre_fichiers_banamur (offre_id, file_path, file_name) VALUES (:offre_id, :file_path, :file_name)");
+                $stmt->execute([
+                    'offre_id' => $offreId,
+                    'file_path' => $targetFile,
+                    'file_name' => $fileName
+                ]);
+            }
+        }
+    }
+
+    public function getFichiersByOffre($offreId)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM offre_fichiers_banamur WHERE offre_id = :offre_id");
+        $stmt->execute(['offre_id' => $offreId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
