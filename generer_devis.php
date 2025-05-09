@@ -141,29 +141,14 @@ include('header/header_generer_devis.php');
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="index">1</td>
-                            <td><input type="text" class="form-control" name="designation[]" placeholder="Désignation"></td>
-                            <td>
-                                <select class="form-select unite-select" name="unite[]" required>
-                                    <option value="" disabled selected>Choisir...</option>
-                                    <?php foreach ($unites as $unite): ?>
-                                        <option value="<?= (int)$unite['id'] ?>">
-                                            <?= htmlspecialchars($unite['libelle']) ?> (<?= htmlspecialchars($unite['symbole']) ?>)
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </td>
-                            <td><input type="number" class="form-control quantite" name="quantite[]" placeholder="Quantité"></td>
-                            <td><input type="number" class="form-control prix" name="prix[]" placeholder="Prix Unitaire"></td>
-                            <td><input type="number" class="form-control total" name="total[]" placeholder="Prix Total" readonly></td>
-                            <td>
-                                <button type="button" class="btn btn-danger remove-row">-</button>
-                            </td>
-                        </tr>
+
                     </tbody>
                 </table>
             </div>
+            <!-- Boutons pour ajouter un groupe ou une ligne -->
+            <button type="button" class="btn btn-info mb-2" id="addGroupBtn">
+                <i class="fas fa-layer-group"></i> Ajouter un groupe
+            </button>
             <button type="button" class="btn btn-success mt-3" id="addRow">+ Ajouter une ligne</button>
         </form>
 
