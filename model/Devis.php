@@ -181,4 +181,17 @@ class Devis
             $stmtLigne->execute($ligne);
         }
     }
+    public function getDevisById($id)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM devis_banamur WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getLignesDevis($devisId)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM ligne_devis_banamur WHERE devis_id = :devis_id");
+        $stmt->execute(['devis_id' => $devisId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

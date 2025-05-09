@@ -1,38 +1,6 @@
 <?php
 include 'auth_check.php';
-// Inclure la connexion à la base de données
-include '../logi/connex.php';
-
-
-
-// Vérifier si l'identifiant du devis est passé en paramètre
-if (isset($_GET['devisId'])) {
-    $id_devis = $_GET['devisId'];
-
-    // Requête pour récupérer les détails du devis
-    $query = $con->prepare("SELECT * FROM devis_banamur WHERE id = :id");
-    $query->execute(['id' => $id_devis]);
-    $devis = $query->fetch();
-
-    if (!$devis) {
-        die("Devis non trouvé.");
-    }
-} else {
-    die("Identifiant du devis manquant.");
-}
-
-
-// Récupérer les clients
-$clients = $con->prepare('SELECT * FROM client_banamur');
-$clients->execute();
-
-// Récupérer les offres
-$offres = $con->prepare('SELECT * FROM offre_banamur');
-$offres->execute();
-
-$lignes_devis = $con->prepare('SELECT * FROM ligne_devis_banamur WHERE devis_id=:A');
-$lignes_devis->execute(array('A' => $id_devis));
-
+require_once 'header/header_modifier_devis.php';
 ?>
 
 <!DOCTYPE html>

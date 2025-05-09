@@ -1,4 +1,7 @@
-<?php include 'auth_check.php'; ?>
+<?php
+include 'auth_check.php';
+include 'header/header_liste_offre.php';
+?>
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -9,35 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .card {
-            border: 1px solid #dee2e6;
-            border-radius: 0.5rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .card-header {
-            background-color: #1d2b57;
-            color: #fff;
-            text-align: center;
-        }
-
-        .card-body {
-            background-color: #f8f9fa;
-        }
-    </style>
+    <link rel="stylesheet" href="css/custom_style_liste_offre.css">
 </head>
 
 <body>
@@ -70,25 +45,17 @@
         <!-- Cards displaying offers -->
         <div class="card-grid">
             <!-- PHP code to fetch and display offers from the database -->
-            <?php
-            include('../logi/connex.php');
-
-            $query = $con->prepare('SELECT * FROM offre_banamur');
-            $query->execute();
-            $offers = $query->fetchAll(PDO::FETCH_ASSOC);
-
-            foreach ($offers as $offer) {
-                echo '<div class="card">';
-                echo '<div class="card-header">Numéro d\'Offre: ' . htmlspecialchars($offer['num_offre']) . '</div>';
-                echo '<div class="card-body">';
-                echo '<p><strong>Date d\'Offre:</strong> ' . htmlspecialchars($offer['date_offre']) . '</p>';
-                echo '<p><strong>Référence:</strong> ' . htmlspecialchars($offer['reference_offre']) . '</p>';
-                echo '<p><strong>Commercial dédié:</strong> ' . htmlspecialchars($offer['commercial_dedie']) . '</p>';
-                echo '<p><strong>Date de Création:</strong> ' . htmlspecialchars($offer['date_creat_offre']) . '</p>';
-                echo '</div>';
-                echo '</div>';
-            }
-            ?>
+            <?php foreach ($offers as $offer): ?>
+                <div class="card">
+                    <div class="card-header">Numéro d'Offre: <?= htmlspecialchars($offer['num_offre']) ?></div>
+                    <div class="card-body">
+                        <p><strong>Date d'Offre:</strong> <?= htmlspecialchars($offer['date_offre']) ?></p>
+                        <p><strong>Référence:</strong> <?= htmlspecialchars($offer['reference_offre']) ?></p>
+                        <p><strong>Commercial dédié:</strong> <?= htmlspecialchars($offer['commercial_dedie']) ?></p>
+                        <p><strong>Date de Création:</strong> <?= htmlspecialchars($offer['date_creat_offre']) ?></p>
+                    </div>
+                </div>
+            <?php endforeach; ?>
         </div>
     </div>
 
