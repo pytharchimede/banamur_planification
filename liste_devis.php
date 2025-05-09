@@ -74,7 +74,7 @@ include 'header/header_liste_devis.php';
         </div>
 
         <!-- Grid displaying quotes -->
-        <div class="card-grid">
+        <div class="card-grid mt-4">
             <?php foreach ($devis as $de) : ?>
                 <div class="card">
                     <div class="card-header">
@@ -92,12 +92,27 @@ include 'header/header_liste_devis.php';
                             <p><strong>Date de Création:</strong> <?= htmlspecialchars($de['created_at']) ?></p>
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <a class="btn-view" target="_blank" href="request/export_pdf.php?devisId=<?= $de['id'] ?>">
-                            <i class="fas fa-eye"></i> Visualiser
-                        </a>
-                        <a class="btn-hide" href="request/masquer_devis.php?devisId=<?= $de['id'] ?>"><i class="fas fa-eye-slash"></i> Masquer</a>
-                        <a class="btn-edit" href="modifier_devis.php?devisId=<?= $de['id'] ?>"><i class="fas fa-edit"></i> Modifier</a>
+                    <div class="card-footer d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                        <div class="d-flex gap-2">
+                            <a class="btn btn-outline-primary btn-sm" target="_blank" title="Visualiser le devis détaillé"
+                                href="request/export_pdf.php?devisId=<?= $de['id'] ?>">
+                                <i class="fas fa-file-alt"></i> Détaillé
+                            </a>
+                            <a class="btn btn-outline-info btn-sm" target="_blank" title="Visualiser le devis groupé"
+                                href="request/export_pdf_groupe.php?devisId=<?= $de['id'] ?>">
+                                <i class="fas fa-layer-group"></i> Groupé
+                            </a>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a class="btn btn-outline-secondary btn-sm" title="Masquer ce devis"
+                                href="request/masquer_devis.php?devisId=<?= $de['id'] ?>">
+                                <i class="fas fa-eye-slash"></i>
+                            </a>
+                            <a class="btn btn-outline-warning btn-sm" title="Modifier ce devis"
+                                href="modifier_devis.php?devisId=<?= $de['id'] ?>">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </div>
                     </div>
                     <div class="footer-validation">
                         <?php if (!$de['validation_technique']) : ?>
