@@ -12,7 +12,9 @@ include('header/header_generer_devis.php');
     <title>Rédaction de Devis - BTP</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/custom_style_generer_devis.css">
 </head>
 
 <body>
@@ -129,13 +131,12 @@ include('header/header_generer_devis.php');
                 <table class="table table-bordered" id="devisTable">
                     <thead>
                         <tr>
-                            <th style="width: 50px;">#</th>
+                            <th style="width: 50px;">N°</th>
                             <th>Désignation</th>
-                            <th>Prix</th>
+                            <th>Unité</th>
                             <th>Quantité</th>
-                            <th>TVA (%)</th>
-                            <th>Remise (%)</th>
-                            <th>Total</th>
+                            <th>Prix Unitaire</th>
+                            <th>Prix Total</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -143,11 +144,19 @@ include('header/header_generer_devis.php');
                         <tr>
                             <td class="index">1</td>
                             <td><input type="text" class="form-control" name="designation[]" placeholder="Désignation"></td>
-                            <td><input type="number" class="form-control prix" name="prix[]" placeholder="Prix"></td>
+                            <td>
+                                <select class="form-select unite-select" name="unite[]" required>
+                                    <option value="" disabled selected>Choisir...</option>
+                                    <?php foreach ($unites as $unite): ?>
+                                        <option value="<?= (int)$unite['id'] ?>">
+                                            <?= htmlspecialchars($unite['libelle']) ?> (<?= htmlspecialchars($unite['symbole']) ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </td>
                             <td><input type="number" class="form-control quantite" name="quantite[]" placeholder="Quantité"></td>
-                            <td><input type="number" class="form-control tva" name="tva[]" placeholder="TVA"></td>
-                            <td><input type="number" class="form-control remise" name="remise[]" placeholder="Remise"></td>
-                            <td><input type="number" class="form-control total" name="total[]" readonly></td>
+                            <td><input type="number" class="form-control prix" name="prix[]" placeholder="Prix Unitaire"></td>
+                            <td><input type="number" class="form-control total" name="total[]" placeholder="Prix Total" readonly></td>
                             <td>
                                 <button type="button" class="btn btn-danger remove-row">-</button>
                             </td>
@@ -215,10 +224,33 @@ include('header/header_generer_devis.php');
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let uniteOptions = `
+        <option value="" disabled selected>Choisir...</option>
+        <?php foreach ($unites as $unite): ?>
+            <option value="<?= (int)$unite['id'] ?>">
+                <?= htmlspecialchars($unite['libelle']) ?> (<?= htmlspecialchars($unite['symbole']) ?>)
+            </option>
+        <?php endforeach; ?>
+        `;
+    </script>
     <script src="js/script.js"></script>
     <!--Intégration de jquery/Ajax-->
     <script src="../logi/js/jquery_1.7.1_jquery.min.js"></script>
-    <script src="js/function.js"></script>
+    <script src="js/function_devis.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        function initSelect2() {
+            $('.unite-select').select2({
+                dropdownParent: $('#devisTable').parent(),
+                width: '100%',
+                placeholder: "Choisir..."
+            });
+        }
+        $(document).ready(function() {
+            initSelect2();
+        });
+    </script>
 </body>
 
 </html>

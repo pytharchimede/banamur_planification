@@ -124,6 +124,8 @@ $pdf->SetFont('BookAntiqua', '', 8);
 
 $pdf->Ln(10);
 
+
+
 // Tableau des lignes du devis
 $pdf->SetFont('Arial', 'B', 8);
 $pdf->SetFont('BookAntiqua', 'B', 8);
@@ -133,34 +135,30 @@ $pdf->SetTextColor(255, 255, 255);
 $pdf->SetDrawColor(169, 169, 169);
 
 $pdf->Cell(10, 10, Utils::toMbConvertEncoding('Pos.'), 1, 0, 'C', true);
-$pdf->Cell(85, 10, Utils::toMbConvertEncoding('Description'), 1, 0, 'C', true);
+$pdf->Cell(65, 10, Utils::toMbConvertEncoding('Description'), 1, 0, 'C', true);
 $pdf->Cell(20, 10, Utils::toMbConvertEncoding('Quantité'), 1, 0, 'C', true);
+$pdf->Cell(25, 10, Utils::toMbConvertEncoding('Unité'), 1, 0, 'C', true);
 $pdf->Cell(30, 10, Utils::toMbConvertEncoding('Prix unitaire'), 1, 0, 'C', true);
-$pdf->Cell(20, 10, Utils::toMbConvertEncoding('TVA'), 1, 0, 'C', true);
 $pdf->Cell(30, 10, Utils::toMbConvertEncoding('Prix total'), 1, 0, 'C', true);
 $pdf->Ln();
 
 $pdf->SetTextColor(0, 0, 0);
 $pdf->SetFillColor(255, 255, 255);
 $pdf->SetDrawColor(0, 0, 0);
-$pdf->SetDrawColor(255, 255, 255);
-
-$tvaFacturable = $devis['tva_facturable'] == 1;
 
 $pdf->SetFont('Arial', '', 8);
 $pdf->SetFont('BookAntiqua', '', 8);
 foreach ($lignes as $i => $ligne) {
+    $unite = isset($unitesArray[$ligne['unite_id']]) ? $unitesArray[$ligne['unite_id']]['libelle'] . ' (' . $unitesArray[$ligne['unite_id']]['symbole'] . ')' : '';
     $pdf->Cell(10, 10, $i + 1, 1);
     $pdf->SetFont('Arial', 'B', 8);
     $pdf->AddFont('BookAntiqua', 'B', 8);
-    $pdf->Cell(85, 10, Utils::toMbConvertEncoding($ligne['designation']), 1);
+    $pdf->Cell(65, 10, Utils::toMbConvertEncoding($ligne['designation']), 1);
     $pdf->SetFont('Arial', '', 8);
     $pdf->AddFont('BookAntiqua', '', 8);
     $pdf->Cell(20, 10, $ligne['quantite'], 1);
+    $pdf->Cell(25, 10, Utils::toMbConvertEncoding($unite), 1);
     $pdf->Cell(30, 10, number_format($ligne['prix'], 0, ',', ' ') . ' XOF', 1);
-    $tvaMontant = ($tvaFacturable) ? number_format($ligne['quantite'] * ($ligne['prix'] * 0.18), 0, ',', ' ') : '0';
-
-    $pdf->Cell(20, 10, number_format($tvaMontant, 0, ',', ' ') . ' XOF', 1);
     $pdf->Cell(30, 10, number_format($ligne['total'], 0, ',', ' ') . ' XOF', 1);
     $pdf->Ln();
 }
@@ -211,36 +209,41 @@ $pdf->Cell(0, 5, Utils::toMbConvertEncoding('Habituelle entre nous'), 0, 1, 'L')
 
 $pdf->Ln(5);
 
+// Ajouter les signatures
 $pdf->SetFont('BookAntiqua', 'BU', 10);
 $pdf->Cell(5);
-$pdf->Cell(80, 10, Utils::toMbConvertEncoding('Directeur Commercial (Nom et Signature)'), 0, 0, 'L');
+$pdf->Cell(80, 10, Utils::toMbConvertEncoding('Directeur Technique (Nom et Signature)'), 0, 0, 'L');
 $pdf->Cell(100, 10, Utils::toMbConvertEncoding('Directeur Général (Nom et Signature)'), 0, 1, 'R');
 
 $pdf->Ln(1);
 
-$signatureCommercial = '../signatures/' . $directeurCommercial['signature'];
+$signatureTechnique = '../signatures/' . $directeurTechnique['signature'];
 $signatureGeneral = '../signatures/' . $directeurGeneral['signature'];
 
 $pdf->Cell(5);
 
-if ($devisObj->isValidCommercial($devisId)) {
-    list($widthCommercial, $heightCommercial) = getimagesize($signatureCommercial);
-    $aspectRatioCommercial = $widthCommercial / $heightCommercial;
-    $maxWidthCommercial = 150;
-    $maxHeightCommercial = 50;
+// Signature Directeur Technique
+if ($devisObj->isValidTechnique($devisId)) {
+    list($widthTechnique, $heightTechnique) = getimagesize($signatureTechnique);
+    $aspectRatioTechnique = $widthTechnique / $heightTechnique;
+    $maxWidthTechnique = 150;
+    $maxHeightTechnique = 50;
 
-    if ($aspectRatioCommercial > 1) {
-        $newWidthCommercial = $maxWidthCommercial;
-        $newHeightCommercial = $maxWidthCommercial / $aspectRatioCommercial;
+    if ($aspectRatioTechnique > 1) {
+        $newWidthTechnique = $maxWidthTechnique;
+        $newHeightTechnique = $maxWidthTechnique / $aspectRatioTechnique;
     } else {
-        $newHeightCommercial = $maxHeightCommercial;
-        $newWidthCommercial = $maxHeightCommercial * $aspectRatioCommercial;
+        $newHeightTechnique = $maxHeightTechnique;
+        $newWidthTechnique = $maxHeightTechnique * $aspectRatioTechnique;
     }
-    $pdf->Cell(80, 30, $pdf->Image($signatureCommercial, $pdf->GetX() + ($maxWidthCommercial - $newWidthCommercial) / 2 - 30, $pdf->GetY() + ($maxHeightCommercial - $newHeightCommercial) / 2, $newWidthCommercial, $newHeightCommercial), 1, 0, 'C');
+    $pdf->Cell(80, 30, $pdf->Image($signatureTechnique, $pdf->GetX() + ($maxWidthTechnique - $newWidthTechnique) / 2 - 30, $pdf->GetY() + ($maxHeightTechnique - $newHeightTechnique) / 2, $newWidthTechnique, $newHeightTechnique), 1, 0, 'C');
+} else {
+    $pdf->Cell(80, 30, '', 1, 0, 'C');
 }
 
 $pdf->Cell(30);
 
+// Signature Directeur Général
 if ($devisObj->isValidGenerale($devisId)) {
     list($widthGeneral, $heightGeneral) = getimagesize($signatureGeneral);
     $aspectRatioGeneral = $widthGeneral / $heightGeneral;
@@ -258,12 +261,14 @@ if ($devisObj->isValidGenerale($devisId)) {
     $pdf->SetY($pdf->GetY() + 10);
     $pdf->Cell(125);
     $pdf->Cell(80, 30, $pdf->Image($signatureGeneral, $pdf->GetX() + ($maxWidthGeneral - $newWidthGeneral) / 2, $pdf->GetY() + ($maxHeightGeneral - $newHeightGeneral) / 2, $newWidthGeneral, $newHeightGeneral), 1, 1, 'C');
+} else {
+    $pdf->Cell(80, 30, '', 1, 1, 'C');
 }
 
 $pdf->SetFont('BookAntiqua', '', 10);
 $pdf->Cell(5);
-if ($devisObj->isValidCommercial($devisId)) {
-    $pdf->Cell(80, 10, Utils::toMbConvertEncoding($directeurCommercial['prenom'] . ' ' . $directeurCommercial['nom']), 0, 0, 'L');
+if ($devisObj->isValidTechnique($devisId)) {
+    $pdf->Cell(80, 10, Utils::toMbConvertEncoding($directeurTechnique['prenom'] . ' ' . $directeurTechnique['nom']), 0, 0, 'L');
 } else {
     $pdf->Cell(80, 10, Utils::toMbConvertEncoding('En Attente de validation...'), 0, 0, 'L');
 }

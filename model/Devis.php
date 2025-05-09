@@ -9,60 +9,27 @@ class Devis
         $this->pdo = $pdo;
     }
 
-    public function validerCommerciale($devisId)
-    {
-        // Préparer la requête pour mettre à jour le champ `validation_commerciale` à 1
-        $sql = "UPDATE devis_banamur SET validation_commerciale = 1 WHERE id = :devisId";
 
-        // Préparer l'exécution de la requête
-        $stmt = $this->pdo->prepare($sql);
 
-        // Lier l'ID du devis_banamur à la requête
-        $stmt->bindParam(':devisId', $devisId, PDO::PARAM_INT);
-
-        // Exécuter la requête
-        if ($stmt->execute()) {
-            // Si la mise à jour est réussie, retourner true
-            return true;
-        } else {
-            // Si une erreur survient, retourner false
-            return false;
-        }
-    }
-
+    // Validation générale (directeur général)
     public function validerGenerale($devisId)
     {
-        // Préparer la requête pour mettre à jour le champ `validation_commerciale` à 1
         $sql = "UPDATE devis_banamur SET validation_generale = 1 WHERE id = :devisId";
-
-        // Préparer l'exécution de la requête
         $stmt = $this->pdo->prepare($sql);
-
-        // Lier l'ID du devis_banamur à la requête
         $stmt->bindParam(':devisId', $devisId, PDO::PARAM_INT);
-
-        // Exécuter la requête
-        if ($stmt->execute()) {
-            // Si la mise à jour est réussie, retourner true
-            return true;
-        } else {
-            // Si une erreur survient, retourner false
-            return false;
-        }
+        return $stmt->execute();
     }
 
-    // Méthode pour vérifier si la validation commerciale a été effectuée
-    public function isValidCommercial($devisId)
+    // Validation technique (directeur technique)
+    public function validerTechnique($devisId)
     {
-        $sql = "SELECT validation_commerciale FROM devis_banamur WHERE id = :devisId";
+        $sql = "UPDATE devis_banamur SET validation_technique = 1 WHERE id = :devisId";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':devisId', $devisId, PDO::PARAM_INT);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['validation_commerciale'] == 1;
+        return $stmt->execute();
     }
 
-    // Méthode pour vérifier si la validation générale a été effectuée
+    // Vérifie si la validation générale a été effectuée
     public function isValidGenerale($devisId)
     {
         $sql = "SELECT validation_generale FROM devis_banamur WHERE id = :devisId";
@@ -70,7 +37,18 @@ class Devis
         $stmt->bindParam(':devisId', $devisId, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['validation_generale'] == 1;
+        return isset($result['validation_generale']) && $result['validation_generale'] == 1;
+    }
+
+    // Vérifie si la validation technique a été effectuée
+    public function isValidTechnique($devisId)
+    {
+        $sql = "SELECT validation_technique FROM devis_banamur WHERE id = :devisId";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':devisId', $devisId, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return isset($result['validation_technique']) && $result['validation_technique'] == 1;
     }
 
     public function getAllDevis()
@@ -86,7 +64,7 @@ class Devis
         $stmt->execute();
         $nb_devis = $stmt->fetch(PDO::FETCH_ASSOC)['nb'];
         $index_actuel = $nb_devis + 1;
-        return 'FI-DEV-PAB-' . $index_actuel;
+        return 'BAN-DEV-PAB-' . $index_actuel;
     }
 
     public function getDevisFiltres($filtres = [])
@@ -132,11 +110,17 @@ class Devis
 
         // Enregistrer les lignes de devis
         foreach ($lignes as $ligne) {
-            $sqlLigne = "INSERT INTO ligne_devis_banamur (devis_id, designation, prix, quantite, tva, remise, total)
-                         VALUES (:devis_id, :designation, :prix, :quantite, :tva, :remise, :total)";
+            $sqlLigne = "INSERT INTO ligne_devis_banamur (devis_id, designation, prix, quantite, unite_id, total)
+                         VALUES (:devis_id, :designation, :prix, :quantite, :unite_id, :total)";
             $stmtLigne = $this->pdo->prepare($sqlLigne);
-            $ligne['devis_id'] = $devisId;
-            $stmtLigne->execute($ligne);
+            $stmtLigne->execute([
+                'devis_id'   => $devisId,
+                'designation' => $ligne['designation'],
+                'prix'       => $ligne['prix'],
+                'quantite'   => $ligne['quantite'],
+                'unite_id'   => $ligne['unite_id'],
+                'total'      => $ligne['total'],
+            ]);
         }
 
         return $devisId;
@@ -174,11 +158,17 @@ class Devis
 
         // Ajouter les nouvelles lignes
         foreach ($lignes as $ligne) {
-            $sqlLigne = "INSERT INTO ligne_devis_banamur (devis_id, designation, prix, quantite, tva, remise, total)
-                     VALUES (:devis_id, :designation, :prix, :quantite, :tva, :remise, :total)";
+            $sqlLigne = "INSERT INTO ligne_devis_banamur (devis_id, designation, prix, quantite, unite_id, total)
+                         VALUES (:devis_id, :designation, :prix, :quantite, :unite_id, :total)";
             $stmtLigne = $this->pdo->prepare($sqlLigne);
-            $ligne['devis_id'] = $devisId;
-            $stmtLigne->execute($ligne);
+            $stmtLigne->execute([
+                'devis_id'   => $devisId,
+                'designation' => $ligne['designation'],
+                'prix'       => $ligne['prix'],
+                'quantite'   => $ligne['quantite'],
+                'unite_id'   => $ligne['unite_id'],
+                'total'      => $ligne['total'],
+            ]);
         }
     }
     public function getDevisById($id)

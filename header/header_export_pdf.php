@@ -8,6 +8,7 @@ require_once("../model/Database.php");
 require_once("../model/Devis.php");
 require_once("../model/Client.php");
 require_once("../model/Offre.php");
+require_once("../model/UniteMesure.php");
 
 $pdo = Database::getConnection();
 $userObj = new User($pdo);
@@ -50,4 +51,10 @@ if (!$client) {
 $offre = $offreObj->getOffreById($devis['offre_id']);
 if (!$offre) {
     die('Offre non trouvée.');
+}
+
+$uniteModel = new UniteMesure($pdo);
+$unitesArray = [];
+foreach ($uniteModel->getAll() as $u) {
+    $unitesArray[$u['id']] = $u;
 }

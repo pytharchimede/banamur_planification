@@ -41,26 +41,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    // Préparation des lignes de devis
+    // Préparation des lignes de devis (nouveau format : JSON envoyé par AJAX)
     $lignes = [];
-    if (isset($_POST['designation'])) {
-        $designations = $_POST['designation'];
-        $prix = $_POST['prix'];
-        $quantites = $_POST['quantite'];
-        $tvas = $_POST['tva'];
-        $remises = $_POST['remise'];
-        $totaux = $_POST['total'];
-
-        for ($i = 0; $i < count($designations); $i++) {
-            $lignes[] = [
-                'designation' => $designations[$i],
-                'prix'        => $prix[$i],
-                'quantite'    => $quantites[$i],
-                'tva'         => $tvas[$i],
-                'remise'      => $remises[$i],
-                'total'       => $totaux[$i],
+    if (isset($_POST['lignes'])) {
+        $lignes = json_decode($_POST['lignes'], true);
+        // On ne garde que les champs nécessaires : designation, prix, quantite, unite_id, total
+        foreach ($lignes as &$ligne) {
+            $ligne = [
+                'designation' => $ligne['designation'],
+                'prix'        => $ligne['prix'],
+                'quantite'    => $ligne['quantite'],
+                'unite_id'    => $ligne['unite_id'],
+                'total'       => $ligne['total'],
             ];
         }
+        unset($ligne);
     }
 
     // Création du devis via la classe

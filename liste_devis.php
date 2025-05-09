@@ -65,7 +65,7 @@ include 'header/header_liste_devis.php';
 
         <!-- Button to export filtered quotes in PDF -->
         <div class="text-end mt-3">
-            <a target="_blank" href="https://fidest.ci/devis/request/export_resultat.php?<?php echo http_build_query($_GET); ?>" class="btn btn-primary">
+            <a target="_blank" href="request/export_resultat.php?<?php echo http_build_query($_GET); ?>" class="btn btn-primary">
                 <i class="fas fa-file-pdf"></i> Exporter en PDF
             </a>
             <a target="_blank" href="generer_devis.php" class="btn btn-primary">
@@ -93,11 +93,11 @@ include 'header/header_liste_devis.php';
                         </div>
                     </div>
                     <div class="card-footer">
-                        <a class="btn-view" target="_blank" href="https://fidest.ci/devis/request/export_pdf.php?devisId=<?= $de['id'] ?>">
+                        <a class="btn-view" target="_blank" href="request/export_pdf.php?devisId=<?= $de['id'] ?>">
                             <i class="fas fa-eye"></i> Visualiser
                         </a>
-                        <a class="btn-hide" href="https://fidest.ci/devis/request/masquer_devis.php?devisId=<?= $de['id'] ?>"><i class="fas fa-eye-slash"></i> Masquer</a>
-                        <a class="btn-edit" href="https://fidest.ci/devis/modifier_devis.php?devisId=<?= $de['id'] ?>"><i class="fas fa-edit"></i> Modifier</a>
+                        <a class="btn-hide" href="request/masquer_devis.php?devisId=<?= $de['id'] ?>"><i class="fas fa-eye-slash"></i> Masquer</a>
+                        <a class="btn-edit" href="modifier_devis.php?devisId=<?= $de['id'] ?>"><i class="fas fa-edit"></i> Modifier</a>
                     </div>
                     <div class="footer-validation">
                         <?php if (!$de['validation_commerciale']) : ?>
