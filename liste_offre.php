@@ -191,10 +191,13 @@ include 'header/header_liste_offre.php';
         function updateFileList() {
             fileList.innerHTML = '';
             filesBuffer.forEach((file, idx) => {
-                fileList.innerHTML += `<div style="display:flex;align-items:center;justify-content:space-between;">
-                    <span>${file.name}</span>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="removeFile(${idx})" style="margin-left:10px;">Supprimer</button>
-                </div>`;
+                fileList.innerHTML += `
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin:6px 0;padding:6px 10px;border-radius:5px;background:#fffbe6;border:1px solid #fdd96c;">
+                        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${file.name}</span>
+                        <span style="cursor:pointer;color:#d9534f;font-size:1.1rem;margin-left:12px;" title="Supprimer" onclick="removeFile(${idx})">
+                            <i class="fas fa-times-circle"></i>
+                        </span>
+                    </div>`;
             });
         }
 
