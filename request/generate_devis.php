@@ -53,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 'quantite'    => $ligne['quantite'],
                 'unite_id'    => $ligne['unite_id'],
                 'total'       => $ligne['total'],
+                'groupe'      => isset($ligne['groupe']) ? $ligne['groupe'] : null,
             ];
         }
         unset($ligne);

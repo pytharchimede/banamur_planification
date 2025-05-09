@@ -45,15 +45,15 @@ class User
         return isset($user[$permission]) && $user[$permission] == 1;
     }
 
-    public function findDirecteurCommercial()
+    public function findDirecteurTechnique()
     {
         $stmt = $this->pdo->prepare("
         SELECT u.* 
         FROM user_devis_banamur u
-        INNER JOIN role_devis r ON u.role_id = r.id_role_devis
+        INNER JOIN role_devis_banamur r ON u.role_id = r.id_role_devis
         WHERE r.lib_role_devis = :libelle AND u.active = 1
     ");
-        $stmt->execute(['libelle' => 'directeur commercial']);
+        $stmt->execute(['libelle' => 'directeur technique']);
         return $stmt->fetch();
     }
 
@@ -62,7 +62,7 @@ class User
         $stmt = $this->pdo->prepare("
         SELECT u.* 
         FROM user_devis_banamur u
-        INNER JOIN role_devis r ON u.role_id = r.id_role_devis
+        INNER JOIN role_devis_banamur r ON u.role_id = r.id_role_devis
         WHERE r.lib_role_devis = :libelle AND u.active = 1
     ");
         $stmt->execute(['libelle' => 'directeur general']);

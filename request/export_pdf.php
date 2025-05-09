@@ -14,7 +14,7 @@ class PDF extends FPDF
         $this->Cell(0, 10, '', 0, 1, 'C');
         $this->Ln(10);
 
-        $this->Image('../img/logo_veritas.jpg', 150, 10, 30);
+        // $this->Image('../img/logo_veritas.jpg', 150, 10, 30);
     }
 
     // Méthode pour le pied de page
@@ -110,21 +110,11 @@ $pdf->SetFont('Arial', 'B', 12);
 $pdf->SetFont('BookAntiqua', 'B', 12);
 $pdf->Cell(50, 10, Utils::toMbConvertEncoding('Devis N° ' . $devis['numero_devis']), 0, 0, 'L');
 
-$pdf->SetFont('Arial', '', 10);
-$pdf->SetFont('BookAntiqua', '', 10);
-$pdf->Cell(0, 10, Utils::toMbConvertEncoding('   à l\'attention de ' . $devis['correspondant']), 0, 1, 'L');
 
-$pdf->SetFont('Arial', '', 8);
-$pdf->SetFont('BookAntiqua', '', 8);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding('Pour faire suite a votre demande, '), 0, 1, 'L');
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding('nous vous prions de bien vouloir trouver ci-dessous notre meilleur proposition.'), 0, 1, 'L');
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding('Nous restons à votre  entière disposition pour toute information complémentaire.'), 0, 1, 'L');
 $pdf->SetFont('Arial', '', 8);
 $pdf->SetFont('BookAntiqua', '', 8);
 
 $pdf->Ln(10);
-
-
 
 // Tableau des lignes du devis
 $pdf->SetFont('Arial', 'B', 8);
@@ -146,11 +136,55 @@ $pdf->SetTextColor(0, 0, 0);
 $pdf->SetFillColor(255, 255, 255);
 $pdf->SetDrawColor(0, 0, 0);
 
-$pdf->SetFont('Arial', '', 8);
-$pdf->SetFont('BookAntiqua', '', 8);
-foreach ($lignes as $i => $ligne) {
+// Vérifier s'il y a au moins un groupe renseigné
+$hasGroup = false;
+foreach ($lignes as $l) {
+    if (!empty($l['groupe'])) {
+        $hasGroup = true;
+        break;
+    }
+}
+
+$currentGroup = null;
+$groupTotal = 0;
+$pos = 1;
+
+foreach ($lignes as $index => $ligne) {
+    // Mode groupé
+    if ($hasGroup) {
+        // Nouveau groupe
+        if ($ligne['groupe'] !== $currentGroup) {
+            // Afficher le sous-total du groupe précédent si besoin
+            if ($currentGroup !== null) {
+                $pdf->SetFont('BookAntiqua', 'B', 10);
+                // Fusionne toute la ligne (10+65+20+25+30+30 = 180mm)
+                $pdf->Cell(
+                    180,
+                    8,
+                    Utils::toMbConvertEncoding('SOUS-TOTAL ' . strtoupper($currentGroup) . ' : ' . number_format($groupTotal, 0, ',', ' ') . ' XOF'),
+                    1, // Bordure sur tout le tour
+                    1,
+                    'R'
+                );
+                $pdf->Ln(2);
+            }
+            // Afficher le titre du groupe si présent
+            if (!empty($ligne['groupe'])) {
+                $pdf->SetFont('BookAntiqua', 'B', 10);
+                $pdf->SetFillColor(230, 230, 230);
+                $pdf->Cell(180, 8, Utils::toMbConvertEncoding(strtoupper($ligne['groupe'])), 1, 1, 'L', true);
+                $pdf->SetFillColor(255, 255, 255);
+            }
+            $currentGroup = $ligne['groupe'];
+            $groupTotal = 0;
+        }
+    }
+
+    // Affichage de la ligne de devis (identique dans les deux cas)
     $unite = isset($unitesArray[$ligne['unite_id']]) ? $unitesArray[$ligne['unite_id']]['libelle'] . ' (' . $unitesArray[$ligne['unite_id']]['symbole'] . ')' : '';
-    $pdf->Cell(10, 10, $i + 1, 1);
+    $pdf->SetFont('Arial', '', 8);
+    $pdf->SetFont('BookAntiqua', '', 8);
+    $pdf->Cell(10, 10, $pos++, 1);
     $pdf->SetFont('Arial', 'B', 8);
     $pdf->AddFont('BookAntiqua', 'B', 8);
     $pdf->Cell(65, 10, Utils::toMbConvertEncoding($ligne['designation']), 1);
@@ -161,128 +195,45 @@ foreach ($lignes as $i => $ligne) {
     $pdf->Cell(30, 10, number_format($ligne['prix'], 0, ',', ' ') . ' XOF', 1);
     $pdf->Cell(30, 10, number_format($ligne['total'], 0, ',', ' ') . ' XOF', 1);
     $pdf->Ln();
+
+    // Additionner au sous-total du groupe
+    if ($hasGroup) {
+        $groupTotal += $ligne['total'];
+        // Si c'est la dernière ligne, afficher le sous-total du groupe si besoin
+        if ($index === array_key_last($lignes) && $currentGroup !== null) {
+            $pdf->SetFont('BookAntiqua', 'B', 10);
+            // Fusionne toute la ligne (10+65+20+25+30+30 = 180mm)
+            $pdf->Cell(
+                180,
+                8,
+                Utils::toMbConvertEncoding('SOUS-TOTAL ' . strtoupper($currentGroup) . ' : ' . number_format($groupTotal, 0, ',', ' ') . ' XOF'),
+                1, // Bordure sur tout le tour
+                1,
+                'R'
+            );
+            $pdf->Ln(2);
+        }
+    }
 }
 
-$pdf->Ln(5);
-$pdf->SetDrawColor(0, 0, 0);
-$pdf->Cell(190, 0, '', 'T');
-$pdf->SetDrawColor(255, 255, 255);
+// Ligne Montant HT
+$pdf->SetFont('BookAntiqua', 'B', 10);
+$pdf->Cell(120, 10, Utils::toMbConvertEncoding('MONTANT HT'), 1, 0, 'R');
+$pdf->Cell(60, 10, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1, 1, 'R');
 
-$pdf->Ln(2);
-$pdf->SetFont('Arial', 'B', 8);
-$pdf->AddFont('BookAntiqua', 'B', 8);
-$pdf->Cell(115, 10, '', 0);
-$pdf->Cell(45, 10, Utils::toMbConvertEncoding('Montant HT'), 1);
-$pdf->Cell(30, 10, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1);
-$pdf->Ln();
+// Ligne TVA si facturable
 if ($devis['tva_facturable'] == 1) {
-    $pdf->Cell(115, 10, '', 0);
-    $pdf->Cell(45, 10, Utils::toMbConvertEncoding('TVA 18%'), 1);
-    $pdf->Cell(30, 10, number_format($devis['tva'], 0, ',', ' ') . ' XOF', 1);
-    $pdf->Ln();
+    $pdf->Cell(120, 10, Utils::toMbConvertEncoding('TVA 18%'), 1, 0, 'R');
+    $pdf->Cell(60, 10, number_format($devis['tva'], 0, ',', ' ') . ' XOF', 1, 1, 'R');
 }
-$pdf->Cell(115, 10, '', 0);
-$pdf->Cell(45, 10, Utils::toMbConvertEncoding('Montant TTC'), 1);
-$pdf->Cell(30, 10, number_format($devis['total_ttc'], 0, ',', ' ') . ' XOF', 1);
+
+// Ligne Montant TTC
+$pdf->Cell(120, 10, Utils::toMbConvertEncoding('MONTANT TTC'), 1, 0, 'R');
+$pdf->Cell(60, 10, number_format($devis['total_ttc'], 0, ',', ' ') . ' XOF', 1, 1, 'R');
+
 
 $pdf->Ln(20);
 
-// Ajouter les conditions
-$pdf->SetFont('Arial', 'BU', 8);
-$pdf->SetFont('BookAntiqua', 'BU', 8);
-$pdf->Cell(25, 5, Utils::toMbConvertEncoding('Validité de l\'offre:'), 0, 0, 'L');
-$pdf->SetFont('Arial', '', 8);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding('30 jours'), 0, 1, 'L');
-
-$pdf->SetFont('Arial', 'BU', 8);
-$pdf->SetFont('BookAntiqua', 'BU', 8);
-$pdf->Cell(26, 5, Utils::toMbConvertEncoding('Délai de livraison:'), 0, 0, 'L');
-$pdf->SetFont('Arial', '', 8);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding($devis['delai_livraison']), 0, 1, 'L');
-
-$pdf->SetFont('Arial', 'BU', 8);
-$pdf->SetFont('BookAntiqua', 'BU', 8);
-$pdf->Cell(35, 5, Utils::toMbConvertEncoding('Conditions de règlement:'), 0, 0, 'L');
-$pdf->SetFont('Arial', '', 8);
-$pdf->SetFont('BookAntiqua', '', 8);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding('Habituelle entre nous'), 0, 1, 'L');
-
-$pdf->Ln(5);
-
-// Ajouter les signatures
-$pdf->SetFont('BookAntiqua', 'BU', 10);
-$pdf->Cell(5);
-$pdf->Cell(80, 10, Utils::toMbConvertEncoding('Directeur Technique (Nom et Signature)'), 0, 0, 'L');
-$pdf->Cell(100, 10, Utils::toMbConvertEncoding('Directeur Général (Nom et Signature)'), 0, 1, 'R');
-
-$pdf->Ln(1);
-
-$signatureTechnique = '../signatures/' . $directeurTechnique['signature'];
-$signatureGeneral = '../signatures/' . $directeurGeneral['signature'];
-
-$pdf->Cell(5);
-
-// Signature Directeur Technique
-if ($devisObj->isValidTechnique($devisId)) {
-    list($widthTechnique, $heightTechnique) = getimagesize($signatureTechnique);
-    $aspectRatioTechnique = $widthTechnique / $heightTechnique;
-    $maxWidthTechnique = 150;
-    $maxHeightTechnique = 50;
-
-    if ($aspectRatioTechnique > 1) {
-        $newWidthTechnique = $maxWidthTechnique;
-        $newHeightTechnique = $maxWidthTechnique / $aspectRatioTechnique;
-    } else {
-        $newHeightTechnique = $maxHeightTechnique;
-        $newWidthTechnique = $maxHeightTechnique * $aspectRatioTechnique;
-    }
-    $pdf->Cell(80, 30, $pdf->Image($signatureTechnique, $pdf->GetX() + ($maxWidthTechnique - $newWidthTechnique) / 2 - 30, $pdf->GetY() + ($maxHeightTechnique - $newHeightTechnique) / 2, $newWidthTechnique, $newHeightTechnique), 1, 0, 'C');
-} else {
-    $pdf->Cell(80, 30, '', 1, 0, 'C');
-}
-
-$pdf->Cell(30);
-
-// Signature Directeur Général
-if ($devisObj->isValidGenerale($devisId)) {
-    list($widthGeneral, $heightGeneral) = getimagesize($signatureGeneral);
-    $aspectRatioGeneral = $widthGeneral / $heightGeneral;
-    $maxWidthGeneral = 60;
-    $maxHeightGeneral = 20;
-
-    if ($aspectRatioGeneral > 1) {
-        $newWidthGeneral = $maxWidthGeneral;
-        $newHeightGeneral = $maxWidthGeneral / $aspectRatioGeneral;
-    } else {
-        $newHeightGeneral = $maxHeightGeneral;
-        $newWidthGeneral = $maxHeightGeneral * $aspectRatioGeneral;
-    }
-
-    $pdf->SetY($pdf->GetY() + 10);
-    $pdf->Cell(125);
-    $pdf->Cell(80, 30, $pdf->Image($signatureGeneral, $pdf->GetX() + ($maxWidthGeneral - $newWidthGeneral) / 2, $pdf->GetY() + ($maxHeightGeneral - $newHeightGeneral) / 2, $newWidthGeneral, $newHeightGeneral), 1, 1, 'C');
-} else {
-    $pdf->Cell(80, 30, '', 1, 1, 'C');
-}
-
-$pdf->SetFont('BookAntiqua', '', 10);
-$pdf->Cell(5);
-if ($devisObj->isValidTechnique($devisId)) {
-    $pdf->Cell(80, 10, Utils::toMbConvertEncoding($directeurTechnique['prenom'] . ' ' . $directeurTechnique['nom']), 0, 0, 'L');
-} else {
-    $pdf->Cell(80, 10, Utils::toMbConvertEncoding('En Attente de validation...'), 0, 0, 'L');
-}
-
-if ($devisObj->isValidGenerale($devisId)) {
-    $pdf->Cell(100, 10, Utils::toMbConvertEncoding($directeurGeneral['prenom'] . ' ' . $directeurGeneral['nom']), 0, 1, 'R');
-} else {
-    $pdf->Cell(80, 10, Utils::toMbConvertEncoding('En Attente de validation...'), 0, 0, 'L');
-}
-
-$pdf->Cell(5);
-$pdf->Cell(80, 30, '', 1, 0, 'C');
-$pdf->Cell(10);
-$pdf->Cell(80, 30, '', 1, 1, 'C');
 
 ob_clean();
 

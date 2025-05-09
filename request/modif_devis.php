@@ -55,6 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $tvas = $_POST['tva'];
         $remises = $_POST['remise'];
         $totaux = $_POST['total'];
+        $groupes = isset($_POST['groupe']) ? $_POST['groupe'] : [];
+
 
         for ($i = 0; $i < count($designations); $i++) {
             $lignes[] = [
@@ -64,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 'tva'         => $tvas[$i],
                 'remise'      => $remises[$i],
                 'total'       => $totaux[$i],
+                'groupe'      => isset($groupes[$i]) ? $groupes[$i] : null,
             ];
         }
     }

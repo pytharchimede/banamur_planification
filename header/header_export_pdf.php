@@ -16,7 +16,7 @@ $devisObj = new Devis($pdo);
 $clientObj = new Client($pdo);
 $offreObj = new Offre($pdo);
 
-$directeurCommercial = $userObj->findDirecteurCommercial();
+$directeurTechnique = $userObj->findDirecteurTechnique();
 $directeurGeneral = $userObj->findDirecteurGeneral();
 
 // Vérifiez que le devisId est défini dans la session ou dans l'URL

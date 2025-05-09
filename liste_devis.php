@@ -100,7 +100,7 @@ include 'header/header_liste_devis.php';
                         <a class="btn-edit" href="modifier_devis.php?devisId=<?= $de['id'] ?>"><i class="fas fa-edit"></i> Modifier</a>
                     </div>
                     <div class="footer-validation">
-                        <?php if (!$de['validation_commerciale']) : ?>
+                        <?php if (!$de['validation_technique']) : ?>
                             <a class="btn-validate commerciale" href="request/valider_commerciale.php?devisId=<?= $de['id'] ?>"><i class="fas fa-check-circle"></i> Valider Commerciale</a>
                         <?php elseif (!$de['validation_generale']) : ?>
                             <a class="btn-validate generale" href="request/valider_generale.php?devisId=<?= $de['id'] ?>"><i class="fas fa-check-circle"></i> Valider Générale</a>
