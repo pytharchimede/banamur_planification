@@ -3,22 +3,46 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f8f9fa;
+    background-color: #fffbe6; /* Jaune très clair */
 }
 
 .spinner-container {
     text-align: center;
-    color: #1d2b57;
+    color: #000; /* Noir */
 }
 
 .spinner-container .spinner-border {
     width: 5rem;
     height: 5rem;
     border-width: 0.25em;
+    color: #fdd96c; /* Jaune */
+    border-color: #fdd96c #000 #fdd96c #000;
 }
 
 .spinner-container h1 {
     margin-top: 20px;
     font-size: 2rem;
     font-weight: bold;
+    color: #000; /* Noir */
+}
+
+/* Messages jaune/noir */
+.message {
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.message.success {
+    background-color: #fffbe6; /* Jaune très clair */
+    color: #000; /* Texte noir */
+    border: 1px solid #fdd96c;
+}
+
+.message.error {
+    background-color: #fdd96c; /* Jaune principal */
+    color: #000; /* Texte noir */
+    border: 1px solid #000;
 }
