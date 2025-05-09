@@ -191,10 +191,16 @@ $(document).ready(function () {
       totalHT += totalHTLine;
     });
     $("#totalHT").val(totalHT.toFixed(2));
-    // Si tu veux calculer la TVA sur le total, fais-le ici
-    // let tva = ...;
-    // let totalTTC = totalHT + tva;
-    // $('#totalTTC').val(totalTTC.toFixed(2));
+
+    // Calcul TVA si la case est cochée
+    let tvaFacturable = $("#tvaFacturable").is(":checked");
+    let tauxTVA = 0.18;
+    let tva = tvaFacturable ? totalHT * tauxTVA : 0;
+    $("#tva").val(tva.toFixed(2));
+
+    // Total TTC
+    let totalTTC = totalHT + tva;
+    $("#totalTTC").val(totalTTC.toFixed(2));
   }
 
   // Prévisualisation du logo
