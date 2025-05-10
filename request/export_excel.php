@@ -47,57 +47,61 @@ $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 $sheet->setTitle('Devis');
 
-// --- Ajout du logo ---
+// --- Ajout du logo (plus grand, bien positionné) ---
 $logoPath = '../logo/' . ($devis['logo'] ?: 'default_logo.jpg');
 if (file_exists($logoPath)) {
     $drawing = new Drawing();
     $drawing->setName('Logo');
     $drawing->setPath($logoPath);
-    $drawing->setHeight(60);
+    $drawing->setHeight(100); // plus grand
     $drawing->setCoordinates('A1');
+    $drawing->setOffsetX(10);
+    $drawing->setOffsetY(5);
     $drawing->setWorksheet($sheet);
 }
 
-// --- Ajout du QR Code (si tu as déjà généré un QR code PNG pour ce devis) ---
+// --- Ajout du QR Code à droite ---
 $qrcodePath = '../qrcodes/qrcode_' . $devis['id'] . '.png';
 if (file_exists($qrcodePath)) {
     $drawingQR = new Drawing();
     $drawingQR->setName('QR Code');
     $drawingQR->setPath($qrcodePath);
-    $drawingQR->setHeight(60);
+    $drawingQR->setHeight(80);
     $drawingQR->setCoordinates('F1');
+    $drawingQR->setOffsetX(30);
+    $drawingQR->setOffsetY(5);
     $drawingQR->setWorksheet($sheet);
 }
 
-// --- Expéditeur et destinataire ---
+// --- Numéro de devis centré, grand et gras ---
+$sheet->mergeCells('B2:E3');
+$sheet->setCellValue('B2', 'DEVIS N° ' . $devis['numero_devis']);
+$sheet->getStyle('B2')->getFont()->setSize(20)->setBold(true);
+$sheet->getStyle('B2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
+
+// --- Expéditeur et destinataire sur la même ligne ---
 $row = 5;
+$sheet->mergeCells("A$row:C$row");
+$sheet->mergeCells("D$row:F$row");
 $sheet->setCellValue("A$row", "Expéditeur : BANAMUR BTP");
-$sheet->getStyle("A$row")->getFont()->setBold(true);
-$row++;
-$sheet->setCellValue("A$row", "Destinataire : " . $client['nom_client']);
-$sheet->getStyle("A$row")->getFont()->setBold(true);
+$sheet->setCellValue("D$row", "Destinataire : " . $client['nom_client']);
+$sheet->getStyle("A$row:F$row")->getFont()->setBold(true);
 $row += 2;
 
-// --- Infos client et devis ---
+// --- Infos client et devis (bien espacés) ---
 $sheet->setCellValue("A$row", "Adresse : " . $client['localisation_client']);
+$sheet->setCellValue("D$row", "Date émission : " . $devis['date_emission']);
 $row++;
 $sheet->setCellValue("A$row", "Commune : " . $client['commune_client']);
+$sheet->setCellValue("D$row", "Date expiration : " . $devis['date_expiration']);
 $row++;
 $sheet->setCellValue("A$row", "BP : " . $client['bp_client']);
+$sheet->setCellValue("D$row", "Offre : " . $offre['num_offre']);
 $row++;
 $sheet->setCellValue("A$row", "Pays : " . $client['pays_client']);
-$row += 2;
-$sheet->setCellValue("A$row", "Devis N° " . $devis['numero_devis']);
+$sheet->setCellValue("D$row", "Référence : " . $offre['reference_offre']);
 $row++;
-$sheet->setCellValue("A$row", "Date émission : " . $devis['date_emission']);
-$row++;
-$sheet->setCellValue("A$row", "Date expiration : " . $devis['date_expiration']);
-$row++;
-$sheet->setCellValue("A$row", "Offre : " . $offre['num_offre']);
-$row++;
-$sheet->setCellValue("A$row", "Référence : " . $offre['reference_offre']);
-$row++;
-$sheet->setCellValue("A$row", "Interlocuteur : " . $offre['commercial_dedie']);
+$sheet->setCellValue("D$row", "Interlocuteur : " . $offre['commercial_dedie']);
 $row += 2;
 
 // --- En-tête du tableau ---
@@ -157,11 +161,11 @@ $sheet->getStyle("A$headerRow:F$row")->getBorders()->getAllBorders()->setBorderS
 
 // --- Pied de page ---
 $row += 2;
+$sheet->mergeCells("A$row:F$row");
 $sheet->setCellValue("A$row", "FOURNITURES INDUSTRIELLES, DEPANNAGE ET TRAVAUX PUBLIQUES - Au capital de 10 000 000 F CFA - Siège Social : Abidjan, Koumassi, Zone industrielle");
 $row++;
-$sheet->setCellValue("A$row", "01 BP 1642 Abidjan 01 - Téléphone : (+225) 27-21-36-27-27  -  Email : info@fidest.org - RCCM : CI-ABJ-2017-B-20163  -  N° CC : 010274200088");
-$sheet->mergeCells("A" . ($row - 1) . ":F" . ($row - 1));
 $sheet->mergeCells("A$row:F$row");
+$sheet->setCellValue("A$row", "01 BP 1642 Abidjan 01 - Téléphone : (+225) 27-21-36-27-27  -  Email : info@fidest.org - RCCM : CI-ABJ-2017-B-20163  -  N° CC : 010274200088");
 $sheet->getStyle("A" . ($row - 1) . ":A$row")->getFont()->setSize(8);
 $sheet->getStyle("A" . ($row - 1) . ":A$row")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
