@@ -21,6 +21,9 @@
         <a class="nav-link" href="liste_unite.php">Unités</a>
     </li>
     <li class="nav-item">
+        <a class="nav-link" href="liste_debourse.php">Déboursés</a>
+    </li>
+    <li class="nav-item">
         <a class="nav-link" href="liste_utilisateur.php">Utilisateurs</a>
     </li>
     <li class="nav-item">
