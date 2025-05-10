@@ -44,81 +44,146 @@ $pdf->AddPage();
 $pdf->SetFont('Arial', 'B', 16);
 $pdf->AliasNbPages();
 
-$pdf->AddFont('BookAntiqua', '', 'bookantiqua.php');
-$pdf->AddFont('BookAntiqua', 'B', 'bookantiqua_bold.php');
-$pdf->SetFont('BookAntiqua', '', 12);
+// Dimensions
+$logoPath = '../logo/' . ($devis['logo'] ?? 'default_logo.jpg');
+$logoWidth = 40;
+$logoHeight = 40;
+$enteteX = 10;
+$enteteY = 10;
+$enteteW = 190;
+
+// Afficher le logo à gauche
+$pdf->Image($logoPath, $enteteX, $enteteY, $logoWidth, $logoHeight);
+
+// Zone de texte à droite du logo
+$textX = $enteteX + $logoWidth + 5;
+$textW = $enteteW - $logoWidth - 5;
+$textY = $enteteY;
+
+// Préparer les 4 lignes (inchangé)
+$lines = [
+    [
+        'text' => 'BANAMUR INDUSTRIES ET TECHNOLOGIES',
+        'size' => 16,
+        'style' => 'B',
+        'color' => [0, 0, 0],
+        'font' => 'Arial'
+    ],
+    [
+        'text' => 'BATIMENT-TRAVAUX PUBLICS',
+        'size' => 13,
+        'style' => '',
+        'color' => [0, 0, 0],
+        'font' => 'Arial'
+    ],
+    [
+        'text' => 'RENOVATION ET TRAVAUX NEUF',
+        'size' => 13,
+        'style' => 'B',
+        'color' => [255, 204, 0],
+        'font' => 'Arial'
+    ],
+    [
+        'text' => 'TUYAUTERIE-CHAUDRENERIE-CHARPENTE METALLIQUE',
+        'size' => 14,
+        'style' => '',
+        'color' => [0, 0, 0],
+        'font' => 'Arial'
+    ],
+];
+
+// Calculer la hauteur d'une ligne pour occuper exactement la hauteur du logo
+$lineH = $logoHeight / count($lines);
+
+// Afficher chaque ligne centrée dans la zone texte, alignée verticalement avec le logo
+for ($i = 0; $i < count($lines); $i++) {
+    $pdf->SetXY($textX, $textY + $i * $lineH);
+    $pdf->SetFont($lines[$i]['font'], $lines[$i]['style'], $lines[$i]['size']);
+    $pdf->SetTextColor($lines[$i]['color'][0], $lines[$i]['color'][1], $lines[$i]['color'][2]);
+    $pdf->Cell($textW, $lineH, Utils::toMbConvertEncoding($lines[$i]['text']), 0, 0, 'C');
+}
+
+// Remettre la couleur noire pour la suite
+$pdf->SetTextColor(0, 0, 0);
+$pdf->Ln($logoHeight + 5);
 
 // Générer le QR code
 $qrCodeData = 'https://fidest.ci/devis/request/export_pdf.php?devisId=' . $devis['id'];
 $qrCodeFile = '../qrCodeFile/qrcode.png';
 QRcode::png($qrCodeData, $qrCodeFile, 'L', 4, 2);
 
-// Ajouter le logo à gauche
-if (isset($devis['logo']) && $devis['logo'] != '') {
-    $pdf->Image('../logo/' . $devis['logo'], 10, 10, 40);
-}
+// Positionner le QR code 
+$pdf->Image($qrCodeFile, 16, 62, 15);
 
-// Ajouter le QR code à droite du logo
-$pdf->Image($qrCodeFile, 180, 10, 20);
+// Positionnement pour le bloc client à droite sous l'entête
+$blocW = 63; // 1/3 de 190mm
+$blocX = 127; // 190 - 63 = 127, mais on laisse 10mm de marge à droite
+$blocY = $enteteY + $logoHeight + 5;
 
-// Positionnement individuel des informations de BANAMUR INDUSTRIES & TECH
-$pdf->SetFont('Arial', 'B', 10);
+// Ligne 1 : Date en français (remplace strftime)
+$fmt = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE, 'Africa/Abidjan', IntlDateFormatter::GREGORIAN, 'dd MMMM yyyy');
+$dateEmission = $fmt->format(new DateTime($devis['date_emission']));
+$ligne1 = "Abidjan, le $dateEmission";
 
-// Positionnement individuel des informations de SIFCA
-$pdf->SetFont('Arial', 'B', 10);
-$pdf->SetFont('BookAntiqua', 'B', 10);
-$pdf->SetXY(10, 50);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding(strtoupper($client['nom_client'])), 0, 1, 'L');
+// Ligne 2 : Nom du client
+$ligne2 = $client['nom_client'];
+
+// Ligne 3 : Localisation
+$ligne3 = $client['localisation_client'];
+
+// Ligne 4 : BP
+$ligne4 = $client['bp_client'];
+
+// Affichage
+$pdf->SetXY($blocX, $blocY);
+$pdf->SetFont('Arial', '', 11);
+$pdf->Cell($blocW, 7, Utils::toMbConvertEncoding($ligne1), 0, 2, 'C');
+
+$pdf->SetFont('Arial', 'B', 15);
+$pdf->Cell($blocW, 9, Utils::toMbConvertEncoding($ligne2), 0, 2, 'C');
+
+$pdf->SetFont('Arial', '', 11);
+$pdf->Cell($blocW, 7, Utils::toMbConvertEncoding($ligne3), 0, 2, 'C');
+
+$pdf->Cell($blocW, 7, Utils::toMbConvertEncoding($ligne4), 0, 2, 'C');
+
+// Revenir à la position normale pour la suite
+$pdf->Ln(5);
+
+
+
+
+// Afficher la référence de l'offre comme titre, centré, grand, gras et encadré, avec retour à la ligne si besoin
+$pdf->SetFont('Arial', 'B', 14);
+$pdf->SetDrawColor(0, 0, 0);
+$pdf->SetTextColor(0, 0, 0);
+$pdf->SetFillColor(255, 255, 255);
+
+$refText = Utils::toMbConvertEncoding(strtoupper($offre['reference_offre']));
+
+// Calcul largeur réelle du texte (max 150mm pour éviter d'aller trop loin sur la page)
+$maxWidth = 180;
+$textWidth = $pdf->GetStringWidth($refText) + 12; // 6mm padding de chaque côté
+if ($textWidth > $maxWidth) $textWidth = $maxWidth;
+
+// Positionner au centre
+$pageWidth = 210 - 20; // A4 - marges (10mm de chaque côté)
+$startX = 10 + ($pageWidth - $textWidth) / 2;
+
+// Afficher le cadre autour du texte, MultiCell pour retour à la ligne
+$pdf->SetX($startX);
+$pdf->MultiCell($textWidth, 7, $refText, 1, 'C', true);
+
+// Ajouter un petit espace après le bloc
+$pdf->Ln(4);
 
 $pdf->SetFont('Arial', '', 8);
-$pdf->SetXY(10, 55);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding($client['localisation_client']), 0, 1, 'L');
 
-$pdf->SetXY(10, 60);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding($client['commune_client']), 0, 1, 'L');
-
-$pdf->SetXY(10, 65);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding($client['bp_client']), 0, 1, 'L');
-
-$pdf->SetXY(10, 70);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding($client['pays_client']), 0, 1, 'L');
-
-// Positionnement individuel des informations du devis
-$pdf->SetFont('Arial', 'B', 10);
-$pdf->SetFont('BookAntiqua', 'B', 10);
-$pdf->SetXY(135, 50);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding('N° d\'offre: ' . $offre['num_offre']), 0, 1, 'L');
-
-$pdf->SetFont('Arial', '', 8);
-$pdf->AddFont('BookAntiqua', '', 8);
-$pdf->SetXY(135, 55);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding('Date: ' . Utils::dateEnToutesLettres($offre['date_offre'])), 0, 1, 'L');
-
-$pdf->SetXY(135, 60);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding('Référence: ' . $offre['reference_offre']), 0, 1, 'L');
-/*
-$pdf->SetXY(150, 65);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding('Votre numéro client: 1064'), 0, 1, 'L');
-*/
-$pdf->SetXY(135, 65);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding('Votre interlocuteur: ' . $offre['commercial_dedie']), 0, 1, 'L');
-
-$pdf->Ln(10);
-
-// Ajouter les informations concernant le devis juste en dessous des trois colonnes
-$pdf->SetFont('Arial', 'B', 12);
-$pdf->SetFont('BookAntiqua', 'B', 12);
-$pdf->Cell(50, 10, Utils::toMbConvertEncoding('Devis N° ' . $devis['numero_devis']), 0, 0, 'L');
-
-
-$pdf->SetFont('Arial', '', 8);
-$pdf->SetFont('BookAntiqua', '', 8);
 
 $pdf->Ln(10);
 
 // Tableau des lignes du devis
 $pdf->SetFont('Arial', 'B', 8);
-$pdf->SetFont('BookAntiqua', 'B', 8);
 
 $pdf->SetFillColor(0, 0, 0);
 $pdf->SetTextColor(255, 255, 255);
@@ -141,76 +206,96 @@ $groupTotal = 0;
 $groupDesignations = [];
 $groupIndex = 1;
 
+// ...avant la boucle...
+$cellHeight = 7; // Hauteur compacte pour chaque ligne de désignation
+
 foreach ($lignes as $index => $ligne) {
     if ($ligne['groupe'] !== $currentGroup) {
-        // Afficher la ligne du groupe précédent si besoin
         if ($currentGroup !== null) {
-            // Préparer la désignation multilignes
             $designationCell = implode("\n", array_map(fn($d) => "- $d", $groupDesignations));
             $nbLines = count($groupDesignations);
-            $cellHeight = 10 * $nbLines;
+            $rowHeight = $cellHeight * $nbLines;
 
-            // Sauvegarde la position de départ
             $x = $pdf->GetX();
             $y = $pdf->GetY();
 
-            $pdf->SetFont('BookAntiqua', 'B', 10);
-            $pdf->Cell(10, $cellHeight, $groupIndex, 1, 0, 'C');
+            // 1. Afficher la désignation (MultiCell)
+            $pdf->SetFont('Arial', '', 9);
+            $pdf->SetXY($x + 10, $y);
+            $beforePage = $pdf->PageNo();
+            $pdf->MultiCell(65, $cellHeight, Utils::toMbConvertEncoding($designationCell), 1, 'L', false);
+            $afterPage = $pdf->PageNo();
 
-            // Désignation sur plusieurs lignes dans la même cellule, avec MultiCell
-            $pdf->SetFont('BookAntiqua', '', 9);
-            $pdf->MultiCell(65, 10, Utils::toMbConvertEncoding($designationCell), 1, 'L', false);
+            // 2. Calcul de la position pour la cellule N°
+            if ($afterPage > $beforePage) {
+                // On est passé à la page suivante
+                $cellY = $pdf->GetY() - $rowHeight;
+                $cellX = 10; // marge gauche
+            } else {
+                $cellY = $y;
+                $cellX = $x;
+            }
+            // Afficher la cellule N° sur la bonne page et à la bonne position
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->SetXY($cellX, $cellY);
+            $pdf->Cell(10, $rowHeight, $groupIndex, 1, 0, 'C');
 
-            // Repositionne le curseur pour les autres colonnes sur la même ligne
-            $pdf->SetXY($x + 10 + 65, $y);
+            // 3. Repositionner pour les autres colonnes
+            $pdf->SetXY($cellX + 10 + 65, $cellY);
 
-            $pdf->SetFont('BookAntiqua', '', 10);
-            $pdf->Cell(20, $cellHeight, '1', 1, 0, 'C');
-            $pdf->Cell(25, $cellHeight, 'u', 1, 0, 'C');
-            $pdf->Cell(30, $cellHeight, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 0, 'C');
-            $pdf->Cell(30, $cellHeight, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'C');
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell(20, $rowHeight, '1', 1, 0, 'C');
+            $pdf->Cell(25, $rowHeight, 'u', 1, 0, 'C');
+            $pdf->Cell(30, $rowHeight, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 0, 'C');
+            $pdf->Cell(30, $rowHeight, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'C');
 
             $groupIndex++;
         }
-        // Prépare le nouveau groupe
         $currentGroup = $ligne['groupe'];
         $groupTotal = 0;
         $groupDesignations = [];
     }
-    // Ajoute la désignation à la liste du groupe
     $groupDesignations[] = $ligne['designation'];
     $groupTotal += $ligne['total'];
 
-    // Si dernière ligne, afficher la ligne du groupe
+    // Dernière ligne
     if ($index === array_key_last($lignes)) {
         $designationCell = implode("\n", array_map(fn($d) => "- $d", $groupDesignations));
         $nbLines = count($groupDesignations);
-        $cellHeight = 10 * $nbLines;
+        $rowHeight = $cellHeight * $nbLines;
 
-        // Sauvegarde la position de départ
         $x = $pdf->GetX();
         $y = $pdf->GetY();
 
-        $pdf->SetFont('BookAntiqua', 'B', 10);
-        $pdf->Cell(10, $cellHeight, $groupIndex, 1, 0, 'C');
+        $pdf->SetFont('Arial', '', 9);
+        $pdf->SetXY($x + 10, $y);
+        $beforePage = $pdf->PageNo();
+        $pdf->MultiCell(65, $cellHeight, Utils::toMbConvertEncoding($designationCell), 1, 'L', false);
+        $afterPage = $pdf->PageNo();
 
-        // Désignation sur plusieurs lignes dans la même cellule, avec MultiCell
-        $pdf->SetFont('BookAntiqua', '', 9);
-        $pdf->MultiCell(65, 10, Utils::toMbConvertEncoding($designationCell), 1, 'L', false);
+        if ($afterPage > $beforePage) {
+            $cellY = $pdf->GetY() - $rowHeight;
+            $cellX = 10;
+        } else {
+            $cellY = $y;
+            $cellX = $x;
+        }
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetXY($cellX, $cellY);
+        $pdf->Cell(10, $rowHeight, $groupIndex, 1, 0, 'C');
 
-        // Repositionne le curseur pour les autres colonnes sur la même ligne
-        $pdf->SetXY($x + 10 + 65, $y);
+        $pdf->SetXY($cellX + 10 + 65, $cellY);
 
-        $pdf->SetFont('BookAntiqua', '', 10);
-        $pdf->Cell(20, $cellHeight, '1', 1, 0, 'C');
-        $pdf->Cell(25, $cellHeight, 'u', 1, 0, 'C');
-        $pdf->Cell(30, $cellHeight, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 0, 'C');
-        $pdf->Cell(30, $cellHeight, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'C');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(20, $rowHeight, '1', 1, 0, 'C');
+        $pdf->Cell(25, $rowHeight, 'u', 1, 0, 'C');
+        $pdf->Cell(30, $rowHeight, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 0, 'C');
+        $pdf->Cell(30, $rowHeight, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'C');
     }
 }
 
 // Ligne Montant HT
-$pdf->SetFont('BookAntiqua', 'B', 10);
+$pdf->SetFont('Arial', 'B', 10);
 $pdf->Cell(150, 10, Utils::toMbConvertEncoding('MONTANT HT'), 1, 0, 'C');
 $pdf->Cell(30, 10, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
 
