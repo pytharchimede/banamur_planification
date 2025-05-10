@@ -277,15 +277,34 @@ $pdf->SetFont('Arial', 'B', 10);
 $pdf->Cell(150, 10, Utils::toMbConvertEncoding('MONTANT HT'), 1, 0, 'C');
 $pdf->Cell(40, 10, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
 
-// Ligne TVA si facturable
+
+// Ligne TVA
 if ($devis['tva_facturable'] == 1) {
     $pdf->Cell(150, 10, Utils::toMbConvertEncoding('TVA 18%'), 1, 0, 'C');
     $pdf->Cell(40, 10, number_format($devis['tva'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
+} else {
+    // Libellé explicite
+    $pdf->SetFont('Arial', 'I', 10);
+    $pdf->SetTextColor(120, 120, 120);
+    $pdf->Cell(150, 10, Utils::toMbConvertEncoding('TVA 18% (non facturée)'), 1, 0, 'C');
+    // Montant barré (simulateur: affiche en gris, italique, entre parenthèses)
+    $pdf->SetFont('Arial', 'I', 10);
+    $pdf->SetTextColor(180, 180, 180);
+    $pdf->Cell(40, 10, '(' . number_format(0.18 * $devis['total_ht'], 0, ',', ' ') . ' XOF)', 1, 1, 'C');
+    // Remettre police normale et couleur noire
+    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->SetTextColor(0, 0, 0);
 }
 
+
 // Ligne Montant TTC
-$pdf->Cell(150, 10, Utils::toMbConvertEncoding('MONTANT TTC'), 1, 0, 'C');
-$pdf->Cell(40, 10, number_format($devis['total_ttc'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
+if ($devis['tva_facturable'] == 1) {
+    $pdf->Cell(150, 10, Utils::toMbConvertEncoding('MONTANT TTC'), 1, 0, 'C');
+    $pdf->Cell(40, 10, number_format($devis['total_ttc'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
+} else {
+    $pdf->Cell(150, 10, Utils::toMbConvertEncoding('MONTANT NET À PAYER'), 1, 0, 'C');
+    $pdf->Cell(40, 10, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
+}
 
 $pdf->Ln(10);
 
