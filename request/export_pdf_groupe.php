@@ -20,20 +20,24 @@ class PDF extends FPDF
     // Méthode pour le pied de page
     function Footer()
     {
-        // Dessiner une ligne grise
+        // Dessiner une ligne noire
         $this->SetDrawColor(0, 0, 0);
         $this->Line(10, 272, 200, 272);
 
-        // Position at 1.5 cm from bottom
+        // Position à 1.5 cm du bas
         $this->SetY(-22);
 
-        // Arial italic 8
+        // Arial 7
         $this->SetFont('Arial', '', 7);
 
-        $this->Cell(0, 3.5, Utils::toMbConvertEncoding("FOURNITURES INDUSTRIELLES, DEPANNAGE ET TRAVAUX PUBLIQUES - Au capital de 10 000 000 F CFA - Siège Social : Abidjan, Koumassi, Zone industrielle"), 0, 1, 'C');
-        $this->Cell(0, 3.5, Utils::toMbConvertEncoding("01 BP 1642 Abidjan 01 - Téléphone : (+225) +225 27-21-36-27-27  -  Email : info@fidest.org - RCCM : CI-ABJ-2017-B-20163  -  N° CC : 010274200088"), 0, 1, 'C');
+        // Ligne 1
+        $this->Cell(0, 3.5, Utils::toMbConvertEncoding("S.A.R.L au Capital de 100 000 000 FCFA - Siège Social: Abidjan, Koumassi Bd. du Gabon prolongé – 01 BP 1642 Abidjan 01"), 0, 1, 'C');
+        // Ligne 2
+        $this->Cell(0, 3.5, Utils::toMbConvertEncoding("RCCM N°: CI-ABJ-03-2022-B13-02828 – Tél. : +225 27 21 36 27 27 / 27 21 36 09 29 – Fax : 27 21 36 05 75"), 0, 1, 'C');
+        // Ligne 3
+        $this->Cell(0, 3.5, Utils::toMbConvertEncoding("E-mail: banacerf1@gmail.com - Compte Bancaire BDU N° : CI180 01010 020401144580 11"), 0, 1, 'C');
 
-        // Page number
+        // Numéro de page
         $this->Cell(0, 10, Utils::toMbConvertEncoding('Page ' . $this->PageNo() . '/{nb}'), 0, 0, 'C');
     }
 }
