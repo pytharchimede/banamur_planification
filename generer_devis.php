@@ -93,7 +93,7 @@ include('header/header_generer_devis.php');
         <div class="d-flex align-items-start mb-4">
 
             <div id="logoUploadContainer" class="border rounded p-4" onclick="document.getElementById('logoUpload').click();">
-                <img id="logoPreview" src="#" alt="Logo" class="img-fluid mb-2" style="max-height: 150px;">
+                <img id="logoPreview" src="logo/default_logo.jpg" alt="Logo" class="img-fluid mb-2" style="max-height: 150px;">
                 <input type="file" id="logoUpload" name="logoUpload" accept="image/*" style="display: none;">
                 <p id="logoMessage" class="text-muted logo-message">Cliquer ou glisser votre logo</p>
             </div>

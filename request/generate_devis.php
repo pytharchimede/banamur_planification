@@ -42,6 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $data['logo'] = $newFileName;
         }
     }
+    // Si aucun logo uploadé, logo par défaut
+    if (empty($data['logo'])) {
+        $data['logo'] = 'default_logo.jpg';
+    }
 
     // Préparation des lignes de devis (nouveau format : JSON envoyé par AJAX)
     $lignes = [];
