@@ -13,8 +13,6 @@ class PDF extends FPDF
         $this->SetFont('Arial', 'B', 12);
         $this->Cell(0, 10, '', 0, 1, 'C');
         $this->Ln(10);
-
-        // $this->Image('../img/logo_veritas.jpg', 150, 10, 30);
     }
 
     // Méthode pour le pied de page
@@ -43,10 +41,6 @@ $pdf = new PDF('P', 'mm', 'A4');
 $pdf->AddPage();
 $pdf->SetFont('Arial', 'B', 16);
 $pdf->AliasNbPages();
-
-// $pdf->AddFont('BookAntiqua', '', 'bookantiqua.php');
-// $pdf->AddFont('BookAntiqua', 'B', 'bookantiqua_bold.php');
-// $pdf->SetFont('BookAntiqua', '', 12);
 
 // Dimensions
 $logoPath = '../logo/' . ($devis['logo'] ?? 'default_logo.jpg');
@@ -293,7 +287,23 @@ if ($devis['tva_facturable'] == 1) {
 $pdf->Cell(150, 10, Utils::toMbConvertEncoding('MONTANT TTC'), 1, 0, 'C');
 $pdf->Cell(40, 10, number_format($devis['total_ttc'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
 
-$pdf->Ln(20);
+$pdf->Ln(10);
+
+// Ligne 1 : Arrêtée la présente facture à la somme de :
+$pdf->SetFont('Arial', 'U', 8);
+$pdf->Cell(0, 6, Utils::toMbConvertEncoding("Arrêtée le présent devis à la somme de :"), 0, 1, 'L');
+
+// Ligne 2 : Montant TTC en lettres (grand, gras, multiligne si besoin)
+$montantLettre = Utils::montantEnLettre($devis['total_ttc']);
+$pdf->SetFont('Arial', 'B', 10);
+$pdf->MultiCell(0, 6, Utils::toMbConvertEncoding(strtoupper($montantLettre)), 0, 'L');
+
+// Ligne 3 : CONDITIONS DE REGLEMENT
+$pdf->SetFont('Arial', 'U', 8);
+$pdf->Cell(0, 6, Utils::toMbConvertEncoding("CONDITIONS DE REGLEMENT :"), 0, 1, 'L');
+$pdf->SetFont('Arial', 'B', 8);
+$pdf->MultiCell(0, 6, Utils::toMbConvertEncoding("Paiement 60 jours après réception du devis"), 0, 'L');
+
 
 ob_clean();
 

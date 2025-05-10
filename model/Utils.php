@@ -36,4 +36,16 @@ class Utils
     {
         return utf8_decode($string);
     }
+
+    public static function montantEnLettre($nombre)
+    {
+        // Utilise NumberFormatter si disponible (intl)
+        if (class_exists('NumberFormatter')) {
+            $fmt = new \NumberFormatter('fr_FR', \NumberFormatter::SPELLOUT);
+            $lettres = $fmt->format($nombre);
+            return ucfirst($lettres) . ' francs CFA';
+        }
+        // Sinon, version basique
+        return $nombre . ' francs CFA';
+    }
 }
