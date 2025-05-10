@@ -163,7 +163,7 @@ $pdf->SetDrawColor(0, 0, 0);
 $pdf->SetTextColor(0, 0, 0);
 $pdf->SetFillColor(255, 255, 255);
 
-$refText = Utils::toMbConvertEncoding($offre['reference_offre']);
+$refText = Utils::toMbConvertEncoding(strtoupper($offre['reference_offre']));
 
 // Calcul largeur réelle du texte (max 150mm pour éviter d'aller trop loin sur la page)
 $maxWidth = 180;
@@ -182,13 +182,13 @@ $pdf->MultiCell($textWidth, 7, $refText, 1, 'C', true);
 $pdf->Ln(4);
 
 $pdf->SetFont('Arial', '', 8);
-// $pdf->SetFont('BookAntiqua', '', 8);
+
 
 $pdf->Ln(10);
 
 // Tableau des lignes du devis
 $pdf->SetFont('Arial', 'B', 12);
-// $pdf->SetFont('BookAntiqua', 'B', 8);
+
 
 $pdf->SetFillColor(0, 0, 0);
 $pdf->SetTextColor(255, 255, 255);
@@ -237,7 +237,10 @@ foreach ($lignes as $index => $ligne) {
             if (!empty($ligne['groupe'])) {
                 // $pdf->SetFont('BookAntiqua', 'B', 10);
                 $pdf->SetFillColor(230, 230, 230);
-                $pdf->Cell(190, 8, Utils::toMbConvertEncoding(strtoupper($ligne['groupe'])), 1, 1, 'L', true);
+                // Colonne N° sans bordure droite, même couleur de fond
+                $pdf->Cell(10, 8, '', 'LTB', 0, '', true); // L=Left, T=Top, B=Bottom (pas de R=Right)
+                // Colonne groupe, bordure complète, même couleur de fond
+                $pdf->Cell(180, 8, Utils::toMbConvertEncoding(strtoupper($ligne['groupe'])), 'R', 1, 'L', true);
                 $pdf->SetFillColor(255, 255, 255);
             }
             $currentGroup = $ligne['groupe'];
@@ -248,13 +251,13 @@ foreach ($lignes as $index => $ligne) {
     // Affichage de la ligne de devis (identique dans les deux cas)
     $unite = isset($unitesArray[$ligne['unite_id']]) ? '' . $unitesArray[$ligne['unite_id']]['symbole'] . '' : '';
     $pdf->SetFont('Arial', '', 8);
-    // $pdf->SetFont('BookAntiqua', '', 8);
+
     $pdf->Cell(10, 10, $pos++, 1, 0, 'C');
     $pdf->SetFont('Arial', 'B', 8);
-    // $pdf->AddFont('BookAntiqua', 'B', 8);
+
     $pdf->Cell(65, 10, Utils::toMbConvertEncoding($ligne['designation']), 1);
     $pdf->SetFont('Arial', '', 8);
-    // $pdf->AddFont('BookAntiqua', '', 8);
+
     $pdf->Cell(20, 10, $ligne['quantite'], 1, 0, 'C'); // quantité centrée
     $pdf->Cell(25, 10, Utils::toMbConvertEncoding($unite), 1, 0, 'C'); // unité centrée
     $pdf->Cell(30, 10, number_format($ligne['prix'], 0, ',', ' ') . ' XOF', 1, 0, 'C'); // prix unitaire centré
@@ -265,18 +268,18 @@ foreach ($lignes as $index => $ligne) {
         $groupTotal += $ligne['total'];
         // Si c'est la dernière ligne, afficher le sous-total du groupe si besoin
         if ($index === array_key_last($lignes) && $currentGroup !== null) {
-            // $pdf->SetFont('BookAntiqua', 'B', 10);
+            $pdf->SetFont('Arial', 'B', 10);
             // Fusionne toutes les colonnes sauf la dernière (10+65+20+25+30 = 150mm)
-            $pdf->Cell(160, 10, Utils::toMbConvertEncoding('SOUS-TOTAL ' . strtoupper($currentGroup)), 1, 0, 'C');
+            $pdf->Cell(150, 10, Utils::toMbConvertEncoding('SOUS-TOTAL ' . strtoupper($currentGroup)), 1, 0, 'C');
             // Colonne "Prix total" (30mm) pour le montant, bordure complète
-            $pdf->Cell(30, 10, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'C');
+            $pdf->Cell(40, 10, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'C');
             $pdf->Ln(2);
         }
     }
 }
 
 // Ligne Montant HT
-// $pdf->SetFont('BookAntiqua', 'B', 10);
+$pdf->SetFont('Arial', 'B', 10);
 $pdf->Cell(150, 10, Utils::toMbConvertEncoding('MONTANT HT'), 1, 0, 'C');
 $pdf->Cell(40, 10, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
 
