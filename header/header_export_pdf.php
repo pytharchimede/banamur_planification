@@ -1,6 +1,5 @@
 <?php
 
-
 include('../fpdf186/fpdf.php');
 require_once("../phpqrcode/qrlib.php");
 require_once("../model/User.php");

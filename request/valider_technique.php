@@ -13,7 +13,7 @@ if (isset($_GET['devisId'])) {
     $devis = new Devis($pdo);
 
     // Appeler la méthode validerDevis pour valider le devis
-    $result = $devis->validerCommerciale($devisId);
+    $result = $devis->validerTechnique($devisId);
 
     // Si la validation a réussi, rediriger vers la page d'origine
     if ($result) {
