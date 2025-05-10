@@ -177,12 +177,7 @@ $pdf->SetX($startX);
 $pdf->MultiCell($textWidth, 7, $refText, 1, 'C', true);
 
 // Ajouter un petit espace après le bloc
-$pdf->Ln(4);
-
-$pdf->SetFont('Arial', '', 8);
-
-
-$pdf->Ln(10);
+$pdf->Ln(8);
 
 // Tableau des lignes du devis
 $pdf->SetFont('Arial', 'B', 12);
@@ -319,7 +314,7 @@ if ($devis['tva_facturable'] == 1) {
     $pdf->Cell(40, $SubTotalLineHeight, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
 }
 
-$pdf->Ln(10);
+$pdf->Ln(5);
 
 // Ligne 1 : Arrêtée la présente facture à la somme de :
 $pdf->SetFont('Arial', 'U', 8);
@@ -336,6 +331,24 @@ $pdf->Cell(0, 6, Utils::toMbConvertEncoding("CONDITIONS DE REGLEMENT :"), 0, 1, 
 $pdf->SetFont('Arial', 'B', 8);
 $pdf->MultiCell(0, 6, Utils::toMbConvertEncoding("Paiement 60 jours après réception du devis"), 0, 'L');
 
+// Espace pour la signature du Directeur Technique
+$pdf->Ln(5); // espace avant la zone de signature
+
+// Position horizontale à droite (ajuste si besoin)
+$signatureX = 130;
+$pdf->SetXY($signatureX, $pdf->GetY());
+
+// "DIRECTEUR TECHNIQUE" en majuscule, souligné
+$pdf->SetFont('Arial', 'U', 10);
+$pdf->Cell(70, 7, Utils::toMbConvertEncoding('DIRECTEUR TECHNIQUE'), 0, 2, 'C');
+
+// Nom du directeur technique (remplace par le vrai nom si besoin)
+$pdf->SetFont('Arial', 'B', 11);
+$pdf->Cell(70, 8, Utils::toMbConvertEncoding('NOM DU DIRECTEUR'), 0, 2, 'C');
+
+// Espace pour cachet et signature
+$pdf->SetFont('Arial', '', 9);
+$pdf->Cell(70, 20, Utils::toMbConvertEncoding('(Cachet et signature)'), 0, 2, 'C');
 
 ob_clean();
 
