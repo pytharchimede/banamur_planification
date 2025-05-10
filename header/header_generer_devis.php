@@ -20,3 +20,6 @@ $offres = $offreModel->getAllOffres();
 // Récupérer toutes les unités de mesure
 $uniteModel = new UniteMesure($pdo);
 $unites = $uniteModel->getAll();
+
+
+$page = "generer_devis";

@@ -9,6 +9,8 @@ $userModel = new User($pdo);
 // Récupérer la liste des utilisateurs
 $stmt = $pdo->query("SELECT * FROM user_devis");
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$page = "liste_utilisateur";
 ?>
 
 <!DOCTYPE html>

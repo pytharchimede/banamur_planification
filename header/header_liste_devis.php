@@ -24,3 +24,6 @@ foreach ($devis as $de) {
     $total_ttc += $de['total_ttc'];
     $nb_devis++;
 }
+
+
+$page = "liste_devis";

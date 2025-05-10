@@ -1,4 +1,8 @@
-<?php include 'auth_check.php'; ?>
+<?php
+
+include 'auth_check.php';
+include 'header/header_dashboard.php';
+?>
 <!DOCTYPE html>
 <html lang="fr">
 

@@ -1,4 +1,10 @@
-<?php include 'auth_check.php'; ?>
+<?php
+
+include 'auth_check.php';
+
+$page = "liste_facture";
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 
