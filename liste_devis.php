@@ -63,7 +63,7 @@ include 'header/header_liste_devis.php';
             <h4 class="text-end">Montant Total TTC: <span class="text-success"><?php echo number_format($total_ttc, 0, ',', ' '); ?> FCFA</span></h4>
         </div>
 
-        <!-- Button to export filtered quotes in PDF -->
+        <!-- Button to export filtered quotes in PDF & Excel -->
         <div class="text-end mt-3">
             <a target="_blank" href="request/export_resultat.php?<?php echo http_build_query($_GET); ?>" class="btn btn-primary">
                 <i class="fas fa-file-pdf"></i> Exporter en PDF
@@ -101,6 +101,10 @@ include 'header/header_liste_devis.php';
                             <a class="btn btn-outline-info btn-sm" target="_blank" title="Visualiser le devis groupé"
                                 href="request/export_pdf_groupe.php?devisId=<?= $de['id'] ?>">
                                 <i class="fas fa-layer-group"></i> Groupé
+                            </a>
+                            <a class="btn btn-success btn-sm" target="_blank" title="Exporter en Excel"
+                                href="request/export_excel.php?devisId=<?= $de['id'] ?>">
+                                <i class="fas fa-file-excel"></i> Exporter en Excel
                             </a>
                         </div>
                         <div class="d-flex gap-2">
