@@ -34,6 +34,7 @@ $(document).ready(function () {
       var quantite = $(this).find('input[name="quantite[]"]').val();
       var unite_id = $(this).find('select[name="unite[]"]').val();
       var total = $(this).find('input[name="total[]"]').val();
+      var groupe = $(this).find('input[name="groupe[]"]').val() || "";
       if (designation && prix && quantite && unite_id) {
         lignes.push({
           designation: designation,
@@ -41,6 +42,7 @@ $(document).ready(function () {
           quantite: quantite,
           unite_id: unite_id,
           total: total,
+          groupe: groupe, // <-- AJOUT ICI
         });
       }
     });

@@ -243,5 +243,65 @@ $(document).ready(function () {
       }
     });
 
+  // Ajout du JSON des lignes dans un champ caché lors de la soumission du formulaire
+  $("form").on("submit", function (e) {
+    e.preventDefault(); // Empêche le rechargement
+
+    // Synchronise le titre du groupe pour chaque ligne
+    let currentGroupTitle = "";
+    $("#devisTable tbody tr").each(function () {
+      if ($(this).hasClass("groupe-row")) {
+        currentGroupTitle = $(this).find(".groupe-titre").val() || "";
+      } else if (!$(this).hasClass("sous-total-row")) {
+        $(this).find(".groupe-value").val(currentGroupTitle);
+      }
+    });
+
+    // Récupère toutes les lignes du tableau
+    let lignes = [];
+    $("#devisTable tbody tr").each(function () {
+      if (
+        !$(this).hasClass("groupe-row") &&
+        !$(this).hasClass("sous-total-row")
+      ) {
+        lignes.push({
+          designation: $(this).find('input[name="designation[]"]').val(),
+          prix: $(this).find('input[name="prix[]"]').val(),
+          quantite: $(this).find('input[name="quantite[]"]').val(),
+          unite_id: $(this).find('select[name="unite[]"]').val(),
+          total: $(this).find('input[name="total[]"]').val(),
+          groupe: $(this).find('input[name="groupe[]"]').val(),
+        });
+      }
+    });
+    // Ajoute le JSON dans un champ caché
+    if ($("#lignes-json").length === 0) {
+      $(this).append('<input type="hidden" id="lignes-json" name="lignes">');
+    }
+    $("#lignes-json").val(JSON.stringify(lignes));
+
+    // Affiche toutes les données envoyées
+    let formData = new FormData(this);
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ":", pair[1]);
+    }
+
+    // Envoi AJAX
+    $.ajax({
+      url: $(this).attr("action"),
+      type: "POST",
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function (response) {
+        console.log("Réponse serveur :", response);
+        alert("Réponse serveur : " + response);
+      },
+      error: function (xhr, status, error) {
+        console.error("Erreur AJAX :", error);
+      },
+    });
+  });
+
   updateIndex();
 });

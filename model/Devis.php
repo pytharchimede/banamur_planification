@@ -110,8 +110,8 @@ class Devis
 
         // Enregistrer les lignes de devis
         foreach ($lignes as $ligne) {
-            $sqlLigne = "INSERT INTO ligne_devis_banamur (devis_id, designation, prix, quantite, unite_id, total)
-                         VALUES (:devis_id, :designation, :prix, :quantite, :unite_id, :total)";
+            $sqlLigne = "INSERT INTO ligne_devis_banamur (devis_id, designation, prix, quantite, unite_id, total, groupe)
+                         VALUES (:devis_id, :designation, :prix, :quantite, :unite_id, :total, :groupe)";
             $stmtLigne = $this->pdo->prepare($sqlLigne);
             $stmtLigne->execute([
                 'devis_id'   => $devisId,
@@ -120,6 +120,7 @@ class Devis
                 'quantite'   => $ligne['quantite'],
                 'unite_id'   => $ligne['unite_id'],
                 'total'      => $ligne['total'],
+                'groupe'     => $ligne['groupe'], // <-- ajout ici
             ]);
         }
 

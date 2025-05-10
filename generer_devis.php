@@ -38,6 +38,7 @@ include('header/header_generer_devis.php');
     <div class="container mt-4">
         <h1 class="text-center">Rédiger un Devis</h1>
 
+
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="clientSelect" class="form-label">Sélectionner le client</label>
@@ -115,7 +116,7 @@ include('header/header_generer_devis.php');
             </div>
         </div>
 
-        <form id="devisForm" action="request/generate_devis.php" method="POST" enctype="multipart/form-data">
+        <form id="devisForm" method="POST" enctype="multipart/form-data">
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="emisPar" class="form-label">Émetteur</label>
@@ -141,7 +142,7 @@ include('header/header_generer_devis.php');
                         </tr>
                     </thead>
                     <tbody>
-
+                        <!-- Ajout des lignes du devis ici -->
                     </tbody>
                 </table>
             </div>
@@ -179,6 +180,8 @@ include('header/header_generer_devis.php');
                     <label for="totalTTC" class="form-label">Total TTC</label>
                     <input type="text" class="form-control" id="totalTTC" name="totalTTC" readonly>
                 </div>
+
+                <div id="resultat"></div>
                 <!-- Buttons -->
                 <div class="btn-group d-flex flex-column mt-3">
                     <button type="button" class="btn btn-primary mt-2" id="saveBtn" style="margin-bottom:2px;">

@@ -7,6 +7,8 @@ $pdo = Database::getConnection();
 $devisModel = new Devis($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+
     // Récupération des données du formulaire
     $data = [
         'numero_devis'     => $_POST['numeroDevis'] ?? '',
@@ -58,6 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         unset($ligne);
     }
+
+    error_log(print_r($lignes, true)); // Pour déboguer les lignes de devis
+
 
     // Création du devis via la classe
     $devisId = $devisModel->creerDevis($data, $lignes);
