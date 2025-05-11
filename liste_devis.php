@@ -125,6 +125,10 @@ include 'header/header_liste_devis.php';
                             <a class="btn-validate generale" href="request/valider_generale.php?devisId=<?= $de['id'] ?>"><i class="fas fa-check-circle"></i> Valider Générale</a>
                         <?php else : ?>
                             <span class="validated"><i class="fas fa-check-double"></i> Déjà Validé</span>
+                            <a class="btn btn-outline-dark btn-sm ms-2" title="Gérer le déboursé"
+                                href="gerer_debourse.php?devisId=<?= $de['id'] ?>">
+                                <i class="fas fa-coins"></i> Gérer le déboursé
+                            </a>
                         <?php endif; ?>
                     </div>
                 </div>
