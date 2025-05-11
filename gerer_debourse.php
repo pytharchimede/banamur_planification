@@ -52,7 +52,7 @@ function getCategorieOptions($selected = '')
             <span class="badge bg-success fs-6">Total TTC : <?= number_format($devis['total_ttc'] ?? 0, 0, ',', ' ') ?> FCFA</span>
         </div>
 
-        <form method="post" action="save_debourse.php">
+        <form id="form-debourse" method="post">
             <input type="hidden" name="devis_id" value="<?= $devisId ?>">
             <?php foreach ($lignes as $ligne):
                 $debourse = $debourses[$ligne['id']] ?? [];
@@ -135,6 +135,7 @@ function getCategorieOptions($selected = '')
                 </button>
             </div>
         </form>
+        <div id="alert-debourse"></div>
     </div>
 
     <footer class="footer text-white text-center py-3 bg-dark">
@@ -179,6 +180,39 @@ function getCategorieOptions($selected = '')
             </td>
         `;
         }
+
+        $('#form-debourse').on('submit', function(e) {
+            e.preventDefault();
+            let form = $(this);
+            let btn = form.find('button[type=submit]');
+            let data = form.serialize(); // Sérialise AVANT de désactiver
+            // Désactive tous les champs
+            form.find('input, select, textarea, button').prop('disabled', true);
+            $('#alert-debourse').html('');
+            $.ajax({
+                url: 'request/save_debourse.php',
+                type: 'POST',
+                data: data, // Utilise la variable data
+                dataType: 'json',
+                success: function(resp) {
+                    if (resp.success) {
+                        $('#alert-debourse').html('<div class="alert alert-success">' + resp.message + '</div>');
+                        setTimeout(function() {
+                            window.location.href = 'liste_devis.php';
+                        }, 5000);
+                    } else {
+                        $('#alert-debourse').html('<div class="alert alert-danger">' + resp.message + '</div>');
+                        // Réactive tous les champs si erreur
+                        form.find('input, select, textarea, button').prop('disabled', false);
+                    }
+                },
+                error: function() {
+                    $('#alert-debourse').html('<div class="alert alert-danger">Erreur lors de la sauvegarde.</div>');
+                    // Réactive tous les champs si erreur
+                    form.find('input, select, textarea, button').prop('disabled', false);
+                }
+            });
+        });
     </script>
 </body>
 

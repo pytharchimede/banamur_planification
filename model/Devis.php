@@ -206,4 +206,48 @@ class Devis
         $stmt->execute(['debourse_id' => $debourseId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function saveDebourseLigne($devisId, $ligneId, $montant, $responsable, $date_debut, $date_fin)
+    {
+        $sql = "REPLACE INTO debourse_banamur (devis_id, ligne_devis_id, montant_debourse, responsable_id, date_debut, date_fin)
+                VALUES (:devis_id, :ligne_devis_id, :montant, :responsable, :date_debut, :date_fin)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'devis_id' => $devisId,
+            'ligne_devis_id' => $ligneId,
+            'montant' => $montant,
+            'responsable' => $responsable,
+            'date_debut' => $date_debut,
+            'date_fin' => $date_fin
+        ]);
+    }
+
+    public function deleteSousLignesDebourse($ligneId)
+    {
+        $sql = "DELETE FROM ligne_debourse_banamur WHERE debourse_id = (SELECT id FROM debourse_banamur WHERE ligne_devis_id = :ligne_id)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['ligne_id' => $ligneId]);
+    }
+
+    public function addSousLigneDebourse($ligneId, $categorie, $designation, $montant, $date_debut, $date_fin)
+    {
+        // Récupérer l'id du déboursé principal
+        $stmt = $this->pdo->prepare("SELECT id FROM debourse_banamur WHERE ligne_devis_id = :ligne_id");
+        $stmt->execute(['ligne_id' => $ligneId]);
+        $debourse = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$debourse) return;
+        $debourse_id = $debourse['id'];
+
+        $sql = "INSERT INTO ligne_debourse_banamur (debourse_id, categorie, designation, montant, date_debut, date_fin)
+                VALUES (:debourse_id, :categorie, :designation, :montant, :date_debut, :date_fin)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'debourse_id' => $debourse_id,
+            'categorie' => $categorie,
+            'designation' => $designation,
+            'montant' => $montant,
+            'date_debut' => $date_debut,
+            'date_fin' => $date_fin
+        ]);
+    }
 }
