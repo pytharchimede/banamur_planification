@@ -1,0 +1,31 @@
+.table-debourse th,
+.table-debourse td {
+    vertical-align: middle;
+}
+
+.ligne-sous-debourse {
+    background: #f8f9fa;
+}
+
+.alert-depassement {
+    color: #fff;
+    background: #dc3545;
+    border: none;
+}
+
+.btn-add-sous-ligne {
+    font-size: 0.9em;
+}
+
+.wow-title {
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-weight: bold;
+    color: #0d6efd;
+    letter-spacing: 2px;
+}
+
+.card-ligne {
+    box-shadow: 0 2px 8px #0001;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+}

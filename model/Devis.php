@@ -186,4 +186,24 @@ class Devis
         $stmt->execute(['devis_id' => $devisId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // Récupère les déboursés pour un devis, indexés par ligne_devis_id
+    public function getDeboursesByDevis($devisId)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM debourse_banamur WHERE devis_id = :devis_id");
+        $stmt->execute(['devis_id' => $devisId]);
+        $result = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $result[$row['ligne_devis_id']] = $row;
+        }
+        return $result;
+    }
+
+    // Récupère les sous-lignes de déboursé pour une ligne de devis
+    public function getLignesDebourse($debourseId)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM ligne_debourse_banamur WHERE debourse_id = :debourse_id");
+        $stmt->execute(['debourse_id' => $debourseId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

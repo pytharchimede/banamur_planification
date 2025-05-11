@@ -11,7 +11,7 @@ class User
 
     public function ajouterUtilisateur($data)
     {
-        $sql = "INSERT INTO user_devis (mail_pro, password, nom, prenom, modifier_devis, visualiser_devis, soumettre_devis, masquer_devis, envoyer_devis, valider_devis, active)
+        $sql = "INSERT INTO user_devis_banamur (mail_pro, password, nom, prenom, modifier_devis, visualiser_devis, soumettre_devis, masquer_devis, envoyer_devis, valider_devis, active)
             VALUES (:mail_pro, :password, :nom, :prenom, :modifier_devis, :visualiser_devis, :soumettre_devis, :masquer_devis, :envoyer_devis, :valider_devis, 1)";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute($data);
@@ -71,21 +71,21 @@ class User
 
     public function desactiverUtilisateur($id)
     {
-        $sql = "UPDATE user_devis SET active = 0 WHERE id = :id";
+        $sql = "UPDATE user_devis_banamur SET active = 0 WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute(['id' => $id]);
     }
 
     public function getUserById($id)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM user_devis WHERE id = :id");
+        $stmt = $this->pdo->prepare("SELECT * FROM user_devis_banamur WHERE id = :id");
         $stmt->execute(['id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function modifierUtilisateur($id, $data)
     {
-        $sql = "UPDATE user_devis SET mail_pro = :mail_pro, password = :password, nom = :nom, prenom = :prenom, modifier_devis = :modifier_devis, visualiser_devis = :visualiser_devis, soumettre_devis = :soumettre_devis, masquer_devis = :masquer_devis, envoyer_devis = :envoyer_devis, valider_devis = :valider_devis WHERE id = :id";
+        $sql = "UPDATE user_devis_banamur SET mail_pro = :mail_pro, password = :password, nom = :nom, prenom = :prenom, modifier_devis = :modifier_devis, visualiser_devis = :visualiser_devis, soumettre_devis = :soumettre_devis, masquer_devis = :masquer_devis, envoyer_devis = :envoyer_devis, valider_devis = :valider_devis WHERE id = :id";
         $data['id'] = $id;
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute($data);
@@ -93,15 +93,23 @@ class User
 
     public function reactiverUtilisateur($id)
     {
-        $sql = "UPDATE user_devis SET active = 1 WHERE id = :id";
+        $sql = "UPDATE user_devis_banamur SET active = 1 WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute(['id' => $id]);
     }
 
     public function supprimerUtilisateur($id)
     {
-        $sql = "DELETE FROM user_devis WHERE id = :id";
+        $sql = "DELETE FROM user_devis_banamur WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute(['id' => $id]);
+    }
+
+    // Récupère tous les utilisateurs (pour la liste des responsables)
+    public function getUtilisateurs()
+    {
+        $stmt = $this->pdo->prepare("SELECT id, nom FROM user_devis_banamur");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
