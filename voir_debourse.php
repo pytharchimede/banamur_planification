@@ -1,0 +1,220 @@
+<?php
+include 'auth_check.php';
+
+include 'header/header_voir_debourse.php';
+
+?>
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Voir Déboursé - Devis <?= htmlspecialchars($devis['numero_devis'] ?? '') ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/custom_style_voir_debourse.css">
+</head>
+
+<body>
+    <!-- Menu -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="https://fidest.ci/logo/new_logo_banamur.jpg" alt="Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <?php include 'menu.php'; ?>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <h1 class="text-center wow-title mb-4">
+            <i class="fas fa-eye"></i> Déboursé du devis <span class="text-dark"><?= htmlspecialchars($devis['numero_devis'] ?? '') ?></span>
+        </h1>
+        <div class="mb-4 text-center">
+            <span class="badge bg-primary fs-6">Client : <?= htmlspecialchars($devis['destine_a'] ?? '') ?></span>
+            <span class="badge bg-success fs-6">Total TTC : <?= number_format($devis['total_ttc'] ?? 0, 0, ',', ' ') ?> FCFA</span>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-3">
+                <div class="card stat-card text-center p-3">
+                    <div class="fs-2 text-success"><i class="fas fa-coins"></i></div>
+                    <div class="fw-bold">Total déboursé</div>
+                    <div class="fs-5"><?= number_format($totalDebourse, 0, ',', ' ') ?> FCFA</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card text-center p-3">
+                    <div class="fs-2 text-info"><i class="fas fa-list-ol"></i></div>
+                    <div class="fw-bold">Nombre de sous-lignes</div>
+                    <div class="fs-5"><?= $nbSousLignes ?></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card stat-card p-3">
+                    <div class="fw-bold mb-2"><i class="fas fa-chart-pie"></i> Répartition par catégorie</div>
+                    <?php foreach ($categoriesStats as $cat => $montant): ?>
+                        <span class="badge bg-secondary badge-categorie mb-1"><?= ucfirst($cat) ?> : <?= number_format($montant, 0, ',', ' ') ?> FCFA</span>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="d-flex justify-content-end gap-2 mb-3">
+            <a href="request/export_debourse_pdf.php?devisId=<?= $devisId ?>" target="_blank" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i> Exporter PDF
+            </a>
+            <a href="request/export_debourse_excel.php?devisId=<?= $devisId ?>" target="_blank" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Exporter Excel
+            </a>
+            <a href="liste_devis.php" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+
+        <!-- Tableau des déboursés -->
+        <?php foreach ($lignes as $ligne):
+            $debourse = $debourses[$ligne['id']] ?? null;
+            if (!$debourse) continue;
+            $sousLignes = $devisModel->getLignesDebourse($debourse['id']);
+        ?>
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <strong>Ligne :</strong> <?= htmlspecialchars($ligne['designation']) ?>
+                    <span class="float-end text-secondary">Montant devis : <?= number_format($ligne['montant'] ?? 0, 0, ',', ' ') ?> FCFA</span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Montant déboursé :</strong>
+                            <span class="editable" data-type="montant" data-id="<?= $debourse['id'] ?>">
+                                <?= number_format($debourse['montant_debourse'] ?? 0, 0, ',', ' ') ?> FCFA
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Responsable :</strong>
+                            <span class="editable" data-type="responsable" data-id="<?= $debourse['id'] ?>">
+                                <?php
+                                $resp = array_filter($utilisateurs, fn($u) => $u['id'] == $debourse['responsable_id']);
+                                echo htmlspecialchars($resp ? reset($resp)['nom'] : 'Non défini');
+                                ?>
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Période :</strong>
+                            <?= htmlspecialchars($debourse['date_debut'] ?? '') ?> au <?= htmlspecialchars($debourse['date_fin'] ?? '') ?>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-debourse align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Catégorie</th>
+                                    <th>Désignation</th>
+                                    <th>Montant</th>
+                                    <th>Date début</th>
+                                    <th>Date fin</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($sousLignes as $sous): ?>
+                                    <tr>
+                                        <td><?= ucfirst($sous['categorie']) ?></td>
+                                        <td class="editable" data-type="designation" data-id="<?= $sous['id'] ?>">
+                                            <?= htmlspecialchars($sous['designation']) ?>
+                                        </td>
+                                        <td class="editable" data-type="montant_sous" data-id="<?= $sous['id'] ?>">
+                                            <?= number_format($sous['montant'], 0, ',', ' ') ?> FCFA
+                                        </td>
+                                        <td><?= htmlspecialchars($sous['date_debut']) ?></td>
+                                        <td><?= htmlspecialchars($sous['date_fin']) ?></td>
+                                        <td>
+                                            <button class="btn btn-outline-warning btn-sm btn-edit-sous-ligne" data-id="<?= $sous['id'] ?>">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+
+    <footer class="footer text-white text-center py-3 bg-dark">
+        <div class="container">
+            <p>&copy; <?= gmdate('Y'); ?> BANAMUR INDUSTRIES & TECH. Tous droits réservés.</p>
+            <div class="social-icons">
+                <a href="#" class="fab fa-facebook-f"></a>
+                <a href="#" class="fab fa-twitter"></a>
+                <a href="#" class="fab fa-linkedin-in"></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Edition rapide (inline) pour montant, designation, responsable
+        $('.editable').on('click', function() {
+            let span = $(this);
+            if (span.find('input,select').length) return;
+            let type = span.data('type');
+            let id = span.data('id');
+            let val = span.text().trim().replace(' FCFA', '');
+            let input;
+            if (type === 'responsable') {
+                input = $('<select class="edit-input"></select>');
+                <?php foreach ($utilisateurs as $u): ?>
+                    input.append('<option value="<?= $u['id'] ?>"><?= addslashes($u['nom']) ?></option>');
+                <?php endforeach; ?>
+            } else {
+                input = $('<input type="text" class="edit-input" value="' + val + '">');
+            }
+            span.html(input);
+            input.focus();
+            input.on('blur keydown', function(e) {
+                if (e.type === 'blur' || (e.type === 'keydown' && e.key === 'Enter')) {
+                    let newVal = input.val();
+                    $.post('request/update_debourse_inline.php', {
+                        id: id,
+                        type: type,
+                        value: newVal
+                    }, function(resp) {
+                        if (resp.success) {
+                            if (type === 'montant' || type === 'montant_sous') {
+                                span.html(Number(newVal).toLocaleString('fr-FR') + ' FCFA');
+                            } else if (type === 'responsable') {
+                                span.html(input.find('option:selected').text());
+                            } else {
+                                span.html(newVal);
+                            }
+                        } else {
+                            span.html(val);
+                            alert(resp.message || 'Erreur lors de la mise à jour.');
+                        }
+                    }, 'json');
+                }
+            });
+        });
+
+        // Bouton édition (peut ouvrir un modal pour édition avancée)
+        $('.btn-edit-sous-ligne').on('click', function() {
+            alert("Edition avancée à implémenter (modal, etc.)");
+        });
+    </script>
+</body>
+
+</html>

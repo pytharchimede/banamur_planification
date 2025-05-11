@@ -1,0 +1,31 @@
+.wow-title {
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-weight: bold;
+    color: #0d6efd;
+    letter-spacing: 2px;
+}
+
+.stat-card {
+    box-shadow: 0 2px 8px #0001;
+    border-radius: 10px;
+}
+
+.table-debourse th,
+.table-debourse td {
+    vertical-align: middle;
+}
+
+.badge-categorie {
+    font-size: 0.95em;
+}
+
+.editable {
+    cursor: pointer;
+    border-bottom: 1px dashed #0d6efd;
+}
+
+.edit-input {
+    width: 100%;
+    border: 1px solid #0d6efd;
+    border-radius: 4px;
+}

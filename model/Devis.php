@@ -250,4 +250,11 @@ class Devis
             'date_fin' => $date_fin
         ]);
     }
+
+    public function debourseExistePourDevis($devisId)
+    {
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM debourse_banamur WHERE devis_id = :devis_id");
+        $stmt->execute(['devis_id' => $devisId]);
+        return $stmt->fetchColumn() > 0;
+    }
 }
