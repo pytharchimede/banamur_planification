@@ -56,7 +56,7 @@ function getCategorieOptions($selected = '')
             <input type="hidden" name="devis_id" value="<?= $devisId ?>">
             <?php foreach ($lignes as $ligne):
                 $debourse = $debourses[$ligne['id']] ?? [];
-                $montant_ligne = isset($ligne['montant']) && is_numeric($ligne['montant']) ? $ligne['montant'] : 0;
+                $montant_ligne = isset($ligne['prix']) && is_numeric($ligne['prix']) ? $ligne['prix'] : 0;
                 $total_debourse_ligne = $debourse['montant_debourse'] ?? 0;
                 $depassement = ($total_debourse_ligne > $montant_ligne);
             ?>

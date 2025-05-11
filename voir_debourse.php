@@ -90,7 +90,7 @@ include 'header/header_voir_debourse.php';
             <div class="card mb-4">
                 <div class="card-header bg-light">
                     <strong>Ligne :</strong> <?= htmlspecialchars($ligne['designation']) ?>
-                    <span class="float-end text-secondary">Montant devis : <?= number_format($ligne['montant'] ?? 0, 0, ',', ' ') ?> FCFA</span>
+                    <span class="float-end text-secondary">Montant devis : <?= number_format($ligne['prix'] ?? 0, 0, ',', ' ') ?> FCFA</span>
                 </div>
                 <div class="card-body">
                     <div class="row mb-3">
