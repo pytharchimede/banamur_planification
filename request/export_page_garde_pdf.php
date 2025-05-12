@@ -29,9 +29,9 @@ class PDF extends FPDF
         $this->SetFont('Arial', '', 7);
 
         // Ligne 1
-        $this->Cell(0, 3.5, Utils::toMbConvertEncoding("S.A.R.L au Capital de 100 000 000 FCFA - Siège Social: Abidjan, Koumassi Bd. du Gabon prolongé – 01 BP 1642 Abidjan 01"), 0, 1, 'C');
+        $this->Cell(0, 3.5, Utils::toMbConvertEncoding("S.A.R.L au Capital de 100 000 000 FCFA - Siège Social: Abidjan, Koumassi Bd. du Gabon prolongé - 01 BP 1642 Abidjan 01"), 0, 1, 'C');
         // Ligne 2
-        $this->Cell(0, 3.5, Utils::toMbConvertEncoding("RCCM N°: CI-ABJ-03-2022-B13-02828 – Tél. : +225 27 21 36 27 27 / 27 21 36 09 29 – Fax : 27 21 36 05 75"), 0, 1, 'C');
+        $this->Cell(0, 3.5, Utils::toMbConvertEncoding("RCCM N°: CI-ABJ-03-2022-B13-02828 - Tél. : +225 27 21 36 27 27 / 27 21 36 09 29 - Fax : 27 21 36 05 75"), 0, 1, 'C');
         // Ligne 3
         $this->Cell(0, 3.5, Utils::toMbConvertEncoding("E-mail: banacerf1@gmail.com - Compte Bancaire BDU N° : CI180 01010 020401144580 11"), 0, 1, 'C');
 
@@ -89,7 +89,7 @@ $lines = [
         'font' => 'Arial'
     ],
     [
-        'text' => 'TUYAUTERIE-CHAUDRENERIE-CHARPENTE METALLIQUE',
+        'text' => 'TUYAUTERIE-CHAUDRONNERIE-CHARPENTE METALLIQUE',
         'size' => 14,
         'style' => '',
         'color' => [0, 0, 0],
