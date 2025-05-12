@@ -33,16 +33,6 @@ $titres = [
     <title>Éditer <?= $titres[$section] ?? '' ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/classic/ckeditor.js"></script>
-    <script>
-        tinymce.init({
-            selector: '#contenu',
-            plugins: 'fullscreen table lists link image code',
-            toolbar: 'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | link image | table | fullscreen | code',
-            height: 500,
-            menubar: false,
-            branding: false
-        });
-    </script>
     <style>
         /* Style A4 pour la zone d’édition */
         .a4-page {
@@ -81,17 +71,52 @@ $titres = [
     <script>
         ClassicEditor
             .create(document.querySelector('#contenu'), {
+                extraPlugins: [MyCustomUploadAdapterPlugin],
                 toolbar: [
-                    'heading', '|', 'bold', 'italic', 'underline', 'link', 'bulletedList', 'numberedList', 'blockQuote',
-                    '|', 'insertTable', 'undo', 'redo', 'alignment', 'outdent', 'indent', 'imageUpload', 'codeBlock', 'fullscreen'
-                ],
-                simpleUpload: {
-                    uploadUrl: 'request/ckeditor_upload.php',
-                }
+                    'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote',
+                    '|', 'insertTable', 'undo', 'redo', 'outdent', 'indent', 'imageUpload'
+                ]
             })
             .catch(error => {
                 console.error(error);
             });
+
+        function MyCustomUploadAdapterPlugin(editor) {
+            editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+                return new MyUploadAdapter(loader);
+            };
+        }
+
+        class MyUploadAdapter {
+            constructor(loader) {
+                this.loader = loader;
+            }
+
+            upload() {
+                return this.loader.file.then(file => {
+                    const data = new FormData();
+                    data.append('upload', file);
+
+                    return fetch('request/ckeditor_upload.php', {
+                            method: 'POST',
+                            body: data
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result && result.url) {
+                                return {
+                                    default: result.url
+                                };
+                            }
+                            throw new Error(result.error?.message || 'Erreur lors de l\'upload');
+                        });
+                });
+            }
+
+            abort() {
+                // Gérer l'annulation si nécessaire
+            }
+        }
     </script>
 </body>
 
