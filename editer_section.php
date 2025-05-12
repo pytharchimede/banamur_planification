@@ -32,9 +32,12 @@ $titres = [
     <meta charset="UTF-8">
     <title>Éditer <?= $titres[$section] ?? '' ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/classic/ckeditor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@ckeditor/ckeditor5-build-classic@36.0.1/build/ckeditor.js"></script>
     <style>
-        /* Style A4 pour la zone d’édition */
+        body {
+            background: #f4f4f4;
+        }
+
         .a4-page {
             background: #fff;
             margin: 0 auto;
@@ -45,8 +48,22 @@ $titres = [
             border-radius: 8px;
         }
 
-        body {
-            background: #f4f4f4;
+        .ck-content img {
+            max-width: 100%;
+            display: block;
+            margin: 10px auto;
+            position: relative;
+        }
+
+        .resizer {
+            width: 10px;
+            height: 10px;
+            background: #007bff;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            cursor: se-resize;
+            z-index: 10;
         }
     </style>
 </head>
@@ -68,19 +85,78 @@ $titres = [
             </div>
         </form>
     </div>
+
     <script>
         ClassicEditor
             .create(document.querySelector('#contenu'), {
                 extraPlugins: [MyCustomUploadAdapterPlugin],
                 toolbar: [
-                    'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote',
-                    '|', 'insertTable', 'undo', 'redo', 'outdent', 'indent', 'imageUpload'
-                ]
+                    'heading', '|',
+                    'bold', 'italic', 'link',
+                    'bulletedList', 'numberedList', 'blockQuote',
+                    '|', 'insertTable', 'undo', 'redo',
+                    'outdent', 'indent',
+                    '|', 'imageUpload', 'alignment'
+                ],
+                image: {
+                    toolbar: [
+                        'imageStyle:alignLeft',
+                        'imageStyle:alignCenter',
+                        'imageStyle:alignRight',
+                        '|', 'imageTextAlternative'
+                    ],
+                    styles: ['alignLeft', 'alignCenter', 'alignRight']
+                }
+            })
+            .then(editor => {
+                editor.model.document.on('change:data', () => {
+                    const editable = editor.ui.getEditableElement();
+                    const images = editable.querySelectorAll('img');
+
+                    images.forEach(img => {
+                        if (!img.parentElement.querySelector('.resizer')) {
+                            const resizer = document.createElement('div');
+                            resizer.className = 'resizer';
+
+                            img.style.position = 'relative';
+                            img.parentElement.style.position = 'relative';
+                            img.parentElement.appendChild(resizer);
+
+                            let startX, startY, startWidth, startHeight;
+
+                            resizer.addEventListener('mousedown', function(e) {
+                                e.preventDefault();
+                                startX = e.clientX;
+                                startY = e.clientY;
+                                startWidth = parseInt(document.defaultView.getComputedStyle(img).width, 10);
+                                startHeight = parseInt(document.defaultView.getComputedStyle(img).height, 10);
+
+                                document.documentElement.addEventListener('mousemove', doDrag, false);
+                                document.documentElement.addEventListener('mouseup', stopDrag, false);
+                            });
+
+                            function doDrag(e) {
+                                const newWidth = startWidth + e.clientX - startX;
+                                const newHeight = startHeight + e.clientY - startY;
+                                img.style.width = newWidth + 'px';
+                                img.style.height = newHeight + 'px';
+                                img.setAttribute('width', newWidth);
+                                img.setAttribute('height', newHeight);
+                            }
+
+                            function stopDrag() {
+                                document.documentElement.removeEventListener('mousemove', doDrag, false);
+                                document.documentElement.removeEventListener('mouseup', stopDrag, false);
+                            }
+                        }
+                    });
+                });
             })
             .catch(error => {
                 console.error(error);
             });
 
+        // Plugin upload personnalisé
         function MyCustomUploadAdapterPlugin(editor) {
             editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
                 return new MyUploadAdapter(loader);
@@ -114,7 +190,7 @@ $titres = [
             }
 
             abort() {
-                // Gérer l'annulation si nécessaire
+                // gestion annulation
             }
         }
     </script>
