@@ -93,24 +93,75 @@ include 'header/header_liste_devis.php';
                         </div>
                     </div>
                     <div class="card-footer d-flex flex-wrap gap-2 justify-content-between align-items-center">
-                        <div class="d-flex flex-wrap gap-2 mt-2">
-                            <a class="btn btn-danger btn-sm" target="_blank"
-                                href="request/export_page_garde_pdf.php?devisId=<?= $de['id'] ?>">
-                                <i class="fas fa-file-pdf"></i> PDF Page de garde
-                            </a>
-                            <a target="_blank" class="btn btn-outline-primary btn-sm" href="editer_section.php?devisId=<?= $de['id'] ?>&section=description">
-                                <i class="fas fa-align-left"></i> Description
-                            </a>
-                            <a target="_blank" class="btn btn-outline-primary btn-sm" href="editer_section.php?devisId=<?= $de['id'] ?>&section=delai">
-                                <i class="fas fa-clock"></i> Délai de réalisation
-                            </a>
-                            <a target="_blank" class="btn btn-outline-primary btn-sm" href="editer_section.php?devisId=<?= $de['id'] ?>&section=conditions">
-                                <i class="fas fa-euro-sign"></i> Conditions financières
-                            </a>
-                            <a target="_blank" class="btn btn-outline-primary btn-sm" href="editer_section.php?devisId=<?= $de['id'] ?>&section=garantie">
-                                <i class="fas fa-shield-alt"></i> Garantie
-                            </a>
-                        </div>
+                        <ul class="list-group list-group-flush w-100">
+                            <?php
+                            $sections = [
+                                [
+                                    'label' => 'Description',
+                                    'key' => 'description',
+                                    'icon' => 'fa-align-left',
+                                    'section' => 'description'
+                                ],
+                                [
+                                    'label' => 'Délai de réalisation',
+                                    'key' => 'delai_livraison',
+                                    'icon' => 'fa-clock',
+                                    'section' => 'delai'
+                                ],
+                                [
+                                    'label' => 'Conditions financières',
+                                    'key' => 'conditions',
+                                    'icon' => 'fa-euro-sign',
+                                    'section' => 'conditions'
+                                ],
+                                [
+                                    'label' => 'Garantie',
+                                    'key' => 'garantie',
+                                    'icon' => 'fa-shield-alt',
+                                    'section' => 'garantie'
+                                ]
+                            ];
+                            foreach ($sections as $sec):
+                                $filled = !empty($de[$sec['key']]);
+                            ?>
+                                <li class="list-group-item w-100 px-3 py-3 d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <i class="fas <?= $sec['icon'] ?> text-primary fs-5"></i>
+                                        <span class="fw-semibold"><?= $sec['label'] ?></span>
+                                        <?php if ($filled): ?>
+                                            <span class="badge bg-success ms-2">Complété</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary ms-2">À faire</span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="btn btn-link text-dark p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <?php if ($filled): ?>
+                                                <li>
+                                                    <a class="dropdown-item text-success" href="visualiser_section.php?devisId=<?= $de['id'] ?>&section=<?= $sec['section'] ?>" target="_blank">
+                                                        <i class="fas fa-eye"></i> Visualiser
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item text-warning" href="editer_section.php?devisId=<?= $de['id'] ?>&section=<?= $sec['section'] ?>" target="_blank">
+                                                        <i class="fas fa-edit"></i> Modifier
+                                                    </a>
+                                                </li>
+                                            <?php else: ?>
+                                                <li>
+                                                    <a class="dropdown-item text-primary" href="editer_section.php?devisId=<?= $de['id'] ?>&section=<?= $sec['section'] ?>" target="_blank">
+                                                        <i class="fas fa-plus-circle"></i> Saisir
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
                         <div class="d-flex gap-2">
                             <a class="btn btn-outline-primary btn-sm" target="_blank" title="Visualiser le devis détaillé"
                                 href="request/export_pdf.php?devisId=<?= $de['id'] ?>">
