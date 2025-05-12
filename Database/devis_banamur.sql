@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : sam. 10 mai 2025 à 10:31
+-- Généré le : lun. 12 mai 2025 à 10:20
 -- Version du serveur : 9.1.0
 -- Version de PHP : 8.3.14
 
@@ -51,8 +51,13 @@ CREATE TABLE IF NOT EXISTS `devis_banamur` (
   `masque` int NOT NULL,
   `validation_technique` int NOT NULL,
   `validation_generale` int NOT NULL,
+  `page_garde` longtext COLLATE utf8mb3_unicode_ci,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `delai` longtext COLLATE utf8mb3_unicode_ci,
+  `conditions` longtext COLLATE utf8mb3_unicode_ci,
+  `garantie` longtext COLLATE utf8mb3_unicode_ci,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -93,6 +93,23 @@ include 'header/header_liste_devis.php';
                         </div>
                     </div>
                     <div class="card-footer d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            <a class="btn btn-outline-primary btn-sm" href="editer_section.php?devisId=<?= $de['id'] ?>&section=page_garde">
+                                <i class="fas fa-file-alt"></i> Page de garde
+                            </a>
+                            <a class="btn btn-outline-primary btn-sm" href="editer_section.php?devisId=<?= $de['id'] ?>&section=description">
+                                <i class="fas fa-align-left"></i> Description
+                            </a>
+                            <a class="btn btn-outline-primary btn-sm" href="editer_section.php?devisId=<?= $de['id'] ?>&section=delai">
+                                <i class="fas fa-clock"></i> Délai de réalisation
+                            </a>
+                            <a class="btn btn-outline-primary btn-sm" href="editer_section.php?devisId=<?= $de['id'] ?>&section=conditions">
+                                <i class="fas fa-euro-sign"></i> Conditions financières
+                            </a>
+                            <a class="btn btn-outline-primary btn-sm" href="editer_section.php?devisId=<?= $de['id'] ?>&section=garantie">
+                                <i class="fas fa-shield-alt"></i> Garantie
+                            </a>
+                        </div>
                         <div class="d-flex gap-2">
                             <a class="btn btn-outline-primary btn-sm" target="_blank" title="Visualiser le devis détaillé"
                                 href="request/export_pdf.php?devisId=<?= $de['id'] ?>">

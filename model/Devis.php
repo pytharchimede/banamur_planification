@@ -257,4 +257,21 @@ class Devis
         $stmt->execute(['devis_id' => $devisId]);
         return $stmt->fetchColumn() > 0;
     }
+
+    public function getSectionContent($devisId, $section)
+    {
+        $allowed = ['page_garde', 'description', 'delai', 'conditions', 'garantie'];
+        if (!in_array($section, $allowed)) return '';
+        $stmt = $this->pdo->prepare("SELECT `$section` FROM devis_banamur WHERE id = :id");
+        $stmt->execute(['id' => $devisId]);
+        return $stmt->fetchColumn();
+    }
+
+    public function saveSectionContent($devisId, $section, $contenu)
+    {
+        $allowed = ['page_garde', 'description', 'delai', 'conditions', 'garantie'];
+        if (!in_array($section, $allowed)) return false;
+        $stmt = $this->pdo->prepare("UPDATE devis_banamur SET `$section` = :contenu WHERE id = :id");
+        return $stmt->execute(['contenu' => $contenu, 'id' => $devisId]);
+    }
 }
