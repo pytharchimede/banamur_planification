@@ -94,8 +94,9 @@ include 'header/header_liste_devis.php';
                     </div>
                     <div class="card-footer d-flex flex-wrap gap-2 justify-content-between align-items-center">
                         <div class="d-flex flex-wrap gap-2 mt-2">
-                            <a class="btn btn-outline-primary btn-sm" href="editer_section.php?devisId=<?= $de['id'] ?>&section=page_garde">
-                                <i class="fas fa-file-alt"></i> Page de garde
+                            <a class="btn btn-danger btn-sm" target="_blank"
+                                href="request/export_page_garde_pdf.php?devisId=<?= $de['id'] ?>">
+                                <i class="fas fa-file-pdf"></i> PDF Page de garde
                             </a>
                             <a class="btn btn-outline-primary btn-sm" href="editer_section.php?devisId=<?= $de['id'] ?>&section=description">
                                 <i class="fas fa-align-left"></i> Description
