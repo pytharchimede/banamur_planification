@@ -59,7 +59,9 @@ switch ($section) {
         <form>
             <div class="mb-3">
                 <label class="form-label"><?= htmlspecialchars($label) ?></label>
-                <textarea class="form-control" rows="8" readonly><?= htmlspecialchars($value) ?></textarea>
+                <div class="border rounded p-3 bg-light" style="min-height:150px;">
+                    <?= $value ?>
+                </div>
             </div>
             <button type="button" class="btn btn-secondary" onclick="window.close();">Fermer</button>
         </form>

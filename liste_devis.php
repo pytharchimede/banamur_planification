@@ -93,6 +93,10 @@ include 'header/header_liste_devis.php';
                         </div>
                     </div>
                     <div class="card-footer d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                        <a class="btn btn-danger btn-sm" target="_blank"
+                            href="request/export_page_garde_pdf.php?devisId=<?= $de['id'] ?>">
+                            <i class="fas fa-file-pdf"></i> PDF Page de garde
+                        </a>
                         <ul class="list-group list-group-flush w-100">
                             <?php
                             $sections = [
