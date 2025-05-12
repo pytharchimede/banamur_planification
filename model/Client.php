@@ -15,8 +15,8 @@ class Client
 
     public function ajouterClient($data)
     {
-        $sql = "INSERT INTO client_banamur (code_client, nom_client, localisation_client, commune_client, bp_client, pays_client, date_creat_client)
-            VALUES (:code_client, :nom_client, :localisation_client, :commune_client, :bp_client, :pays_client, :date_creat_client)";
+        $sql = "INSERT INTO client_banamur (code_client, nom_client, localisation_client, commune_client, bp_client, pays_client, telephone_client, logo_client, date_creat_client)
+            VALUES (:code_client, :nom_client, :localisation_client, :commune_client, :bp_client, :pays_client, :telephone_client, :logo_client, :date_creat_client)";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute($data);
     }

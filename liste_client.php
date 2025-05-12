@@ -48,12 +48,16 @@ include 'header/header_liste_client.php';
             <?php foreach ($clients as $client): ?>
                 <div class="col-md-4 mb-4">
                     <div class="client-card p-3 h-100">
+                        <?php if (!empty($client['logo_client'])): ?>
+                            <img src="uploads/logos_clients/<?= htmlspecialchars($client['logo_client']) ?>" alt="Logo" style="max-width:80px;max-height:80px;" class="mb-2 d-block mx-auto">
+                        <?php endif; ?>
                         <div class="client-name"><?= htmlspecialchars($client['nom_client']) ?></div>
-                        <div class="client-info">Code Client : <?= htmlspecialchars($client['code_client']) ?></div>
-                        <div class="client-info">Localisation : <?= htmlspecialchars($client['localisation_client']) ?></div>
-                        <div class="client-info">Commune : <?= htmlspecialchars($client['commune_client']) ?></div>
-                        <div class="client-info">BP : <?= htmlspecialchars($client['bp_client']) ?></div>
-                        <div class="client-info">Pays : <?= htmlspecialchars($client['pays_client']) ?></div>
+                        <div class="client-info">Téléphone : <?= htmlspecialchars($client['telephone_client'] ?? '') ?></div>
+                        <div class="client-info">Code Client : <?= htmlspecialchars($client['code_client'] ?? '') ?></div>
+                        <div class="client-info">Localisation : <?= htmlspecialchars($client['localisation_client'] ?? '') ?></div>
+                        <div class="client-info">Commune : <?= htmlspecialchars($client['commune_client'] ?? '') ?></div>
+                        <div class="client-info">BP : <?= htmlspecialchars($client['bp_client'] ?? '') ?></div>
+                        <div class="client-info">Pays : <?= htmlspecialchars($client['pays_client'] ?? '') ?></div>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -69,7 +73,7 @@ include 'header/header_liste_client.php';
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="request/ajouter_client.php" method="POST">
+                    <form action="request/ajouter_client.php" method="POST" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="code_client" class="form-label">Code Client</label>
                             <input type="text" class="form-control" id="code_client" name="code_client" required>
@@ -98,6 +102,17 @@ include 'header/header_liste_client.php';
                             <label for="date_creat_client" class="form-label">Date de Création</label>
                             <input type="date" class="form-control" id="date_creat_client" name="date_creat_client" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="telephone_client" class="form-label">Téléphone</label>
+                            <input type="text" class="form-control" id="telephone_client" name="telephone_client" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="logo_client" class="form-label">Logo</label>
+                            <input type="file" class="form-control" id="logo_client" name="logo_client" accept="image/*" onchange="previewLogo(event)">
+                            <div class="mt-2">
+                                <img id="logoPreview" src="#" alt="Prévisualisation logo" style="max-width:120px; display:none;" />
+                            </div>
+                        </div>
                         <button type="submit" class="btn btn-primary">Ajouter le Client</button>
                     </form>
                 </div>
@@ -123,6 +138,18 @@ include 'header/header_liste_client.php';
     <!--Intégration de jquery/Ajax-->
     <script src="../logi/js/jquery_1.7.1_jquery.min.js"></script>
     <script src="js/function.js"></script>
+    <script>
+        function previewLogo(event) {
+            const [file] = event.target.files;
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    $('#logoPreview').attr('src', e.target.result).show();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 </body>
 
 </html>
