@@ -198,7 +198,7 @@ $pdf->Ln(8);
 
 // Référence de l’offre alignée à gauche sur toute la largeur (hors cadre)
 $pdf->SetFont('Arial', '', 12);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding("Référence de l’offre :"), 0, 1, 'L');
+$pdf->Cell(0, 5, Utils::toPdfEncoding("Référence de l’offre :"), 0, 1, 'L');
 $pdf->SetFont('Arial', 'B', 12);
 $pdf->Cell(0, 5, Utils::toMbConvertEncoding(strtoupper($offre['num_offre'])), 0, 1, 'L');
 

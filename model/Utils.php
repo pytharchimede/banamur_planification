@@ -48,4 +48,10 @@ class Utils
         // Sinon, version basique
         return $nombre . ' francs CFA';
     }
+
+    // Conversion UTF-8 vers windows-1252 pour FPDF (gère mieux les apostrophes et accents)
+    public static function toPdfEncoding($string)
+    {
+        return mb_convert_encoding($string, 'windows-1252', 'UTF-8');
+    }
 }
