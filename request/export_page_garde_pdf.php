@@ -43,8 +43,11 @@ class PDF extends FPDF
 // Créez un nouvel objet FPDF
 $pdf = new PDF('P', 'mm', 'A4');
 $pdf->AddPage();
-$pdf->SetFont('Arial', 'B', 16);
+
 // $pdf->AliasNbPages();
+$pdf->AddFont('BookAntiqua', '', 'bookantiqua.php'); // Pour le style normal
+$pdf->AddFont('BookAntiqua', 'B', 'bookantiqua_bold.php'); // Pour le style gras, si disponible
+$pdf->SetFont('BookAntiqua', '', 12);
 
 // Dimensions
 $logoPath = '../logo/' . ($devis['logo'] ?? 'default_logo.jpg');
@@ -112,14 +115,14 @@ $pdf->Ln($logoHeight - 5);
 
 // Afficher la mention (en dehors du cadre, centré, gras, grand)
 $mention = Utils::toMbConvertEncoding('OFFRE COMMERCIALE');
-$pdf->SetFont('Arial', 'B', 24);
+$pdf->SetFont('BookAntiqua', 'B', 24);
 $pdf->SetTextColor(0, 0, 0);
 $pdf->Cell(0, 14, $mention, 0, 1, 'C');
 $pdf->Ln(3);
 
 // Bloc référence offre avec padding augmenté
 $refText = Utils::toMbConvertEncoding(strtoupper($offre['reference_offre']));
-$pdf->SetFont('Arial', 'B', 18);
+$pdf->SetFont('BookAntiqua', 'B', 18);
 $maxWidth = 180;
 $paddingX = 10; // padding gauche/droite en mm
 $paddingY = 6;  // padding haut/bas en mm
@@ -153,7 +156,7 @@ $pdf->SetY($y2);
 $pdf->Ln(8);
 
 // Présentée à la
-$pdf->SetFont('Arial', '', 13);
+$pdf->SetFont('BookAntiqua', '', 13);
 $pdf->Ln(6);
 $pdf->Cell(0, 8, Utils::toMbConvertEncoding('Présentée à'), 0, 1, 'C');
 
@@ -174,13 +177,13 @@ if ($clientLogoPath && file_exists($clientLogoPath)) {
     $pdf->Ln($clientLogoWidth + 5);
 } else {
     // Afficher le nom du client en grand et gras, centré
-    $pdf->SetFont('Arial', 'B', 38);
+    $pdf->SetFont('BookAntiqua', 'B', 38);
     $pdf->SetTextColor(0, 0, 0);
     $pdf->Cell(0, $clientLogoWidth, Utils::toMbConvertEncoding($client['nom_client']), 0, 1, 'C');
     $pdf->Ln(5);
 }
 // Correspondant sur le devis
-$pdf->SetFont('Arial', '', 12);
+$pdf->SetFont('BookAntiqua', '', 12);
 $pdf->Cell(0, 5, Utils::toMbConvertEncoding('Contact : ' . $devis['correspondant']) . ' - ' . Utils::toMbConvertEncoding($client['nom_client']), 0, 1, 'C');
 $pdf->Cell(0, 5, Utils::toMbConvertEncoding('Adresse : ' . $client['localisation_client']), 0, 1, 'C');
 $pdf->Cell(0, 5, Utils::toMbConvertEncoding($client['bp_client']), 0, 1, 'C');
@@ -190,7 +193,7 @@ $pdf->Cell(0, 5, Utils::toMbConvertEncoding($client['bp_client']), 0, 1, 'C');
 $pdf->Ln(5);
 
 // Dénommé le « Client »
-$pdf->SetFont('Arial', 'I', 12);
+$pdf->SetFont('BookAntiqua', '', 12);
 $pdf->Cell(0, 8, Utils::toMbConvertEncoding('Dénommé le « Client »'), 0, 1, 'C');
 
 // Sauter 3 lignes
