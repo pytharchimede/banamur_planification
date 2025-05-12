@@ -163,26 +163,26 @@ $pdf->Ln(8);
 // Logo du client centré (au milieu de la page)
 $clientLogoPath = '../uploads/logos_clients/' . ($client['logo_client'] ?? 'default_logo.jpg');
 error_log($clientLogoPath);
-if (!file_exists($clientLogoPath)) {
-    $clientLogoPath = null;
-}
 $clientLogoWidth = 50;
 $pageWidth = 210;
 $logoX = ($pageWidth - $clientLogoWidth) / 2;
 $currentY = $pdf->GetY();
-if ($clientLogoPath) {
+
+if ($clientLogoPath && file_exists($clientLogoPath)) {
     $pdf->Image($clientLogoPath, $logoX, $currentY, $clientLogoWidth);
     // Sauter la hauteur du logo + un peu d'espace
     $pdf->Ln($clientLogoWidth + 5);
 } else {
-    // Sauter un espace équivalent si pas de logo
-    $pdf->Ln($clientLogoWidth + 5);
+    // Afficher le nom du client en grand et gras, centré
+    $pdf->SetFont('Arial', 'B', 38);
+    $pdf->SetTextColor(0, 0, 0);
+    $pdf->Cell(0, $clientLogoWidth, Utils::toMbConvertEncoding($client['nom_client']), 0, 1, 'C');
+    $pdf->Ln(5);
 }
-
 // Correspondant sur le devis
 $pdf->SetFont('Arial', '', 12);
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding($devis['correspondant']) . ' - ' . Utils::toMbConvertEncoding($client['nom_client']), 0, 1, 'C');
-$pdf->Cell(0, 5, Utils::toMbConvertEncoding($client['localisation_client']), 0, 1, 'C');
+$pdf->Cell(0, 5, Utils::toMbConvertEncoding('Contact : ' . $devis['correspondant']) . ' - ' . Utils::toMbConvertEncoding($client['nom_client']), 0, 1, 'C');
+$pdf->Cell(0, 5, Utils::toMbConvertEncoding('Adresse : ' . $client['localisation_client']), 0, 1, 'C');
 $pdf->Cell(0, 5, Utils::toMbConvertEncoding($client['bp_client']), 0, 1, 'C');
 
 
