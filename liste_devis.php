@@ -189,6 +189,10 @@ include 'header/header_liste_devis.php';
                                 href="modifier_devis.php?devisId=<?= $de['id'] ?>">
                                 <i class="fas fa-edit"></i>
                             </a>
+                            <a class="btn btn-outline-primary btn-sm" target="_blank"
+                                href="request/export_sommaire.php?devisId=<?= $de['id'] ?>">
+                                <i class="fas fa-list-ol"></i> Sommaire PDF
+                            </a>
                         </div>
                     </div>
                     <div class="footer-validation">
@@ -212,6 +216,10 @@ include 'header/header_liste_devis.php';
                                 <a class="btn btn-outline-info btn-sm ms-2" title="Voir le déboursé"
                                     href="voir_debourse.php?devisId=<?= $de['id'] ?>">
                                     <i class="fas fa-eye"></i> Voir déboursé
+                                </a>
+                                <a class="btn btn-outline-success btn-sm ms-2" title="Imprimer le dossier complet"
+                                    href="request/imprimer_dossier_complet.php?devisId=<?= $de['id'] ?>" target="_blank">
+                                    <i class="fas fa-print"></i> Imprimer dossier complet
                                 </a>
                             <?php else: ?>
                                 <a class="btn btn-outline-dark btn-sm ms-2" title="Gérer le déboursé"
