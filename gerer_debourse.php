@@ -63,7 +63,7 @@ function getCategorieOptions($selected = '')
                 <div class="card card-ligne">
                     <div class="card-header bg-light">
                         <strong>Ligne :</strong> <?= htmlspecialchars($ligne['designation']) ?>
-                        <span class="float-end text-secondary">Montant devis : <?= number_format($montant_ligne, 0, ',', ' ') ?> FCFA</span>
+                        <span class="float-end text-secondary">Montant devis : <?= number_format($montant_ligne * $ligne['quantite'], 0, ',', ' ') ?> FCFA</span>
                     </div>
                     <div class="card-body">
                         <?php if ($depassement): ?>

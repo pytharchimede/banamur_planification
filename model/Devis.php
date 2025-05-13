@@ -173,6 +173,55 @@ class Devis
             ]);
         }
     }
+
+    public function updateDevis($devisId, $data, $lignes)
+    {
+        // Met à jour le devis principal
+        $sql = "UPDATE devis_banamur SET 
+                    numero_devis = :numero_devis,
+                    delai_livraison = :delai_livraison,
+                    date_emission = :date_emission,
+                    date_expiration = :date_expiration,
+                    emis_par = :emis_par,
+                    destine_a = :destine_a,
+                    termes_conditions = :termes_conditions,
+                    pied_de_page = :pied_de_page,
+                    total_ht = :total_ht,
+                    total_ttc = :total_ttc,
+                    logo = :logo,
+                    client_id = :client_id,
+                    offre_id = :offre_id,
+                    tva_facturable = :tva_facturable,
+                    publier_devis = :publier_devis,
+                    tva = :tva,
+                    correspondant = :correspondant
+                WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $data['id'] = $devisId;
+        $stmt->execute($data);
+
+        // Supprime les anciennes lignes
+        $deleteStmt = $this->pdo->prepare("DELETE FROM ligne_devis_banamur WHERE devis_id = :devis_id");
+        $deleteStmt->execute(['devis_id' => $devisId]);
+
+        // Ajoute les nouvelles lignes
+        foreach ($lignes as $ligne) {
+            $sqlLigne = "INSERT INTO ligne_devis_banamur (devis_id, designation, prix, quantite, unite_id, total, groupe)
+                         VALUES (:devis_id, :designation, :prix, :quantite, :unite_id, :total, :groupe)";
+            $stmtLigne = $this->pdo->prepare($sqlLigne);
+            $stmtLigne->execute([
+                'devis_id'    => $devisId,
+                'designation' => $ligne['designation'],
+                'prix'        => $ligne['prix_unitaire'],
+                'quantite'    => $ligne['quantite'],
+                'unite_id'    => $ligne['unite_id'],
+                'total'       => $ligne['prix_total'],
+                'groupe'      => $ligne['groupe'],
+            ]);
+        }
+        return true;
+    }
+
     public function getDevisById($id)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM devis_banamur WHERE id = :id");

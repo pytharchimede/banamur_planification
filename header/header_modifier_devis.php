@@ -1,13 +1,19 @@
 <?php
-require_once '../model/Database.php';
-require_once '../model/Devis.php';
-require_once '../model/Client.php';
-require_once '../model/Offre.php';
+require_once 'model/Database.php';
+require_once 'model/Devis.php';
+require_once 'model/Client.php';
+require_once 'model/Offre.php';
+require_once 'model/UniteMesure.php';
+
 
 $pdo = Database::getConnection();
 $devisModel = new Devis($pdo);
 $clientModel = new Client($pdo);
 $offreModel = new Offre($pdo);
+$uniteModel = new UniteMesure($pdo);
+
+// Récupérer toutes les unités de mesure
+$unites = $uniteModel->getAll();
 
 // Vérifier si l'identifiant du devis est passé en paramètre
 if (isset($_GET['devisId'])) {
