@@ -54,16 +54,24 @@ function getCategorieOptions($selected = '')
 
         <form id="form-debourse" method="post">
             <input type="hidden" name="devis_id" value="<?= $devisId ?>">
+            <?php $index = 0; ?>
             <?php foreach ($lignes as $ligne):
+                $index++;
                 $debourse = $debourses[$ligne['id']] ?? [];
                 $montant_ligne = isset($ligne['prix']) && is_numeric($ligne['prix']) ? $ligne['prix'] : 0;
+                $quantite_ligne = isset($ligne['quantite']) && is_numeric($ligne['quantite']) ? $ligne['quantite'] : 0;
                 $total_debourse_ligne = $debourse['montant_debourse'] ?? 0;
+                $total_ligne = $montant_ligne * $quantite_ligne;
+                $montant_ligne = $total_ligne > 0 ? $total_ligne : $montant_ligne;
                 $depassement = ($total_debourse_ligne > $montant_ligne);
             ?>
                 <div class="card card-ligne">
                     <div class="card-header bg-light">
-                        <strong>Ligne :</strong> <?= htmlspecialchars($ligne['designation']) ?>
-                        <span class="float-end text-secondary">Montant devis : <?= number_format($montant_ligne * $ligne['quantite'], 0, ',', ' ') ?> FCFA</span>
+                        <span class="badge bg-primary rounded-circle fs-5 me-2" style="width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;">
+                            <?= $index ?>
+                        </span>
+                        <span class="fw-bold fs-5"><?= htmlspecialchars($ligne['designation']) ?></span>
+                        <span class="float-end text-secondary">Montant devis : <?= number_format($total_ligne, 0, ',', ' ') ?> FCFA</span>
                     </div>
                     <div class="card-body">
                         <?php if ($depassement): ?>

@@ -81,16 +81,25 @@ include 'header/header_voir_debourse.php';
             </a>
         </div>
 
+        <?php $index = 0; ?>
+
         <!-- Tableau des déboursés -->
         <?php foreach ($lignes as $ligne):
+            $index++;
             $debourse = $debourses[$ligne['id']] ?? null;
             if (!$debourse) continue;
             $sousLignes = $devisModel->getLignesDebourse($debourse['id']);
+            $prix_devis = $ligne['prix'] ?? 0;
+            $quantite_devis = $ligne['quantite'] ?? 0;
+            $montant_devis = $prix_devis * $quantite_devis;
         ?>
             <div class="card mb-4">
                 <div class="card-header bg-light">
-                    <strong>Ligne :</strong> <?= htmlspecialchars($ligne['designation']) ?>
-                    <span class="float-end text-secondary">Montant devis : <?= number_format($ligne['prix'] ?? 0, 0, ',', ' ') ?> FCFA</span>
+                    <span class="badge bg-primary rounded-circle fs-5 me-2" style="width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;">
+                        <?= $index ?>
+                    </span>
+                    <span class="fw-bold fs-5"><?= htmlspecialchars($ligne['designation']) ?></span>
+                    <span class="float-end text-secondary">Montant devis : <?= number_format($montant_devis ?? 0, 0, ',', ' ') ?> FCFA</span>
                 </div>
                 <div class="card-body">
                     <div class="row mb-3">
