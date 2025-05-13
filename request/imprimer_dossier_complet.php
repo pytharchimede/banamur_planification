@@ -26,18 +26,19 @@ class CustomPDF extends TCPDF
         $this->SetXY($x, $y);
 
         $this->SetFont('helvetica', 'B', 14);
-        $this->Cell(0, 7, $this->enteteTexts[0], 0, 2, 'L');
+        $this->Cell(0, 7, $this->enteteTexts[0], 0, 2, 'C');
         $this->SetFont('helvetica', '', 11);
-        $this->Cell(0, 6, $this->enteteTexts[1], 0, 2, 'L');
+        $this->Cell(0, 6, $this->enteteTexts[1], 0, 2, 'C');
         $this->SetFont('helvetica', 'B', 11);
         $this->SetTextColor(255, 204, 0);
-        $this->Cell(0, 6, $this->enteteTexts[2], 0, 2, 'L');
+        $this->Cell(0, 6, $this->enteteTexts[2], 0, 2, 'C');
         $this->SetFont('helvetica', '', 10);
         $this->SetTextColor(0, 0, 0);
-        $this->Cell(0, 6, $this->enteteTexts[3], 0, 2, 'L');
+        $this->Cell(0, 6, $this->enteteTexts[3], 0, 2, 'C');
         $this->Ln(2);
-        $this->SetDrawColor(0, 0, 0);
-        $this->Line($x, $this->GetY(), $this->getPageWidth() - 15, $this->GetY());
+
+        // $this->SetDrawColor(0, 0, 0);
+        // $this->Line($x, $this->GetY(), $this->getPageWidth() - 15, $this->GetY());
     }
 
     public function Footer()
@@ -76,12 +77,26 @@ $pdf->enteteTexts = [
 $pdf->SetCreator(PDF_CREATOR);
 $pdf->SetAuthor('BANAMUR INDUSTRIES & TECH');
 $pdf->SetTitle('Dossier Complet Devis');
-$pdf->SetMargins(15, 35, 15); // top margin augmenté pour l'entête
-$pdf->SetAutoPageBreak(true, 20);
+$pdf->SetMargins(15, 65, 15); // top margin augmenté pour l'entête
+$pdf->SetAutoPageBreak(true, 25); // 25 mm de marge basse pour laisser la place au footer
+
+// Style CSS global
+$style = '
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    table, th, td {
+        border: 1px solid black;
+        padding: 5px;
+    }
+</style>
+';
 
 // ----------- PAGE DE GARDE -----------
 $pdf->AddPage();
-$pdf->Ln(30); // espace sous l'entête
+$pdf->Ln(0); // espace sous l'entête
 
 // Titre de l'offre encadré
 $pdf->SetFont('helvetica', 'B', 24);
@@ -118,9 +133,9 @@ $pdf->SetFont('helvetica', '', 12);
 $pdf->Cell(0, 5, 'Contact : ' . $devis['correspondant'] . ' - ' . $client['nom_client'], 0, 1, 'C');
 $pdf->Cell(0, 5, 'Adresse : ' . $client['localisation_client'], 0, 1, 'C');
 $pdf->Cell(0, 5, $client['bp_client'], 0, 1, 'C');
-$pdf->Ln(5);
+$pdf->Ln(35);
 $pdf->Cell(0, 8, 'Dénommé le « Client »', 0, 1, 'C');
-$pdf->Ln(50);
+$pdf->Ln(20);
 $pdf->SetFont('helvetica', '', 12);
 $pdf->Cell(0, 5, "Référence de l’offre:", 0, 1, 'L');
 $pdf->SetFont('helvetica', 'B', 12);
@@ -130,7 +145,6 @@ $pdf->Ln(10);
 // ----------- SOMMAIRE -----------
 $pdf->AddPage();
 $pdf->SetFont('helvetica', 'B', 28);
-$pdf->Ln(25);
 $pdf->Cell(0, 18, 'SOMMAIRE', 0, 1, 'C');
 $pdf->Ln(20);
 $pdf->SetFont('helvetica', '', 14);
@@ -148,22 +162,48 @@ $pdf->Ln(10);
 $pdf->AddPage();
 $pdf->SetFont('helvetica', '', 12);
 $pdf->SetTextColor(0, 0, 0);
-$pdf->ln(25);
-$html = '
-<h2 style="font-family: Helvetica; color: #222;">1. Description des prestations</h2>
-<div style="margin-bottom: 18px;">' . $devis['description'] . '</div>
-<h2 style="font-family: Helvetica; color: #222;">2. Délai de réalisation</h2>
-<div style="margin-bottom: 18px;">' . $devis['delai'] . '</div>
-<h2 style="font-family: Helvetica; color: #222;">3. Conditions Financières</h2>
-<div style="margin-bottom: 18px;">' . $devis['conditions'] . '</div>
-';
+
+// Construction du HTML avec titres personnalisés
+$html = $style;
+
+// 1. Description des prestations (numéro non souligné, texte souligné)
+$html .= '
+<span style="font-size:18px;">
+  <span>1.&nbsp;</span>
+  <span style="text-decoration: underline;">Description des prestations</span>
+</span>
+<br><div style="margin-bottom: 18px;">' . $devis['description'] . '</div>';
+
+// 2. Délai de réalisation
+$html .= '
+<span style="font-size:18px;">
+  <span>2.&nbsp;</span>
+  <span style="text-decoration: underline;">Délai de réalisation</span>
+</span>
+<br><div style="margin-bottom: 18px;">' . $devis['delai'] . '</div>';
+
+// 3. Conditions Financières
+$html .= '
+<span style="font-size:18px;">
+  <span>3.&nbsp;</span>
+  <span style="text-decoration: underline;">Conditions Financières</span>
+</span>
+<br><div style="margin-bottom: 18px;">' . $devis['conditions'] . '</div>';
+
+// Forcer les bordures noires sur tous les tableaux HTML
+$html = preg_replace(
+    '/<table([^>]*)>/i',
+    '<table$1 border="1" cellpadding="4" style="border-collapse:collapse; border:1px solid #000;">',
+    $html
+);
+
+$pdf->SetDrawColor(0, 0, 0); // Bordures noires pour les tableaux
 $pdf->writeHTML($html, true, false, true, false, '');
 
 // ----------- SECTION DÉCOMPOSITION DES PRIX -----------
 $pdf->AddPage();
 $pdf->SetFont('helvetica', 'B', 16);
 $pdf->SetTextColor(0, 0, 0);
-$pdf->ln(25);
 $pdf->Cell(0, 12, '4. Décomposition des prix', 0, 1, 'L');
 $pdf->Ln(4);
 
@@ -234,8 +274,9 @@ $pdf->MultiCell(0, 6, strtoupper(Utils::toMbConvertEncoding($montantLettre)), 0,
 $pdf->AddPage();
 $pdf->SetFont('helvetica', '', 12);
 $pdf->SetTextColor(0, 0, 0);
-$pdf->ln(25);
-$html = '
+$pdf->SetDrawColor(0, 0, 0); // <-- Ajoute cette ligne ici
+
+$html = $style . '
 <h2 style="font-family: Helvetica; color: #222;">5. Garantie</h2>
 <div style="margin-bottom: 18px;">' . $devis['garantie'] . '</div>
 ';
