@@ -140,11 +140,23 @@ $pdf->Ln(8);
 $pdf->SetTextColor(0, 0, 0);
 
 // Affichage du planning
+$pos = 1;
 if ($minDate === null || $maxDate === null) {
     $pdf->Cell($pageWidth, 12, "Aucune donnée de planning disponible.", 1, 1, 'C');
 } else {
     $totalDays = ($maxDate - $minDate) / 86400 + 1;
     foreach ($lignes_debourse as $l) {
+        if (!empty($l['is_titre'])) {
+            // Afficher le titre du déboursé sur toute la largeur du tableau
+            $pdf->SetFont('helvetica', 'B', 8);
+            $pdf->SetFillColor(220, 220, 220);
+            $pdf->SetX($margins['left']);
+            $pdf->Cell($pageWidth, 8, $l['titre'], 1, 1, 'L', true);
+            $pdf->SetFont('helvetica', '', 7);
+            $pdf->SetFillColor(255, 255, 255);
+            continue;
+        }
+
         $designation = Utils::toMbConvertEncoding($l['designation']);
         $dateDebut = $l['date_debut'] ?? '-';
         $dateFin = $l['date_fin'] ?? '-';
@@ -152,15 +164,12 @@ if ($minDate === null || $maxDate === null) {
 
         // Calcul de la hauteur nécessaire pour la cellule tâche (MultiCell)
         $nbLines = $pdf->getNumLines($designation, $colTask);
-        $rowHeight = max(8, $nbLines * 4.5); // 4.5mm par ligne, min 8mm
+        $rowHeight = max(8, $nbLines * 4.5);
 
-        $yBefore = $pdf->GetY();
-        $xBefore = $pdf->GetX();
-
-        // N°
         $pdf->SetX($margins['left']);
-        $pdf->MultiCell($colNum, $rowHeight, $pos++, 1, 'C', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
-        // Tâche (texte long, retour à la ligne)
+        // N° (numérotation par déboursé)
+        $pdf->MultiCell($colNum, $rowHeight, $l['numero'], 1, 'C', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
+        // Tâche
         $pdf->MultiCell($colTask, $rowHeight, $designation, 1, 'L', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
         // Début
         $pdf->MultiCell($colStart, $rowHeight, $dateDebut, 1, 'C', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
@@ -168,7 +177,6 @@ if ($minDate === null || $maxDate === null) {
         $pdf->MultiCell($colEnd, $rowHeight, $dateFin, 1, 'C', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
         // Durée
         $pdf->MultiCell($colDuration, $rowHeight, $duration, 1, 'C', false, 0, '', '', true, 0, false, true, $rowHeight, 'M');
-
         // Gantt
         $xGantt = $pdf->GetX();
         $yGantt = $pdf->GetY();
@@ -182,7 +190,6 @@ if ($minDate === null || $maxDate === null) {
             $durationBar = max(1, min($totalDays - $offset, ($end - $start) / 86400 + 1));
             $barW = max(2, ($durationBar / $totalDays) * ($colGantt - 2));
             $barOffset = ($offset / $totalDays) * ($colGantt - 2);
-            // Ne pas dépasser la colonne
             if ($barOffset + $barW > $colGantt - 2) $barW = $colGantt - 2 - $barOffset;
             $pdf->SetFillColor(0, 102, 204);
             $pdf->Rect($xGantt + 1 + $barOffset, $yGantt + ($rowHeight / 2) - 2, $barW, 4, 'F');

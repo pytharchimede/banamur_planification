@@ -1,13 +1,13 @@
 <?php
-
-include('../fpdf186/fpdf.php');
-require_once("../phpqrcode/qrlib.php");
-require_once("../model/User.php");
-require_once("../model/Database.php");
-require_once("../model/Devis.php");
-require_once("../model/Client.php");
-require_once("../model/Offre.php");
-require_once("../model/UniteMesure.php");
+//Importation des fichiers nécessaires
+include '../fpdf186/fpdf.php';
+require_once "../phpqrcode/qrlib.php";
+require_once "../model/User.php";
+require_once "../model/Database.php";
+require_once "../model/Devis.php";
+require_once "../model/Client.php";
+require_once "../model/Offre.php";
+require_once "../model/UniteMesure.php";
 
 $pdo = Database::getConnection();
 $userObj = new User($pdo);
@@ -52,12 +52,21 @@ if (!$debourses) {
 // Récupérer les lignes de déboursé via la classe
 // Initialiser un tableau pour stocker les lignes de déboursé
 $lignes_debourse = [];
-
 foreach ($debourses as $debourse) {
+    // Ajouter un titre pour chaque déboursé
+    $lignes_debourse[] = [
+        'is_titre' => true,
+        'titre' => $debourse['libelle'] ?? 'Déboursé ' . $debourse['id']
+    ];
     // Récupérer les lignes du déboursé courant
     $lignes = $devisObj->getLignesDebourse($debourse['id']);
     if ($lignes && is_array($lignes)) {
-        $lignes_debourse = array_merge($lignes_debourse, $lignes);
+        $num = 1;
+        foreach ($lignes as $ligne) {
+            $ligne['numero'] = $num++;
+            $ligne['is_titre'] = false;
+            $lignes_debourse[] = $ligne;
+        }
     }
 }
 
@@ -65,7 +74,6 @@ foreach ($debourses as $debourse) {
 if (empty($lignes_debourse)) {
     die('Aucune ligne de déboursé trouvée pour ce devis.');
 }
-
 
 // Récupérer le client via la classe
 $client = $clientObj->getClientById($devis['client_id']);
