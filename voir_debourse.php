@@ -71,10 +71,13 @@ include 'header/header_voir_debourse.php';
         <!-- Actions -->
         <div class="d-flex justify-content-end gap-2 mb-3">
             <a href="request/export_debourse_pdf.php?devisId=<?= $devisId ?>" target="_blank" class="btn btn-danger">
-                <i class="fas fa-file-pdf"></i> Exporter PDF
+                <i class="fas fa-file-pdf"></i> Exporter déboursé (PDF)
             </a>
             <a href="request/export_debourse_excel.php?devisId=<?= $devisId ?>" target="_blank" class="btn btn-success">
-                <i class="fas fa-file-excel"></i> Exporter Excel
+                <i class="fas fa-file-excel"></i> Exporter déboursé (Excel)
+            </a>
+            <a href="request/export_planning_gantt.php?devisId=<?= $devisId ?>" target="_blank" class="btn btn-primary">
+                <i class="fas fa-project-diagram"></i> Exporter planning (Gantt)
             </a>
             <a href="liste_devis.php" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left"></i> Retour à la liste
