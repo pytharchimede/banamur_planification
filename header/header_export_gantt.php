@@ -53,16 +53,26 @@ if (!$debourses) {
 // Initialiser un tableau pour stocker les lignes de déboursé
 $lignes_debourse = [];
 foreach ($debourses as $debourse) {
-    // Ajouter un titre pour chaque déboursé
+    // Récupérer la désignation de la ligne_devis liée à ce déboursé
+    $designation = '';
+    if (!empty($debourse['ligne_devis_id'])) {
+        foreach ($lignes as $ligne_devis) {
+            if ($ligne_devis['id'] == $debourse['ligne_devis_id']) {
+                $designation = $ligne_devis['designation'];
+                break;
+            }
+        }
+    }
+    // Utiliser la désignation comme titre
     $lignes_debourse[] = [
         'is_titre' => true,
-        'titre' => $debourse['libelle'] ?? 'Déboursé ' . $debourse['id']
+        'titre' => $designation ?: 'Déboursé'
     ];
     // Récupérer les lignes du déboursé courant
-    $lignes = $devisObj->getLignesDebourse($debourse['id']);
-    if ($lignes && is_array($lignes)) {
+    $lignes_deb = $devisObj->getLignesDebourse($debourse['id']);
+    if ($lignes_deb && is_array($lignes_deb)) {
         $num = 1;
-        foreach ($lignes as $ligne) {
+        foreach ($lignes_deb as $ligne) {
             $ligne['numero'] = $num++;
             $ligne['is_titre'] = false;
             $lignes_debourse[] = $ligne;

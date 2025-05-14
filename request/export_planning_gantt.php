@@ -121,23 +121,30 @@ foreach ($lignes_debourse as $l) {
 }
 
 // Affichage de l'échelle de temps au-dessus du Gantt
-$pdf->SetFont('helvetica', 'I', 6);
-$pdf->SetTextColor(80, 80, 80);
-$pdf->SetX($margins['left'] + $colNum + $colTask + $colStart + $colEnd + $colDuration);
+if ($minDate === null || $maxDate === null) {
+    // Pas de planning, donc pas d'échelle de temps à afficher
+    $pdf->Cell($pageWidth, 12, "Aucune donnée de planning disponible.", 1, 1, 'C');
+} else {
+    // ... Affichage de l'échelle de temps ...
+    $pdf->SetFont('helvetica', 'I', 6);
+    $pdf->SetTextColor(80, 80, 80);
+    $pdf->SetX($margins['left'] + $colNum + $colTask + $colStart + $colEnd + $colDuration);
 
-$nbLabels = 6; // Nombre de repères à afficher (ajuste selon besoin)
-for ($i = 0; $i <= $nbLabels; $i++) {
-    $timestamp = $minDate + ($i * ($maxDate - $minDate) / $nbLabels);
-    $label = date('d/m/Y', $timestamp); // Correction ici
-    $xLabel = $pdf->GetX() + ($i * $colGantt / $nbLabels);
-    $pdf->SetXY($xLabel, $pdf->GetY());
-    $pdf->Cell(1, 3, '|', 0, 0, 'C');
-    $pdf->SetXY($xLabel - 10, $pdf->GetY() + 2);
-    $pdf->Cell(20, 3, $label, 0, 0, 'C');
-    $pdf->SetXY($margins['left'] + $colNum + $colTask + $colStart + $colEnd + $colDuration, $pdf->GetY() - 2);
+    $jours = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+    $nbLabels = 6;
+    for ($i = 0; $i <= $nbLabels; $i++) {
+        $timestamp = $minDate + ($i * ($maxDate - $minDate) / $nbLabels);
+        $label = Utils::dateJourCourtFr(date('Y-m-d', $timestamp));
+        $xLabel = $pdf->GetX() + ($i * $colGantt / $nbLabels);
+        $pdf->SetXY($xLabel, $pdf->GetY());
+        $pdf->Cell(1, 3, '|', 0, 0, 'C');
+        $pdf->SetXY($xLabel - 10, $pdf->GetY() + 2);
+        $pdf->Cell(20, 3, Utils::toMbConvertEncoding($label), 0, 0, 'C');
+        $pdf->SetXY($margins['left'] + $colNum + $colTask + $colStart + $colEnd + $colDuration, $pdf->GetY() - 2);
+    }
+    $pdf->Ln(8);
+    $pdf->SetTextColor(0, 0, 0);
 }
-$pdf->Ln(8);
-$pdf->SetTextColor(0, 0, 0);
 
 // Affichage du planning
 $pos = 1;

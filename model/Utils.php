@@ -54,4 +54,13 @@ class Utils
     {
         return mb_convert_encoding($string, 'windows-1252', 'UTF-8');
     }
+
+    public static function dateJourCourtFr($date)
+    {
+        $jours = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+        $timestamp = strtotime($date);
+        $jour = $jours[(int)date('w', $timestamp)];
+        $dateCourte = date('d/m/y', $timestamp);
+        return $jour . ' ' . $dateCourte;
+    }
 }
