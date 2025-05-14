@@ -165,8 +165,8 @@ if ($minDate === null || $maxDate === null) {
         }
 
         $designation = Utils::toMbConvertEncoding($l['designation']);
-        $dateDebut = $l['date_debut'] ?? '-';
-        $dateFin = $l['date_fin'] ?? '-';
+        $dateDebut = !empty($l['date_debut']) ? Utils::dateJourCourtFr($l['date_debut']) : '-';
+        $dateFin = !empty($l['date_fin']) ? Utils::dateJourCourtFr($l['date_fin']) : '-';
         $duration = dureeFr($l['date_debut'], $l['date_fin']);
 
         // Calcul de la hauteur nécessaire pour la cellule tâche (MultiCell)
