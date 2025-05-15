@@ -6,6 +6,9 @@ require_once 'model/User.php';
 $pdo = Database::getConnection();
 $userModel = new User($pdo);
 
+
+
+
 // Vérifier si l'ID de l'utilisateur est fourni dans l'URL
 if (isset($_GET['id'])) {
     $userId = $_GET['id'];

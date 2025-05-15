@@ -82,15 +82,43 @@ class User
         $stmt->execute(['id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-
     public function modifierUtilisateur($id, $data)
     {
-        $sql = "UPDATE user_devis_banamur SET mail_pro = :mail_pro, password = :password, nom = :nom, prenom = :prenom, modifier_devis = :modifier_devis, visualiser_devis = :visualiser_devis, soumettre_devis = :soumettre_devis, masquer_devis = :masquer_devis, envoyer_devis = :envoyer_devis, valider_devis = :valider_devis WHERE id = :id";
-        $data['id'] = $id;
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute($data);
-    }
+        // Récupère l'utilisateur actuel
+        $user = $this->getUserById($id);
+        if (!$user) return false;
 
+        // On garde les anciennes valeurs si non fournies dans $data
+        $params = [
+            'mail_pro' => $data['mail_pro'] ?? $user['mail_pro'],
+            'password' => $data['password'] ?? $user['password'],
+            'nom' => $data['nom'] ?? $user['nom'],
+            'prenom' => $data['prenom'] ?? $user['prenom'],
+            'modifier_devis' => array_key_exists('modifier_devis', $data) ? $data['modifier_devis'] : $user['modifier_devis'],
+            'visualiser_devis' => array_key_exists('visualiser_devis', $data) ? $data['visualiser_devis'] : $user['visualiser_devis'],
+            'soumettre_devis' => array_key_exists('soumettre_devis', $data) ? $data['soumettre_devis'] : $user['soumettre_devis'],
+            'masquer_devis' => array_key_exists('masquer_devis', $data) ? $data['masquer_devis'] : $user['masquer_devis'],
+            'envoyer_devis' => array_key_exists('envoyer_devis', $data) ? $data['envoyer_devis'] : $user['envoyer_devis'],
+            'valider_devis' => array_key_exists('valider_devis', $data) ? $data['valider_devis'] : $user['valider_devis'],
+            'id' => $id
+        ];
+
+        $sql = "UPDATE user_devis_banamur SET 
+            mail_pro = :mail_pro, 
+            password = :password, 
+            nom = :nom, 
+            prenom = :prenom, 
+            modifier_devis = :modifier_devis, 
+            visualiser_devis = :visualiser_devis, 
+            soumettre_devis = :soumettre_devis, 
+            masquer_devis = :masquer_devis, 
+            envoyer_devis = :envoyer_devis, 
+            valider_devis = :valider_devis 
+            WHERE id = :id";
+
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute($params);
+    }
     public function reactiverUtilisateur($id)
     {
         $sql = "UPDATE user_devis_banamur SET active = 1 WHERE id = :id";

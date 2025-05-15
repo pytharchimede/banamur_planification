@@ -453,4 +453,28 @@ class Devis
             $this->updateDebourseResume($debourse['id']);
         }
     }
+
+    public function getLibelleLigneDevisByDebourseId($debourseId)
+    {
+        $stmt = $this->pdo->prepare("
+        SELECT ld.designation AS libelle
+        FROM ligne_devis_banamur ld
+        JOIN debourse_banamur d ON d.ligne_devis_id = ld.id
+        WHERE d.id = :debourse_id
+        LIMIT 1
+    ");
+        $stmt->execute(['debourse_id' => $debourseId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? $row['libelle'] : '';
+    }
+
+    public function getAllDeboursesWithDevis()
+    {
+        $sql = "SELECT d.*, dv.numero_devis, dv.destine_a
+            FROM debourse_banamur d
+            JOIN devis_banamur dv ON d.devis_id = dv.id
+            ORDER BY d.id DESC";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
