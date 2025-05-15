@@ -418,4 +418,18 @@ class Devis
         ]);
         return $ok ? $this->pdo->lastInsertId() : false;
     }
+
+    public function getDeboursesByDevisId($devisId)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM debourse_banamur WHERE devis_id = :devis_id");
+        $stmt->execute(['devis_id' => $devisId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getLignesDebourseByDebourseId($debourseId)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM ligne_debourse_banamur WHERE debourse_id = :debourse_id");
+        $stmt->execute(['debourse_id' => $debourseId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
