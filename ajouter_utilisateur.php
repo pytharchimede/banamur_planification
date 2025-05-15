@@ -1,6 +1,7 @@
 <?php
 // Inclure les fichiers nécessaires
 require_once 'header/header_add_user.php';
+$page = "liste_utilisateur";
 
 ?>
 

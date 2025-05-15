@@ -1,5 +1,7 @@
 <?php
 include 'header/header_modifier_utilisateur.php';
+$page = "liste_utilisateur";
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">

@@ -108,7 +108,7 @@ class User
     // Récupère tous les utilisateurs (pour la liste des responsables)
     public function getUtilisateurs()
     {
-        $stmt = $this->pdo->prepare("SELECT id, nom FROM user_devis_banamur");
+        $stmt = $this->pdo->prepare("SELECT * FROM user_devis_banamur");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

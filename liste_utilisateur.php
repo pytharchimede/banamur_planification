@@ -6,9 +6,8 @@ require_once 'model/User.php';
 $pdo = Database::getConnection();
 $userModel = new User($pdo);
 
-// Récupérer la liste des utilisateurs
-$stmt = $pdo->query("SELECT * FROM user_devis");
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+//liste des utilisateurs
+$users = $userModel->getUtilisateurs();
 
 $page = "liste_utilisateur";
 ?>
