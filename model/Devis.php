@@ -9,8 +9,6 @@ class Devis
         $this->pdo = $pdo;
     }
 
-
-
     // Validation générale (directeur général)
     public function validerGenerale($devisId)
     {
