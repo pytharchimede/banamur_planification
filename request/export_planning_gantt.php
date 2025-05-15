@@ -193,13 +193,26 @@ if ($minDate === null || $maxDate === null) {
         if (!empty($l['date_debut']) && !empty($l['date_fin'])) {
             $start = strtotime($l['date_debut']);
             $end = strtotime($l['date_fin']);
-            $offset = max(0, min($totalDays, ($start - $minDate) / 86400));
-            $durationBar = max(1, min($totalDays - $offset, ($end - $start) / 86400 + 1));
-            $barW = max(2, ($durationBar / $totalDays) * ($colGantt - 2));
-            $barOffset = ($offset / $totalDays) * ($colGantt - 2);
-            if ($barOffset + $barW > $colGantt - 2) $barW = $colGantt - 2 - $barOffset;
+            $offset = ($start - $minDate) / 86400;
+            $durationBar = max(1, round(($end - $start) / 86400 + 1));
+
+            // Largeur d'un jour en mm
+            $oneDayW = $colGantt / $totalDays;
+
+            // Position de début de la barre
+            $barOffset = $offset * $oneDayW;
+
+            // Largeur de la barre (exactement la durée)
+            $barW = $durationBar * $oneDayW;
+
+            // Ne pas dépasser la colonne
+            if ($barOffset + $barW > $colGantt) {
+                $barW = $colGantt - $barOffset;
+                if ($barW < $oneDayW) $barW = $oneDayW; // Toujours au moins un jour visible
+            }
+
             $pdf->SetFillColor(0, 102, 204);
-            $pdf->Rect($xGantt + 1 + $barOffset, $yGantt + ($rowHeight / 2) - 2, $barW, 4, 'F');
+            $pdf->Rect($xGantt + $barOffset, $yGantt + ($rowHeight / 2) - 2, $barW, 4, 'F');
             $pdf->SetFillColor(255, 255, 255);
         }
     }
