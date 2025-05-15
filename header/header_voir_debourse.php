@@ -36,4 +36,8 @@ foreach ($debourses as $debourse) {
     }
 }
 
+// Calculer le total général
+$devisModel->syncAllDebourseMontants($devisId);
+
+
 $page = "liste_debourse";

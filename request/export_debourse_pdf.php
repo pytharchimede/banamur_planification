@@ -37,16 +37,16 @@ $pdf->SetFont('helvetica', 'B', 14);
 $pdf->Cell(0, 10, "Déboursés du devis {$devis['numero_devis']}", 0, 1, 'C');
 $pdf->SetFont('helvetica', '', 10);
 $pdf->Cell(0, 8, "Client : {$devis['destine_a']}", 0, 1, 'L');
-$pdf->Cell(0, 8, "Total TTC : " . number_format($devis['total_ttc'], 0, ',', ' ') . " FCFA", 0, 1, 'L');
+$totalLignesDebourse = $devisModel->getTotalDebourseByDevisId($devis_id);
+$pdf->Cell(0, 8, "Total lTTC : " . number_format($totalLignesDebourse, 0, ',', ' ') . " FCFA", 0, 1, 'L');
 $pdf->Ln(4);
 
+$totalGeneral = 0;
 foreach ($debourses as $debourse) {
-    // Titre du déboursé
     $pdf->SetFont('helvetica', 'B', 11);
     $pdf->SetFillColor(220, 220, 220);
     $pdf->Cell(0, 8, "Déboursé : " . ($debourse['designation'] ?? 'N/A'), 1, 1, 'L', true);
 
-    // Utilise la méthode de la classe
     $sousLignes = $devisModel->getLignesDebourseByDebourseId($debourse['id']);
 
     // Tableau
@@ -54,22 +54,40 @@ foreach ($debourses as $debourse) {
     $pdf->SetFillColor(0, 0, 0);
     $pdf->SetTextColor(255, 255, 255);
     $pdf->Cell(30, 7, "Catégorie", 1, 0, 'C', true);
-    $pdf->Cell(157, 7, "Désignation", 1, 0, 'C', true);
-    $pdf->Cell(30, 7, "Montant", 1, 0, 'C', true);
+    $pdf->Cell(147, 7, "Désignation", 1, 0, 'C', true);
+    $pdf->Cell(40, 7, "Montant", 1, 0, 'C', true);
     $pdf->Cell(30, 7, "Date début", 1, 0, 'C', true);
     $pdf->Cell(30, 7, "Date fin", 1, 1, 'C', true);
     $pdf->SetFont('helvetica', '', 9);
     $pdf->SetTextColor(0, 0, 0);
 
+    $totalDebourse = 0;
     foreach ($sousLignes as $ligne) {
         $pdf->Cell(30, 7, $ligne['categorie'], 1);
-        $pdf->Cell(157, 7, Utils::toMbConvertEncoding($ligne['designation']), 1);
-        $pdf->Cell(30, 7, number_format($ligne['montant'], 0, ',', ' ') . ' FCFA', 1, 0, 'R');
+        $pdf->Cell(147, 7, Utils::toMbConvertEncoding($ligne['designation']), 1);
+        $pdf->Cell(40, 7, number_format($ligne['montant'], 0, ',', ' ') . ' FCFA', 1, 0, 'R');
         $pdf->Cell(30, 7, Utils::dateJourCourtFr($ligne['date_debut']), 1, 0, 'C');
         $pdf->Cell(30, 7, Utils::dateJourCourtFr($ligne['date_fin']), 1, 1, 'C');
+        $totalDebourse += $ligne['montant'];
+        $totalGeneral += $ligne['montant']; // <-- Additionne chaque sous-ligne au total général
     }
+    // Affiche le total du déboursé
+    $pdf->SetFont('helvetica', 'B', 9);
+    $pdf->Cell(187, 7, "Total déboursé", 1, 0, 'R', true);
+    $pdf->Cell(30, 7, number_format($totalDebourse, 0, ',', ' ') . ' FCFA', 1, 0, 'R', true);
+    $pdf->Cell(60, 7, '', 1, 1, 'C', true);
+    $pdf->SetFont('helvetica', '', 9);
     $pdf->Ln(2);
 }
+
+// Affiche le total général à la fin
+$pdf->SetFont('helvetica', 'B', 12);
+$pdf->SetFillColor(0, 123, 0);
+$pdf->SetTextColor(255, 255, 255);
+$pdf->Cell(177, 10, "TOTAL GENERAL", 1, 0, 'C', true);
+$pdf->Cell(40, 10, number_format($totalGeneral, 0, ',', ' ') . ' FCFA', 1, 0, 'C', true);
+$pdf->Cell(60, 10, '', 1, 1, 'C', true);
+$pdf->SetTextColor(0, 0, 0);
 
 ob_clean();
 $pdf->Output('debourses_devis_' . $devis['id'] . '.pdf', 'I');

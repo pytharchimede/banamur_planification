@@ -42,6 +42,16 @@ include 'header/header_voir_debourse.php';
             <span class="badge bg-success fs-6">Total TTC : <?= number_format($devis['total_ttc'] ?? 0, 0, ',', ' ') ?> FCFA</span>
         </div>
 
+        <?php
+        $totalDebourse = 0;
+        foreach ($debourses as $debourse) {
+            $sousLignes = $devisModel->getLignesDebourseByDebourseId($debourse['id']);
+            foreach ($sousLignes as $ligne) {
+                $totalDebourse += $ligne['montant'];
+            }
+        }
+        ?>
+
         <!-- Statistiques -->
         <div class="row mb-4 g-3">
             <div class="col-md-3">

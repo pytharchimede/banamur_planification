@@ -33,7 +33,9 @@ $row += 2;
 // Infos client
 $sheet->setCellValue('A' . $row, "Client : {$devis['destine_a']}");
 $row++;
-$sheet->setCellValue('A' . $row, "Total TTC : " . number_format($devis['total_ttc'], 0, ',', ' ') . " FCFA");
+
+$totalLignesDebourse = $devisModel->getTotalDebourseByDevisId($devis_id);
+$sheet->setCellValue('A' . $row, "Total lignes déboursé : " . number_format($totalLignesDebourse, 0, ',', ' ') . " FCFA");
 $row += 2;
 
 $grandTotalRows = [];

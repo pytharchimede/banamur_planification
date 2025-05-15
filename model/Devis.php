@@ -432,4 +432,25 @@ class Devis
         $stmt->execute(['debourse_id' => $debourseId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getTotalDebourseByDevisId($devisId)
+    {
+        $total = 0;
+        $debourses = $this->getDeboursesByDevisId($devisId);
+        foreach ($debourses as $debourse) {
+            $sousLignes = $this->getLignesDebourseByDebourseId($debourse['id']);
+            foreach ($sousLignes as $ligne) {
+                $total += $ligne['montant'];
+            }
+        }
+        return $total;
+    }
+
+    public function syncAllDebourseMontants($devisId)
+    {
+        $debourses = $this->getDeboursesByDevisId($devisId);
+        foreach ($debourses as $debourse) {
+            $this->updateDebourseResume($debourse['id']);
+        }
+    }
 }
