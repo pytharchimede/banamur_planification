@@ -323,4 +323,45 @@ class Devis
         $stmt = $this->pdo->prepare("UPDATE devis_banamur SET `$section` = :contenu WHERE id = :id");
         return $stmt->execute(['contenu' => $contenu, 'id' => $devisId]);
     }
+
+    // Met à jour une sous-ligne de déboursé
+    public function updateLigneDebourse($id, $data)
+    {
+        $sql = "UPDATE ligne_debourse_banamur 
+                SET designation = :designation, montant = :montant, date_debut = :date_debut, date_fin = :date_fin
+                WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            'designation' => $data['designation'],
+            'montant' => $data['montant'],
+            'date_debut' => $data['date_debut'],
+            'date_fin' => $data['date_fin'],
+            'id' => $id
+        ]);
+    }
+
+    // Récupère le déboursé parent d'une sous-ligne
+    public function getDebourseByLigneDebourse($ligneDebourseId)
+    {
+        $sql = "SELECT d.* FROM debourse_banamur d
+                JOIN ligne_debourse_banamur l ON l.debourse_id = d.id
+                WHERE l.id = :ligne_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['ligne_id' => $ligneDebourseId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Calcule le montant total et la période d'un déboursé
+    public function getTotauxDebourse($debourseId)
+    {
+        $sql = "SELECT 
+                    SUM(montant) AS montant_debourse,
+                    MIN(date_debut) AS date_debut,
+                    MAX(date_fin) AS date_fin
+                FROM ligne_debourse_banamur
+                WHERE debourse_id = :debourse_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['debourse_id' => $debourseId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }

@@ -123,7 +123,7 @@ include 'header/header_voir_debourse.php';
                         </div>
                         <div class="col-md-4">
                             <strong>Période :</strong>
-                            <?= htmlspecialchars($debourse['date_debut'] ?? '') ?> au <?= htmlspecialchars($debourse['date_fin'] ?? '') ?>
+                            <span class="periode-debourse"><?= htmlspecialchars($debourse['date_debut'] ?? '') ?> au <?= htmlspecialchars($debourse['date_fin'] ?? '') ?></span>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -148,10 +148,14 @@ include 'header/header_voir_debourse.php';
                                         <td class="editable" data-type="montant_sous" data-id="<?= $sous['id'] ?>">
                                             <?= number_format($sous['montant'], 0, ',', ' ') ?> FCFA
                                         </td>
-                                        <td><?= htmlspecialchars($sous['date_debut']) ?></td>
-                                        <td><?= htmlspecialchars($sous['date_fin']) ?></td>
+                                        <td class="editable" data-type="date_debut" data-id="<?= $sous['id'] ?>">
+                                            <?= htmlspecialchars($sous['date_debut']) ?>
+                                        </td>
+                                        <td class="editable" data-type="date_fin" data-id="<?= $sous['id'] ?>">
+                                            <?= htmlspecialchars($sous['date_fin']) ?>
+                                        </td>
                                         <td>
-                                            <button class="btn btn-outline-warning btn-sm btn-edit-sous-ligne" data-id="<?= $sous['id'] ?>">
+                                            <button class="btn btn-outline-warning btn-sm btn-edit-sous-ligne" data-id="<?= $sous['id'] ?>" data-bs-toggle="modal" data-bs-target="#modalEditSousLigne">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         </td>
@@ -163,6 +167,41 @@ include 'header/header_voir_debourse.php';
                 </div>
             </div>
         <?php endforeach; ?>
+    </div>
+
+    <!-- Modal édition sous-ligne déboursé -->
+    <div class="modal fade" id="modalEditSousLigne" tabindex="-1" aria-labelledby="modalEditSousLigneLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="formEditSousLigne" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditSousLigneLabel">Modifier la sous-ligne</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="editSousLigneId">
+                    <div class="mb-3">
+                        <label for="editDesignation" class="form-label">Désignation</label>
+                        <input type="text" class="form-control" name="designation" id="editDesignation" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editMontant" class="form-label">Montant</label>
+                        <input type="number" class="form-control" name="montant" id="editMontant" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDateDebut" class="form-label">Date début</label>
+                        <input type="date" class="form-control" name="date_debut" id="editDateDebut" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDateFin" class="form-label">Date fin</label>
+                        <input type="date" class="form-control" name="date_fin" id="editDateFin" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <footer class="footer text-white text-center py-3 bg-dark">
@@ -179,7 +218,7 @@ include 'header/header_voir_debourse.php';
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Edition rapide (inline) pour montant, designation, responsable
+        // Edition rapide (inline) pour montant, designation, responsable, date_debut, date_fin
         $('.editable').on('click', function() {
             let span = $(this);
             if (span.find('input,select').length) return;
@@ -192,6 +231,8 @@ include 'header/header_voir_debourse.php';
                 <?php foreach ($utilisateurs as $u): ?>
                     input.append('<option value="<?= $u['id'] ?>"><?= addslashes($u['nom']) ?></option>');
                 <?php endforeach; ?>
+            } else if (type === 'date_debut' || type === 'date_fin') {
+                input = $('<input type="date" class="edit-input" value="' + val + '">');
             } else {
                 input = $('<input type="text" class="edit-input" value="' + val + '">');
             }
@@ -213,6 +254,13 @@ include 'header/header_voir_debourse.php';
                             } else {
                                 span.html(newVal);
                             }
+                            // Actualiser montant total et période si besoin
+                            if (resp.montant_debourse !== undefined) {
+                                span.closest('.card-body').find('[data-type="montant"]').html(Number(resp.montant_debourse).toLocaleString('fr-FR') + ' FCFA');
+                            }
+                            if (resp.date_debut && resp.date_fin) {
+                                span.closest('.card-body').find('.periode-debourse').html(resp.date_debut + ' au ' + resp.date_fin);
+                            }
                         } else {
                             span.html(val);
                             alert(resp.message || 'Erreur lors de la mise à jour.');
@@ -224,7 +272,27 @@ include 'header/header_voir_debourse.php';
 
         // Bouton édition (peut ouvrir un modal pour édition avancée)
         $('.btn-edit-sous-ligne').on('click', function() {
-            alert("Edition avancée à implémenter (modal, etc.)");
+            var tr = $(this).closest('tr');
+            var id = $(this).data('id');
+            $('#editSousLigneId').val(id);
+            $('#editDesignation').val(tr.find('[data-type="designation"]').text().trim());
+            $('#editMontant').val(tr.find('[data-type="montant_sous"]').text().replace(/\s+FCFA/, '').replace(/\s/g, ''));
+            $('#editDateDebut').val(tr.find('[data-type="date_debut"]').text().trim());
+            $('#editDateFin').val(tr.find('[data-type="date_fin"]').text().trim());
+            var modal = new bootstrap.Modal(document.getElementById('modalEditSousLigne'));
+            modal.show();
+        });
+
+        // Soumission du formulaire modal
+        $('#formEditSousLigne').on('submit', function(e) {
+            e.preventDefault();
+            $.post('request/update_debourse_inline.php', $(this).serialize(), function(resp) {
+                if (resp.success) {
+                    location.reload(); // Ou mieux : mettre à jour la ligne sans recharger
+                } else {
+                    alert(resp.message || 'Erreur lors de la mise à jour.');
+                }
+            }, 'json');
         });
     </script>
 </body>
