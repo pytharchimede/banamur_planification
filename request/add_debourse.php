@@ -18,16 +18,12 @@ if (!$devis_id || !$designation || !$montant || !$date_debut || !$date_fin) {
     exit;
 }
 
-// Création du déboursé principal via une méthode
+error_log("devis_id=$devis_id, designation=$designation, categorie=$categorie, montant=$montant, date_debut=$date_debut, date_fin=$date_fin");
 $debourse_id = $devisModel->addDebourse($devis_id, $date_debut, $date_fin);
 
 if ($debourse_id) {
-    // Ajout de la première sous-ligne via une méthode
     $devisModel->addSousLigneDebourseByDebourseId($debourse_id, $categorie, $designation, $montant, $date_debut, $date_fin);
-
-    // Mise à jour du résumé via une méthode
     $devisModel->updateDebourseResume($debourse_id);
-
     echo json_encode(['success' => true]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Erreur lors de l\'ajout']);

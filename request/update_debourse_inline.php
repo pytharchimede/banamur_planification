@@ -22,7 +22,8 @@ $ok = $devisModel->updateLigneDebourse($id, [
     'designation' => $designation,
     'montant' => $montant,
     'date_debut' => $date_debut,
-    'date_fin' => $date_fin
+    'date_fin' => $date_fin,
+    'categorie' => $_POST['categorie'] ?? null
 ]);
 
 if ($ok) {

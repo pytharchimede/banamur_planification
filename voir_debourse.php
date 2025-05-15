@@ -147,7 +147,7 @@ include 'header/header_voir_debourse.php';
                             <tbody>
                                 <?php foreach ($sousLignes as $sous): ?>
                                     <tr>
-                                        <td><?= ucfirst($sous['categorie']) ?></td>
+                                        <td><?= htmlspecialchars($sous['categorie']) ?></td>
                                         <td class="editable" data-type="designation" data-id="<?= $sous['id'] ?>">
                                             <?= htmlspecialchars($sous['designation']) ?>
                                         </td>
@@ -206,6 +206,17 @@ include 'header/header_voir_debourse.php';
                         <label for="editDateFin" class="form-label">Date fin</label>
                         <input type="date" class="form-control" name="date_fin" id="editDateFin" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="editCategorie" class="form-label">Catégorie</label>
+                        <select class="form-control" name="categorie" id="editCategorie" required>
+                            <option value="">-- Choisir --</option>
+                            <option value="matériel">Matériel</option>
+                            <option value="matériaux">Matériaux</option>
+                            <option value="transport">Transport</option>
+                            <option value="main d'œuvre">Main d'œuvre</option>
+                            <option value="EPI">EPI</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
@@ -230,7 +241,14 @@ include 'header/header_voir_debourse.php';
                     </div>
                     <div class="mb-3">
                         <label for="addCategorie" class="form-label">Catégorie</label>
-                        <input type="text" class="form-control" name="categorie" id="addCategorie" required>
+                        <select class="form-control" name="categorie" id="addCategorie" required>
+                            <option value="">-- Choisir --</option>
+                            <option value="matériel">Matériel</option>
+                            <option value="matériaux">Matériaux</option>
+                            <option value="transport">Transport</option>
+                            <option value="main d'œuvre">Main d'œuvre</option>
+                            <option value="EPI">EPI</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="addMontant" class="form-label">Montant</label>
@@ -272,6 +290,7 @@ include 'header/header_voir_debourse.php';
             var tr = $(this).closest('tr');
             var id = $(this).data('id');
             $('#editSousLigneId').val(id);
+            $('#editCategorie').val(tr.find('td').eq(0).text().trim()); // 1ère colonne = catégorie
             $('#editDesignation').val(tr.find('[data-type="designation"]').text().trim());
             $('#editMontant').val(tr.find('[data-type="montant_sous"]').text().replace(/\s+FCFA/, '').replace(/\s/g, ''));
             $('#editDateDebut').val(tr.find('[data-type="date_debut"]').text().trim());
@@ -283,12 +302,15 @@ include 'header/header_voir_debourse.php';
         // Bouton ajout sous-ligne
         $('.btn-add-sous-ligne').on('click', function() {
             var debourseId = $(this).data('debourse');
-            $('#editSousLigneId').val(''); // vide pour ajout
+            $('#editSousLigneId').val('');
+            $('#editCategorie').val('');
             $('#editDesignation').val('');
             $('#editMontant').val('');
             $('#editDateDebut').val('');
             $('#editDateFin').val('');
-            $('#formEditSousLigne').append('<input type="hidden" name="debourse_id" id="addDebourseId" value="' + debourseId + '">');
+            // Nettoyer les anciens inputs cachés
+            $('#formEditSousLigne input[name="debourse_id"]').remove();
+            $('#formEditSousLigne').append('<input type="hidden" name="debourse_id" value="' + debourseId + '">');
             var modal = new bootstrap.Modal(document.getElementById('modalEditSousLigne'));
             modal.show();
         });

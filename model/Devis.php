@@ -344,7 +344,7 @@ class Devis
     public function updateLigneDebourse($id, $data)
     {
         $sql = "UPDATE ligne_debourse_banamur 
-                SET designation = :designation, montant = :montant, date_debut = :date_debut, date_fin = :date_fin
+                SET designation = :designation, montant = :montant, date_debut = :date_debut, date_fin = :date_fin, categorie = :categorie
                 WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
@@ -352,6 +352,7 @@ class Devis
             'montant' => $data['montant'],
             'date_debut' => $data['date_debut'],
             'date_fin' => $data['date_fin'],
+            'categorie' => $data['categorie'],
             'id' => $id
         ]);
     }
@@ -370,7 +371,7 @@ class Devis
     // Calcule le montant total et la période d'un déboursé
     public function getTotauxDebourse($debourseId)
     {
-        $sql = "SELECT 
+        $sql = "SELECT
                     SUM(montant) AS montant_debourse,
                     MIN(date_debut) AS date_debut,
                     MAX(date_fin) AS date_fin
@@ -383,7 +384,7 @@ class Devis
 
     public function updateDebourseResume($debourseId)
     {
-        $sql = "SELECT 
+        $sql = "SELECT
                     MIN(date_debut) AS date_debut, 
                     MAX(date_fin) AS date_fin, 
                     SUM(montant) AS montant_debourse
@@ -408,7 +409,7 @@ class Devis
     public function addDebourse($devisId, $date_debut, $date_fin)
     {
         $sql = "INSERT INTO debourse_banamur (devis_id, montant_debourse, date_debut, date_fin)
-                VALUES (:devis_id, 0, :date_debut, :date_fin)";
+            VALUES (:devis_id, 0, :date_debut, :date_fin)";
         $stmt = $this->pdo->prepare($sql);
         $ok = $stmt->execute([
             'devis_id' => $devisId,
