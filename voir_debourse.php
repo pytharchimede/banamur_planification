@@ -218,27 +218,6 @@ include 'header/header_voir_debourse.php';
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Edition rapide (inline) pour montant, designation, responsable, date_debut, date_fin
-        // $('.editable').on('blur change', function() {
-        //     let span = $(this);
-        //     let id = span.data('id');
-        //     let type = span.data('type');
-        //     let value = span.text().trim();
-
-        //     $.post('request/update_debourse_inline.php', {
-        //         id: id,
-        //         [type]: value // envoie uniquement le champ modifié
-        //     }, function(resp) {
-        //         if (resp.success) {
-        //             // Met à jour le montant total et la période du déboursé parent dans la vue
-        //             $('.montant-debourse[data-debourse="' + resp.debourse_id + '"]').text(Number(resp.montant_debourse).toLocaleString('fr-FR') + ' FCFA');
-        //             $('.periode-debourse[data-debourse="' + resp.debourse_id + '"]').text(resp.date_debut + ' au ' + resp.date_fin);
-        //         } else {
-        //             alert(resp.message || 'Erreur lors de la mise à jour');
-        //         }
-        //     }, 'json');
-        // });
-
         // Bouton édition (peut ouvrir un modal pour édition avancée)
         $('.btn-edit-sous-ligne').on('click', function() {
             var tr = $(this).closest('tr');
