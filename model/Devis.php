@@ -364,4 +364,28 @@ class Devis
         $stmt->execute(['debourse_id' => $debourseId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function updateDebourseResume($debourseId)
+    {
+        $sql = "SELECT 
+                    MIN(date_debut) AS date_debut, 
+                    MAX(date_fin) AS date_fin, 
+                    SUM(montant) AS montant_debourse
+                FROM ligne_debourse_banamur
+                WHERE debourse_id = :debourse_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['debourse_id' => $debourseId]);
+        $resume = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $sql2 = "UPDATE debourse_banamur 
+                 SET date_debut = :date_debut, date_fin = :date_fin, montant_debourse = :montant_debourse
+                 WHERE id = :debourse_id";
+        $stmt2 = $this->pdo->prepare($sql2);
+        $stmt2->execute([
+            'date_debut' => $resume['date_debut'],
+            'date_fin' => $resume['date_fin'],
+            'montant_debourse' => $resume['montant_debourse'],
+            'debourse_id' => $debourseId
+        ]);
+    }
 }

@@ -28,6 +28,7 @@ $ok = $devisModel->updateLigneDebourse($id, [
 if ($ok) {
     // Recalculer montant total et période du déboursé parent
     $debourse = $devisModel->getDebourseByLigneDebourse($id);
+    $devisModel->updateDebourseResume($debourse['id']); // <-- AJOUT ICI
     $totaux = $devisModel->getTotauxDebourse($debourse['id']);
     echo json_encode([
         'success' => true,
