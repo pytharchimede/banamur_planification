@@ -219,55 +219,24 @@ include 'header/header_voir_debourse.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Edition rapide (inline) pour montant, designation, responsable, date_debut, date_fin
-        $('.editable').on('click', function() {
+        $('.editable').on('blur change', function() {
             let span = $(this);
-            if (span.find('input,select').length) return;
-            let type = span.data('type');
             let id = span.data('id');
-            let val = span.text().trim().replace(' FCFA', '');
-            let input;
-            if (type === 'responsable') {
-                input = $('<select class="edit-input"></select>');
-                <?php foreach ($utilisateurs as $u): ?>
-                    input.append('<option value="<?= $u['id'] ?>"><?= addslashes($u['nom']) ?></option>');
-                <?php endforeach; ?>
-            } else if (type === 'date_debut' || type === 'date_fin') {
-                input = $('<input type="date" class="edit-input" value="' + val + '">');
-            } else {
-                input = $('<input type="text" class="edit-input" value="' + val + '">');
-            }
-            span.html(input);
-            input.focus();
-            input.on('blur keydown', function(e) {
-                if (e.type === 'blur' || (e.type === 'keydown' && e.key === 'Enter')) {
-                    let newVal = input.val();
-                    $.post('request/update_debourse_inline.php', {
-                        id: id,
-                        type: type,
-                        value: newVal
-                    }, function(resp) {
-                        if (resp.success) {
-                            if (type === 'montant' || type === 'montant_sous') {
-                                span.html(Number(newVal).toLocaleString('fr-FR') + ' FCFA');
-                            } else if (type === 'responsable') {
-                                span.html(input.find('option:selected').text());
-                            } else {
-                                span.html(newVal);
-                            }
-                            // Actualiser montant total et période si besoin
-                            if (resp.montant_debourse !== undefined) {
-                                span.closest('.card-body').find('[data-type="montant"]').html(Number(resp.montant_debourse).toLocaleString('fr-FR') + ' FCFA');
-                            }
-                            if (resp.date_debut && resp.date_fin) {
-                                span.closest('.card-body').find('.periode-debourse').html(resp.date_debut + ' au ' + resp.date_fin);
-                            }
-                        } else {
-                            span.html(val);
-                            alert(resp.message || 'Erreur lors de la mise à jour.');
-                        }
-                    }, 'json');
+            let type = span.data('type');
+            let value = span.text().trim();
+
+            $.post('request/update_debourse_inline.php', {
+                id: id,
+                [type]: value // envoie uniquement le champ modifié
+            }, function(resp) {
+                if (resp.success) {
+                    // Met à jour le montant total et la période du déboursé parent dans la vue
+                    $('.montant-debourse[data-debourse="' + resp.debourse_id + '"]').text(Number(resp.montant_debourse).toLocaleString('fr-FR') + ' FCFA');
+                    $('.periode-debourse[data-debourse="' + resp.debourse_id + '"]').text(resp.date_debut + ' au ' + resp.date_fin);
+                } else {
+                    alert(resp.message || 'Erreur lors de la mise à jour');
                 }
-            });
+            }, 'json');
         });
 
         // Bouton édition (peut ouvrir un modal pour édition avancée)
