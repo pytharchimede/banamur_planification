@@ -298,6 +298,24 @@ class Devis
         ]);
     }
 
+    /**
+     * Ajoute une sous-ligne à un déboursé existant (par son id)
+     */
+    public function addSousLigneDebourseByDebourseId($debourseId, $categorie, $designation, $montant, $date_debut, $date_fin)
+    {
+        $sql = "INSERT INTO ligne_debourse_banamur (debourse_id, categorie, designation, montant, date_debut, date_fin)
+                VALUES (:debourse_id, :categorie, :designation, :montant, :date_debut, :date_fin)";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            'debourse_id' => $debourseId,
+            'categorie' => $categorie,
+            'designation' => $designation,
+            'montant' => $montant,
+            'date_debut' => $date_debut,
+            'date_fin' => $date_fin
+        ]);
+    }
+
     public function debourseExistePourDevis($devisId)
     {
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM debourse_banamur WHERE devis_id = :devis_id");
@@ -385,5 +403,18 @@ class Devis
             'montant_debourse' => $resume['montant_debourse'],
             'debourse_id' => $debourseId
         ]);
+    }
+
+    public function addDebourse($devisId, $date_debut, $date_fin)
+    {
+        $sql = "INSERT INTO debourse_banamur (devis_id, montant_debourse, date_debut, date_fin)
+                VALUES (:devis_id, 0, :date_debut, :date_fin)";
+        $stmt = $this->pdo->prepare($sql);
+        $ok = $stmt->execute([
+            'devis_id' => $devisId,
+            'date_debut' => $date_debut,
+            'date_fin' => $date_fin
+        ]);
+        return $ok ? $this->pdo->lastInsertId() : false;
     }
 }

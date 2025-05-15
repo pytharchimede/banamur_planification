@@ -84,6 +84,12 @@ include 'header/header_voir_debourse.php';
             </a>
         </div>
 
+        <div class="mb-3 text-end">
+            <button class="btn btn-success" id="btnAddDebourse" data-bs-toggle="modal" data-bs-target="#modalAddDebourse">
+                <i class="fas fa-plus"></i> Ajouter un déboursé
+            </button>
+        </div>
+
         <?php $index = 0; ?>
 
         <!-- Tableau des déboursés -->
@@ -164,6 +170,11 @@ include 'header/header_voir_debourse.php';
                             </tbody>
                         </table>
                     </div>
+                    <div class="text-end mt-3">
+                        <button class="btn btn-outline-success btn-sm btn-add-sous-ligne" data-debourse="<?= $debourse['id'] ?>">
+                            <i class="fas fa-plus"></i> Ajouter une ligne
+                        </button>
+                    </div>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -204,6 +215,44 @@ include 'header/header_voir_debourse.php';
         </div>
     </div>
 
+    <!-- Modal ajout déboursé -->
+    <div class="modal fade" id="modalAddDebourse" tabindex="-1" aria-labelledby="modalAddDebourseLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="formAddDebourse" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAddDebourseLabel">Nouveau déboursé</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="addDesignation" class="form-label">Désignation</label>
+                        <input type="text" class="form-control" name="designation" id="addDesignation" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addCategorie" class="form-label">Catégorie</label>
+                        <input type="text" class="form-control" name="categorie" id="addCategorie" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addMontant" class="form-label">Montant</label>
+                        <input type="number" class="form-control" name="montant" id="addMontant" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addDateDebut" class="form-label">Date début</label>
+                        <input type="date" class="form-control" name="date_debut" id="addDateDebut" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addDateFin" class="form-label">Date fin</label>
+                        <input type="date" class="form-control" name="date_fin" id="addDateFin" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <footer class="footer text-white text-center py-3 bg-dark">
         <div class="container">
             <p>&copy; <?= gmdate('Y'); ?> BANAMUR INDUSTRIES & TECH. Tous droits réservés.</p>
@@ -231,6 +280,32 @@ include 'header/header_voir_debourse.php';
             modal.show();
         });
 
+        // Bouton ajout sous-ligne
+        $('.btn-add-sous-ligne').on('click', function() {
+            var debourseId = $(this).data('debourse');
+            $('#editSousLigneId').val(''); // vide pour ajout
+            $('#editDesignation').val('');
+            $('#editMontant').val('');
+            $('#editDateDebut').val('');
+            $('#editDateFin').val('');
+            $('#formEditSousLigne').append('<input type="hidden" name="debourse_id" id="addDebourseId" value="' + debourseId + '">');
+            var modal = new bootstrap.Modal(document.getElementById('modalEditSousLigne'));
+            modal.show();
+        });
+
+        // Adapter la soumission pour différencier ajout/modif
+        $('#formEditSousLigne').on('submit', function(e) {
+            e.preventDefault();
+            var url = $('#editSousLigneId').val() ? 'request/update_debourse_inline.php' : 'request/add_sous_ligne_debourse.php';
+            $.post(url, $(this).serialize(), function(resp) {
+                if (resp.success) {
+                    location.reload();
+                } else {
+                    alert(resp.message || 'Erreur lors de la mise à jour.');
+                }
+            }, 'json');
+        });
+
         // Soumission du formulaire modal
         $('#formEditSousLigne').on('submit', function(e) {
             e.preventDefault();
@@ -239,6 +314,24 @@ include 'header/header_voir_debourse.php';
                     location.reload(); // Ou mieux : mettre à jour la ligne sans recharger
                 } else {
                     alert(resp.message || 'Erreur lors de la mise à jour.');
+                }
+            }, 'json');
+        });
+
+        // Bouton ajout déboursé
+        $('#btnAddDebourse').on('click', function() {
+            var modal = new bootstrap.Modal(document.getElementById('modalAddDebourse'));
+            modal.show();
+        });
+
+        // Soumission du formulaire ajout déboursé
+        $('#formAddDebourse').on('submit', function(e) {
+            e.preventDefault();
+            $.post('request/add_debourse.php', $(this).serialize() + '&devis_id=<?= $devisId ?>', function(resp) {
+                if (resp.success) {
+                    location.reload();
+                } else {
+                    alert(resp.message || 'Erreur lors de l\'ajout.');
                 }
             }, 'json');
         });
