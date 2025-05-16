@@ -38,6 +38,52 @@ class PDF extends FPDF
         // Numéro de page
         $this->Cell(0, 10, Utils::toMbConvertEncoding('Page ' . $this->PageNo() . '/{nb}'), 0, 0, 'C');
     }
+
+    // Méthode pour calculer le nombre de lignes qu'occupera un MultiCell
+    function NbLines($w, $txt)
+    {
+        // Calcule le nombre de lignes qu'occupera un MultiCell de largeur $w pour $txt
+        $cw = &$this->CurrentFont['cw'];
+        if ($w == 0)
+            $w = $this->w - $this->rMargin - $this->x;
+        $wmax = ($w - 2 * $this->cMargin) * 1000 / $this->FontSize;
+        $s = str_replace("\r", '', $txt);
+        $nb = strlen($s);
+        if ($nb > 0 and $s[$nb - 1] == "\n")
+            $nb--;
+        $sep = -1;
+        $i = 0;
+        $j = 0;
+        $l = 0;
+        $nl = 1;
+        while ($i < $nb) {
+            $c = $s[$i];
+            if ($c == "\n") {
+                $i++;
+                $sep = -1;
+                $j = $i;
+                $l = 0;
+                $nl++;
+                continue;
+            }
+            if ($c == ' ')
+                $sep = $i;
+            $l += $cw[$c];
+            if ($l > $wmax) {
+                if ($sep == -1) {
+                    if ($i == $j)
+                        $i++;
+                } else
+                    $i = $sep + 1;
+                $sep = -1;
+                $j = $i;
+                $l = 0;
+                $nl++;
+            } else
+                $i++;
+        }
+        return $nl;
+    }
 }
 
 // Créez un nouvel objet FPDF
@@ -247,21 +293,38 @@ foreach ($lignes as $index => $ligne) {
     $unite = isset($unitesArray[$ligne['unite_id']]) ? '' . $unitesArray[$ligne['unite_id']]['symbole'] . '' : '';
     $pdf->SetFont('Arial', '', 8);
 
+    // Largeurs des colonnes
+    $w = [10, 65, 20, 25, 30, 40];
     $lineHeight = 7;
 
-    $pdf->Cell(10, $lineHeight, $pos++, 1, 0, 'C');
-    $pdf->SetFont('Arial', 'B', 8);
+    // Calculer la hauteur nécessaire pour la désignation
+    $designation = Utils::toMbConvertEncoding($ligne['designation']);
+    $nbLines = $pdf->NbLines($w[1], $designation);
+    $cellHeight = $lineHeight * $nbLines;
 
-    $pdf->Cell(65, $lineHeight, Utils::toMbConvertEncoding($ligne['designation']), 1);
+    // Sauvegarder la position Y de départ
+    $x = $pdf->GetX();
+    $y = $pdf->GetY();
+
+    // N°
+    $pdf->Cell($w[0], $cellHeight, $pos++, 1, 0, 'C');
+
+    // Désignation (MultiCell)
+    $pdf->SetFont('Arial', 'B', 8);
+    $pdf->MultiCell($w[1], $lineHeight, $designation, 1, 'L');
     $pdf->SetFont('Arial', '', 8);
 
-    $pdf->Cell(20, $lineHeight, $ligne['quantite'], 1, 0, 'C'); // quantité centrée
-    $pdf->Cell(25, $lineHeight, Utils::toMbConvertEncoding($unite), 1, 0, 'C'); // unité centrée
-    $pdf->Cell(30, $lineHeight, number_format($ligne['prix'], 0, ',', ' ') . ' XOF', 1, 0, 'C'); // prix unitaire centré
-    $pdf->Cell(40, $lineHeight, number_format($ligne['total'], 0, ',', ' ') . ' XOF', 1, 1, 'C'); // total centré
+    // Revenir à la bonne position pour les autres colonnes
+    $pdf->SetXY($x + $w[0] + $w[1], $y);
 
-
-    $SubTotalLineHeight = 8;
+    // Qté
+    $pdf->Cell($w[2], $cellHeight, $ligne['quantite'], 1, 0, 'C');
+    // U
+    $pdf->Cell($w[3], $cellHeight, Utils::toMbConvertEncoding($unite), 1, 0, 'C');
+    // PU
+    $pdf->Cell($w[4], $cellHeight, number_format($ligne['prix'], 0, ',', ' ') . ' XOF', 1, 0, 'C');
+    // PT
+    $pdf->Cell($w[5], $cellHeight, number_format($ligne['total'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
 
     // Additionner au sous-total du groupe
     if ($hasGroup) {
@@ -270,11 +333,10 @@ foreach ($lignes as $index => $ligne) {
         if ($index === array_key_last($lignes) && $currentGroup !== null) {
             $pdf->SetFont('Arial', 'B', 10);
 
-
             // Fusionne toutes les colonnes sauf la dernière (10+65+20+25+30 = 150mm)
-            $pdf->Cell(150, $SubTotalLineHeight, Utils::toMbConvertEncoding('SOUS-TOTAL ' . strtoupper($currentGroup)), 1, 0, 'C');
+            $pdf->Cell(150, 8, Utils::toMbConvertEncoding('SOUS-TOTAL ' . strtoupper($currentGroup)), 1, 0, 'C');
             // Colonne "Prix total" (30mm) pour le montant, bordure complète
-            $pdf->Cell(40, $SubTotalLineHeight, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'C');
+            $pdf->Cell(40, 8, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'C');
             $pdf->Ln(2);
         }
     }
@@ -282,36 +344,34 @@ foreach ($lignes as $index => $ligne) {
 
 // Ligne Montant HT
 $pdf->SetFont('Arial', 'B', 10);
-$pdf->Cell(150, $SubTotalLineHeight, Utils::toMbConvertEncoding('MONTANT HT'), 1, 0, 'C');
-$pdf->Cell(40, $SubTotalLineHeight, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
-
+$pdf->Cell(150, 8, Utils::toMbConvertEncoding('MONTANT HT'), 1, 0, 'C');
+$pdf->Cell(40, 8, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
 
 // Ligne TVA
 if ($devis['tva_facturable'] == 1) {
-    $pdf->Cell(150, $SubTotalLineHeight, Utils::toMbConvertEncoding('TVA 18%'), 1, 0, 'C');
-    $pdf->Cell(40, $SubTotalLineHeight, number_format($devis['tva'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
+    $pdf->Cell(150, 8, Utils::toMbConvertEncoding('TVA 18%'), 1, 0, 'C');
+    $pdf->Cell(40, 8, number_format($devis['tva'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
 } else {
     // Libellé explicite
     $pdf->SetFont('Arial', 'I', 10);
     $pdf->SetTextColor(120, 120, 120);
-    $pdf->Cell(150, $SubTotalLineHeight, Utils::toMbConvertEncoding('TVA 18% (non facturée)'), 1, 0, 'C');
+    $pdf->Cell(150, 8, Utils::toMbConvertEncoding('TVA 18% (non facturée)'), 1, 0, 'C');
     // Montant barré (simulateur: affiche en gris, italique, entre parenthèses)
     $pdf->SetFont('Arial', 'I', 10);
     $pdf->SetTextColor(180, 180, 180);
-    $pdf->Cell(40, $SubTotalLineHeight, '(' . number_format(0.18 * $devis['total_ht'], 0, ',', ' ') . ' XOF)', 1, 1, 'C');
+    $pdf->Cell(40, 8, '(' . number_format(0.18 * $devis['total_ht'], 0, ',', ' ') . ' XOF)', 1, 1, 'C');
     // Remettre police normale et couleur noire
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->SetTextColor(0, 0, 0);
 }
 
-
 // Ligne Montant TTC
 if ($devis['tva_facturable'] == 1) {
-    $pdf->Cell(150, $SubTotalLineHeight, Utils::toMbConvertEncoding('MONTANT TTC'), 1, 0, 'C');
-    $pdf->Cell(40, $SubTotalLineHeight, number_format($devis['total_ttc'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
+    $pdf->Cell(150, 8, Utils::toMbConvertEncoding('MONTANT TTC'), 1, 0, 'C');
+    $pdf->Cell(40, 8, number_format($devis['total_ttc'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
 } else {
-    $pdf->Cell(150, $SubTotalLineHeight, Utils::toMbConvertEncoding('MONTANT NET À PAYER'), 1, 0, 'C');
-    $pdf->Cell(40, $SubTotalLineHeight, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
+    $pdf->Cell(150, 8, Utils::toMbConvertEncoding('MONTANT NET À PAYER'), 1, 0, 'C');
+    $pdf->Cell(40, 8, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
 }
 
 $pdf->Ln(5);
@@ -326,10 +386,10 @@ $pdf->SetFont('Arial', 'B', 10);
 $pdf->MultiCell(0, 6, Utils::toMbConvertEncoding(strtoupper($montantLettre)), 0, 'L');
 
 // Ligne 3 : CONDITIONS DE REGLEMENT
-$pdf->SetFont('Arial', 'U', 8);
-$pdf->Cell(0, 6, Utils::toMbConvertEncoding("CONDITIONS DE REGLEMENT :"), 0, 1, 'L');
-$pdf->SetFont('Arial', 'B', 8);
-$pdf->MultiCell(0, 6, Utils::toMbConvertEncoding("Paiement 60 jours après réception du devis"), 0, 'L');
+// $pdf->SetFont('Arial', 'U', 8);
+// $pdf->Cell(0, 6, Utils::toMbConvertEncoding("CONDITIONS DE REGLEMENT :"), 0, 1, 'L');
+// $pdf->SetFont('Arial', 'B', 8);
+// $pdf->MultiCell(0, 6, Utils::toMbConvertEncoding("Paiement 60 jours après réception du devis"), 0, 'L');
 
 // Espace pour la signature du Directeur Technique
 $pdf->Ln(5); // espace avant la zone de signature
