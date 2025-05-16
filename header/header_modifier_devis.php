@@ -36,3 +36,6 @@ $clients = $clientModel->getAllClients();
 
 // Récupérer les offres via la classe
 $offres = $offreModel->getAllOffres();
+
+
+$page = "liste_devis";

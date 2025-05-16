@@ -86,7 +86,7 @@ require_once 'header/header_modifier_devis.php';
             <div class="form-group">
                 <label for="publierDevis">Publier le devis</label>
                 <label class="switch">
-                    <input type="checkbox" id="publierDevis" name="publierDevis" value="1" <?= ($devis['publier'] ? 'checked' : '') ?>>
+                    <input type="checkbox" id="publierDevis" name="publierDevis" value="1" <?= ($devis['publier_devis'] ? 'checked' : '') ?>>
                     <span class="slider round"></span>
                 </label>
             </div>
@@ -162,8 +162,8 @@ require_once 'header/header_modifier_devis.php';
                                     </select>
                                 </td>
                                 <td><input type="number" class="form-control" name="quantite[]" value="<?= htmlspecialchars($ligne['quantite']) ?>"></td>
-                                <td><input type="text" class="form-control" name="prix_unitaire[]" value="<?= htmlspecialchars($ligne['prix_unitaire']) ?>"></td>
-                                <td><input type="text" class="form-control" name="prix_total[]" value="<?= htmlspecialchars($ligne['prix_total']) ?>" readonly></td>
+                                <td><input type="text" class="form-control" name="prix_unitaire[]" value="<?= htmlspecialchars($ligne['prix']) ?>"></td>
+                                <td><input type="text" class="form-control" name="prix_total[]" value="<?= htmlspecialchars($ligne['total']) ?>" readonly></td>
                                 <td>
                                     <!-- Bouton pour supprimer la ligne si besoin -->
                                     <button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i></button>
@@ -191,7 +191,7 @@ require_once 'header/header_modifier_devis.php';
                 </div>
                 <div class="form-group mt-3">
                     <label for="piedDePage" class="form-label">Pied de page</label>
-                    <textarea class="form-control" id="piedDePage" name="piedDePage" rows="5"><?= htmlspecialchars($devis['pied_page']) ?></textarea>
+                    <textarea class="form-control" id="piedDePage" name="piedDePage" rows="5"><?= htmlspecialchars($devis['pied_de_page']) ?></textarea>
                 </div>
             </div>
             <div class="col-md-4">
