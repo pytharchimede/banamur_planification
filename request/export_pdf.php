@@ -289,42 +289,53 @@ foreach ($lignes as $index => $ligne) {
         }
     }
 
-    // Affichage de la ligne de devis (identique dans les deux cas)
-    $unite = isset($unitesArray[$ligne['unite_id']]) ? '' . $unitesArray[$ligne['unite_id']]['symbole'] . '' : '';
-    $pdf->SetFont('Arial', '', 8);
+    // Limite de caractères pour la désignation
+    $maxChars = 40;
 
     // Largeurs des colonnes
     $w = [10, 65, 20, 25, 30, 40];
     $lineHeight = 7;
 
-    // Calculer la hauteur nécessaire pour la désignation
-    $designation = Utils::toMbConvertEncoding($ligne['designation']);
-    $nbLines = $pdf->NbLines($w[1], $designation);
-    $cellHeight = $lineHeight * $nbLines;
+    // Préparer la désignation
+    $designationFull = Utils::toMbConvertEncoding($ligne['designation']);
+    if (mb_strlen($designationFull) > $maxChars) {
+        $designation = mb_substr($designationFull, 0, $maxChars - 3) . '...';
+    } else {
+        $designation = $designationFull;
+    }
 
-    // Sauvegarder la position Y de départ
+    // Calculer la hauteur (1 ligne)
+    $cellHeight = $lineHeight;
+
+    // Sauvegarder la position X/Y de départ
     $x = $pdf->GetX();
     $y = $pdf->GetY();
 
     // N°
+    $pdf->SetXY($x, $y);
     $pdf->Cell($w[0], $cellHeight, $pos++, 1, 0, 'C');
 
-    // Désignation (MultiCell)
+    // Désignation (une seule ligne)
     $pdf->SetFont('Arial', 'B', 8);
-    $pdf->MultiCell($w[1], $lineHeight, $designation, 1, 'L');
+    $pdf->SetXY($x + $w[0], $y);
+    $pdf->Cell($w[1], $cellHeight, $designation, 1, 0, 'L');
     $pdf->SetFont('Arial', '', 8);
 
-    // Revenir à la bonne position pour les autres colonnes
-    $pdf->SetXY($x + $w[0] + $w[1], $y);
-
     // Qté
+    $pdf->SetXY($x + $w[0] + $w[1], $y);
     $pdf->Cell($w[2], $cellHeight, $ligne['quantite'], 1, 0, 'C');
     // U
+    $pdf->SetXY($x + $w[0] + $w[1] + $w[2], $y);
     $pdf->Cell($w[3], $cellHeight, Utils::toMbConvertEncoding($unite), 1, 0, 'C');
     // PU
+    $pdf->SetXY($x + $w[0] + $w[1] + $w[2] + $w[3], $y);
     $pdf->Cell($w[4], $cellHeight, number_format($ligne['prix'], 0, ',', ' ') . ' XOF', 1, 0, 'C');
     // PT
-    $pdf->Cell($w[5], $cellHeight, number_format($ligne['total'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
+    $pdf->SetXY($x + $w[0] + $w[1] + $w[2] + $w[3] + $w[4], $y);
+    $pdf->Cell($w[5], $cellHeight, number_format($ligne['total'], 0, ',', ' ') . ' XOF', 1, 0, 'C');
+
+    // Se placer tout à gauche, à la nouvelle ligne
+    $pdf->SetXY($x, $y + $cellHeight);
 
     // Additionner au sous-total du groupe
     if ($hasGroup) {
@@ -365,13 +376,36 @@ if ($devis['tva_facturable'] == 1) {
     $pdf->SetTextColor(0, 0, 0);
 }
 
-// Ligne Montant TTC
+// Ligne Montant TTC ou NAP
 if ($devis['tva_facturable'] == 1) {
     $pdf->Cell(150, 8, Utils::toMbConvertEncoding('MONTANT TTC'), 1, 0, 'C');
     $pdf->Cell(40, 8, number_format($devis['total_ttc'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
+    $montantAvantRemise = $devis['total_ttc'];
 } else {
     $pdf->Cell(150, 8, Utils::toMbConvertEncoding('MONTANT NET À PAYER'), 1, 0, 'C');
     $pdf->Cell(40, 8, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
+    $montantAvantRemise = $devis['total_ht'];
+}
+
+// Si remise, afficher la ligne de remise et le net à payer
+if (!empty($devis['remise']) && $devis['remise'] != 0) {
+    $remisePourcent = floatval($devis['remise']);
+    $montantRemise = $montantAvantRemise * $remisePourcent / 100;
+    $montantNetAPayer = $montantAvantRemise - $montantRemise;
+
+    // Ligne Remise
+    $pdf->SetFont('Arial', '', 10);
+    $pdf->SetTextColor(0, 102, 204);
+    $pdf->Cell(150, 8, Utils::toMbConvertEncoding('REMISE (' . number_format($remisePourcent, 2, ',', ' ') . ' %)'), 1, 0, 'C');
+    $pdf->Cell(40, 8, '- ' . number_format($montantRemise, 0, ',', ' ') . ' XOF', 1, 1, 'C');
+
+    // Ligne Net à Payer
+    $pdf->SetFont('Arial', 'B', 11);
+    $pdf->SetTextColor(0, 0, 0);
+    $pdf->Cell(150, 8, Utils::toMbConvertEncoding('NET À PAYER'), 1, 0, 'C');
+    $pdf->Cell(40, 8, number_format($montantNetAPayer, 0, ',', ' ') . ' XOF', 1, 1, 'C');
+} else {
+    $montantNetAPayer = $montantAvantRemise;
 }
 
 $pdf->Ln(5);
@@ -380,16 +414,10 @@ $pdf->Ln(5);
 $pdf->SetFont('Arial', 'U', 8);
 $pdf->Cell(0, 6, Utils::toMbConvertEncoding("Arrêtée le présent devis à la somme de :"), 0, 1, 'L');
 
-// Ligne 2 : Montant TTC en lettres (grand, gras, multiligne si besoin)
-$montantLettre = Utils::montantEnLettre($devis['total_ttc']);
+// Ligne 2 : Montant en lettres (net à payer)
+$montantLettre = Utils::montantEnLettre($montantNetAPayer);
 $pdf->SetFont('Arial', 'B', 10);
 $pdf->MultiCell(0, 6, Utils::toMbConvertEncoding(strtoupper($montantLettre)), 0, 'L');
-
-// Ligne 3 : CONDITIONS DE REGLEMENT
-// $pdf->SetFont('Arial', 'U', 8);
-// $pdf->Cell(0, 6, Utils::toMbConvertEncoding("CONDITIONS DE REGLEMENT :"), 0, 1, 'L');
-// $pdf->SetFont('Arial', 'B', 8);
-// $pdf->MultiCell(0, 6, Utils::toMbConvertEncoding("Paiement 60 jours après réception du devis"), 0, 'L');
 
 // Espace pour la signature du Directeur Technique
 $pdf->Ln(5); // espace avant la zone de signature

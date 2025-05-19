@@ -302,12 +302,37 @@ $pdf->Cell(30, 10, number_format($devis['total_ht'], 0, ',', ' ') . ' XOF', 1, 1
 if ($devis['tva_facturable'] == 1) {
     $pdf->Cell(150, 10, Utils::toMbConvertEncoding('TVA 18%'), 1, 0, 'C');
     $pdf->Cell(30, 10, number_format($devis['tva'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
+    $montantAvantRemise = $devis['total_ttc'];
+    $libelleMontant = 'MONTANT TTC';
+} else {
+    $montantAvantRemise = $devis['total_ht'];
+    $libelleMontant = 'MONTANT NET À PAYER';
 }
 
-// Ligne Montant TTC
-$pdf->Cell(150, 10, Utils::toMbConvertEncoding('MONTANT TTC'), 1, 0, 'C');
-$pdf->Cell(30, 10, number_format($devis['total_ttc'], 0, ',', ' ') . ' XOF', 1, 1, 'C');
+// Affichage du montant TTC ou NAP
+$pdf->Cell(150, 10, Utils::toMbConvertEncoding($libelleMontant), 1, 0, 'C');
+$pdf->Cell(30, 10, number_format($montantAvantRemise, 0, ',', ' ') . ' XOF', 1, 1, 'C');
 
+// Si remise, afficher la ligne de remise et le net à payer
+if (!empty($devis['remise']) && $devis['remise'] != 0) {
+    $remisePourcent = floatval($devis['remise']);
+    $montantRemise = $montantAvantRemise * $remisePourcent / 100;
+    $montantNetAPayer = $montantAvantRemise - $montantRemise;
+
+    // Ligne Remise
+    $pdf->SetFont('Arial', '', 10);
+    $pdf->SetTextColor(0, 102, 204);
+    $pdf->Cell(150, 10, Utils::toMbConvertEncoding('REMISE (' . number_format($remisePourcent, 2, ',', ' ') . ' %)'), 1, 0, 'C');
+    $pdf->Cell(30, 10, '- ' . number_format($montantRemise, 0, ',', ' ') . ' XOF', 1, 1, 'C');
+
+    // Ligne Net à Payer
+    $pdf->SetFont('Arial', 'B', 11);
+    $pdf->SetTextColor(0, 0, 0);
+    $pdf->Cell(150, 10, Utils::toMbConvertEncoding('NET À PAYER'), 1, 0, 'C');
+    $pdf->Cell(30, 10, number_format($montantNetAPayer, 0, ',', ' ') . ' XOF', 1, 1, 'C');
+} else {
+    $montantNetAPayer = $montantAvantRemise;
+}
 
 $pdf->Ln(5);
 
@@ -315,8 +340,8 @@ $pdf->Ln(5);
 $pdf->SetFont('Arial', 'U', 8);
 $pdf->Cell(0, 6, Utils::toMbConvertEncoding("Arrêtée le présent devis à la somme de :"), 0, 1, 'L');
 
-// Ligne 2 : Montant TTC en lettres (grand, gras, multiligne si besoin)
-$montantLettre = Utils::montantEnLettre($devis['total_ttc']);
+// Ligne 2 : Montant en lettres (net à payer)
+$montantLettre = Utils::montantEnLettre($montantNetAPayer);
 $pdf->SetFont('Arial', 'B', 10);
 $pdf->MultiCell(0, 6, Utils::toMbConvertEncoding(strtoupper($montantLettre)), 0, 'L');
 
