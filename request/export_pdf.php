@@ -326,8 +326,9 @@ foreach ($lignes as $index => $ligne) {
     $pdf->Cell($w[2], $cellHeight, $ligne['quantite'], 1, 0, 'C');
     // U
     $pdf->SetXY($x + $w[0] + $w[1] + $w[2], $y);
-    $pdf->Cell($w[3], $cellHeight, Utils::toMbConvertEncoding($unite), 1, 0, 'C');
-    // PU
+    $uniteData = $uniteModel->getById($ligne['unite_id']);
+    $libelleUnite = $uniteData && isset($uniteData['symbole']) ? $uniteData['symbole'] : '';
+    $pdf->Cell($w[3], $cellHeight, Utils::toMbConvertEncoding($libelleUnite), 1, 0, 'C');    // PU
     $pdf->SetXY($x + $w[0] + $w[1] + $w[2] + $w[3], $y);
     $pdf->Cell($w[4], $cellHeight, number_format($ligne['prix'], 0, ',', ' ') . ' XOF', 1, 0, 'C');
     // PT
@@ -351,6 +352,23 @@ foreach ($lignes as $index => $ligne) {
             $pdf->Ln(2);
         }
     }
+}
+
+// Hauteur minimale estimée pour le bloc final (totaux + montant en lettres + signature)
+$blocFinalHauteur = 70; // Ajuste selon ton besoin
+
+// Position actuelle
+$yActuel = $pdf->GetY();
+$pageHeight = 297; // Hauteur A4 en mm
+$margeBasse = 20; // Marge basse
+
+if ($yActuel + $blocFinalHauteur > $pageHeight - $margeBasse) {
+    // Afficher la mention juste sous le tableau, à la position courante
+    $pdf->SetFont('Arial', 'I', 10);
+    $pdf->SetTextColor(120, 120, 120);
+    $pdf->Cell(0, 8, Utils::toMbConvertEncoding("Les totaux et la signature figurent à la page suivante."), 0, 1, 'C');
+    $pdf->SetTextColor(0, 0, 0); // Remettre la couleur noire
+    $pdf->AddPage();
 }
 
 // Ligne Montant HT

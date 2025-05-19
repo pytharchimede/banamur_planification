@@ -227,7 +227,6 @@ foreach ($lignes as $index => $ligne) {
 
             // 2. Calcul de la position pour la cellule N°
             if ($afterPage > $beforePage) {
-                // On est passé à la page suivante
                 $cellY = $pdf->GetY() - $rowHeight;
                 $cellX = 10; // marge gauche
             } else {
@@ -247,6 +246,9 @@ foreach ($lignes as $index => $ligne) {
             $pdf->Cell(25, $rowHeight, 'u', 1, 0, 'C');
             $pdf->Cell(30, $rowHeight, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 0, 'C');
             $pdf->Cell(30, $rowHeight, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'C');
+
+            // S'assurer que le curseur est bien positionné après la ligne du groupe
+            $pdf->SetY($cellY + $rowHeight);
 
             $groupIndex++;
         }
@@ -290,6 +292,9 @@ foreach ($lignes as $index => $ligne) {
         $pdf->Cell(25, $rowHeight, 'u', 1, 0, 'C');
         $pdf->Cell(30, $rowHeight, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 0, 'C');
         $pdf->Cell(30, $rowHeight, number_format($groupTotal, 0, ',', ' ') . ' XOF', 1, 1, 'C');
+
+        // S'assurer que le curseur est bien positionné après la ligne du groupe
+        $pdf->SetY($cellY + $rowHeight);
     }
 }
 
