@@ -50,6 +50,27 @@ include 'header/header_voir_debourse.php';
                 $totalDebourse += $ligne['montant'];
             }
         }
+
+        // Calcule le montant total du devis (si pas déjà fait)
+        $montantDevis = $devis['total_ttc'] ?? 0;
+        $ecart = $montantDevis - $totalDebourse;
+
+        if ($totalDebourse > $montantDevis) {
+            // Dépassement
+            echo '<div class="alert alert-danger text-center fw-bold">
+                <i class="fas fa-exclamation-triangle"></i> Attention : le total déboursé dépasse le montant du devis !
+            </div>';
+        } elseif ($totalDebourse == $montantDevis) {
+            // Égalité
+            echo '<div class="alert alert-success text-center fw-bold">
+                <i class="fas fa-check-circle"></i> Parfait : le total déboursé est égal au montant du devis.
+            </div>';
+        } elseif ($ecart >= 0 && $ecart <= 10000) {
+            // Écart négligeable
+            echo '<div class="alert alert-warning text-center fw-bold">
+                <i class="fas fa-info-circle"></i> Le total déboursé est inférieur au montant du devis de moins de 10 000 FCFA (écart négligeable).
+            </div>';
+        }
         ?>
 
         <!-- Statistiques -->
@@ -121,6 +142,30 @@ include 'header/header_voir_debourse.php';
                     <span class="float-end text-secondary">Montant devis : <?= number_format($montant_devis ?? 0, 0, ',', ' ') ?> FCFA</span>
                 </div>
                 <div class="card-body">
+                    <?php
+                    $montant_devis = $prix_devis * $quantite_devis;
+                    $montant_debourse = $debourse['montant_debourse'] ?? 0;
+                    $pourcentage = $montant_devis > 0 ? ($montant_debourse / $montant_devis) * 100 : 0;
+
+                    if ($montant_debourse > $montant_devis) {
+                        echo '<div class="alert alert-danger mb-2 p-2 text-center fw-bold">
+                            <i class="fas fa-exclamation-triangle"></i> Attention : le déboursé dépasse le montant prévu pour cette ligne de devis !
+                        </div>';
+                    } elseif ($montant_debourse == $montant_devis && $montant_devis > 0) {
+                        echo '<div class="alert alert-danger mb-2 p-2 text-center fw-bold">
+                            <i class="fas fa-ban"></i> Attention : le déboursé est exactement égal au montant du devis.<br>
+                            <span class="fw-normal">Le chiffre d\'affaires est nul pour cette ligne.</span>
+                        </div>';
+                    } elseif ($montant_devis > 0 && $pourcentage >= 70) {
+                        echo '<div class="alert alert-warning mb-2 p-2 text-center fw-bold">
+                            <i class="fas fa-info-circle"></i> Le déboursé atteint ou dépasse 70% du montant prévu pour cette ligne de devis (écart &lt; 30%).
+                        </div>';
+                    } else {
+                        echo '<div class="alert alert-success mb-2 p-2 text-center fw-bold">
+                            <i class="fas fa-check-circle"></i> Le déboursé est inférieur à 70% du montant prévu pour cette ligne de devis (écart &ge; 30%).
+                        </div>';
+                    }
+                    ?>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <strong>Montant déboursé :</strong>
