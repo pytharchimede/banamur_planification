@@ -1,30 +1,39 @@
 <?php
 require_once '../model/Database.php';
-require_once '../model/Devis.php';
-header('Content-Type: application/json');
 
-$pdo = Database::getConnection();
-$devisModel = new Devis($pdo);
+$pdo = (new Database())->getConnection();
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-$devis_id = $_POST['devis_id'] ?? null;
-$designation = $_POST['designation'] ?? null;
-$categorie = $_POST['categorie'] ?? '';
-$montant = $_POST['montant'] ?? null;
+$designation = $_POST['designation'] ?? '';
+$montant = $_POST['montant'] ?? 0;
 $date_debut = $_POST['date_debut'] ?? null;
 $date_fin = $_POST['date_fin'] ?? null;
+$devis_id = $_POST['devis_id'] ?? 0;
+$responsable_id = $_POST['responsable_id'] ?? 1; // À adapter selon ton système utilisateur
 
-if (!$devis_id || !$designation || !$montant || !$date_debut || !$date_fin) {
-    echo json_encode(['success' => false, 'message' => 'Champs obligatoires manquants']);
+if (!$designation || !$montant || !$devis_id) {
+    echo json_encode(['success' => false, 'message' => 'Données manquantes']);
     exit;
 }
 
-error_log("devis_id=$devis_id, designation=$designation, categorie=$categorie, montant=$montant, date_debut=$date_debut, date_fin=$date_fin");
-$debourse_id = $devisModel->addDebourse($devis_id, $date_debut, $date_fin);
+try {
+    // 1. Ajouter la ligne dans ligne_devis_banamur
+    $stmt = $pdo->prepare("INSERT INTO ligne_devis_banamur (devis_id, designation, prix, quantite, unite_id, total, groupe)
+        VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $prix = $montant;
+    $quantite = 1;
+    $unite_id = 1; // à adapter si besoin
+    $total = $montant;
+    $groupe = ''; // plus de catégorie
+    $stmt->execute([$devis_id, $designation, $prix, $quantite, $unite_id, $total, $groupe]);
+    $ligne_devis_id = $pdo->lastInsertId();
 
-if ($debourse_id) {
-    $devisModel->addSousLigneDebourseByDebourseId($debourse_id, $categorie, $designation, $montant, $date_debut, $date_fin);
-    $devisModel->updateDebourseResume($debourse_id);
+    // 2. Ajouter le déboursé dans debourse_banamur
+    $stmt2 = $pdo->prepare("INSERT INTO debourse_banamur (devis_id, ligne_devis_id, montant_debourse, responsable_id, date_debut, date_fin)
+        VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt2->execute([$devis_id, $ligne_devis_id, $montant, $responsable_id, $date_debut, $date_fin]);
+
     echo json_encode(['success' => true]);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Erreur lors de l\'ajout']);
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }

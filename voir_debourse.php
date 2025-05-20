@@ -250,17 +250,6 @@ include 'header/header_voir_debourse.php';
                         <input type="text" class="form-control" name="designation" id="addDesignation" required>
                     </div>
                     <div class="mb-3">
-                        <label for="addCategorie" class="form-label">Catégorie</label>
-                        <select class="form-control" name="categorie" id="addCategorie" required>
-                            <option value="">-- Choisir --</option>
-                            <option value="matériel">Matériel</option>
-                            <option value="matériaux">Matériaux</option>
-                            <option value="transport">Transport</option>
-                            <option value="main d'œuvre">Main d'œuvre</option>
-                            <option value="EPI">EPI</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
                         <label for="addMontant" class="form-label">Montant</label>
                         <input type="number" class="form-control" name="montant" id="addMontant" required>
                     </div>
