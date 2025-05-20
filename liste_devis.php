@@ -221,6 +221,12 @@ include 'header/header_liste_devis.php';
                                     href="request/imprimer_dossier_complet.php?devisId=<?= $de['id'] ?>" target="_blank">
                                     <i class="fas fa-print"></i> Imprimer dossier complet
                                 </a>
+                                <?php if ($de['validation_technique'] && $de['validation_generale']) : ?>
+                                    <a class="btn btn-outline-success btn-sm ms-2" title="Débuter le chantier"
+                                        href="debuter_chantier.php?devisId=<?= $de['id'] ?>">
+                                        <i class="fas fa-play"></i> Débuter le chantier
+                                    </a>
+                                <?php endif; ?>
                             <?php else: ?>
                                 <a class="btn btn-outline-dark btn-sm ms-2" title="Gérer le déboursé"
                                     href="gerer_debourse.php?devisId=<?= $de['id'] ?>">

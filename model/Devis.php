@@ -421,7 +421,12 @@ class Devis
 
     public function getDeboursesByDevisId($devisId)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM debourse_banamur WHERE devis_id = :devis_id");
+        $stmt = $this->pdo->prepare("
+            SELECT d.*, l.designation AS designation_ligne
+            FROM debourse_banamur d
+            JOIN ligne_devis_banamur l ON l.id = d.ligne_devis_id
+            WHERE d.devis_id = :devis_id
+        ");
         $stmt->execute(['devis_id' => $devisId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
