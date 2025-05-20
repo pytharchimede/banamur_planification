@@ -41,6 +41,10 @@ if (!$offre) {
     die("Offre introuvable.");
 }
 
+$fichiersOffre = [];
+$fichiersOffre = $offreModel->getFichiersByOffre($offre['id_offre']);
+
+
 $operationModel = new Operation($pdo);
 $operations = $operationModel->getByChantier($chantierId);
 if (!$operations) {
@@ -133,6 +137,26 @@ if (!$chantier) die("Chantier introuvable.");
                         <p><b>Offre :</b> <?= htmlspecialchars($offre['num_offre']) ?></p>
                         <p><b>Devis :</b> <?= htmlspecialchars($devis['numero_devis']) ?></p>
                         <p><b>Date création :</b> <?= htmlspecialchars($chantier['date_creation']) ?></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header">Fichiers attachés à l'offre</div>
+                    <div class="card-body">
+                        <?php if (empty($fichiersOffre)): ?>
+                            <p class="text-muted">Aucun fichier attaché.</p>
+                        <?php else: ?>
+                            <ul class="list-unstyled mb-0">
+                                <?php foreach ($fichiersOffre as $fichier): ?>
+                                    <li>
+                                        <a href="<?= htmlspecialchars($fichier['file_path']) ?>" target="_blank" class="text-dark">
+                                            <i class="fas fa-paperclip"></i> <?= htmlspecialchars($fichier['file_name']) ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach ?>
+                            </ul>
+                        <?php endif ?>
                     </div>
                 </div>
             </div>
