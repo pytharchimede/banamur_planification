@@ -32,4 +32,10 @@ class Chantier
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function getAll()
+    {
+        $stmt = $this->pdo->query("SELECT * FROM chantier_banamur ORDER BY id DESC");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

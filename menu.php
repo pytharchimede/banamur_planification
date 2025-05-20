@@ -30,6 +30,9 @@
         <a class="nav-link <?php echo ($page == "profil") ? "active" : ""; ?>" href="profil.php">Profil</a>
     </li>
     <li class="nav-item">
+        <a class="nav-link <?php echo ($page == "liste_chantier") ? "active" : ""; ?>" href="liste_chantier.php">Chantiers</a>
+    </li>
+    <li class="nav-item">
         <a href="deconnex.php" class="btn btn-danger">Déconnexion</a>
     </li>
 </ul>
