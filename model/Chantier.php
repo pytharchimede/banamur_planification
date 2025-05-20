@@ -25,4 +25,11 @@ class Chantier
         ]);
         return $this->pdo->lastInsertId();
     }
+
+    public function getById($id)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM chantier_banamur WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }

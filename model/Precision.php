@@ -12,6 +12,9 @@ class PrecisionFiche
      */
     public function integrateFromDevis($devisId, $chantierId)
     {
+        require_once __DIR__ . '/Designation.php';
+        $designationModel = new Designation($this->pdo);
+
         // On récupère tous les déboursés du devis
         $stmtDebourse = $this->pdo->prepare("SELECT id FROM debourse_banamur WHERE devis_id = ?");
         $stmtDebourse->execute([$devisId]);
@@ -19,6 +22,10 @@ class PrecisionFiche
 
         foreach ($debourses as $debourse) {
             $debourseId = $debourse['id'];
+            // Récupérer le vrai designation_id pour ce chantier et ce déboursé
+            $designationId = $designationModel->getDesignationIdByChantierAndDebourse($chantierId, $debourseId);
+            if (!$designationId) continue; // sécurité
+
             // On récupère toutes les lignes de déboursé pour ce déboursé
             $stmtLignes = $this->pdo->prepare("SELECT * FROM ligne_debourse_banamur WHERE debourse_id = ?");
             $stmtLignes->execute([$debourseId]);
@@ -27,8 +34,8 @@ class PrecisionFiche
                     VALUES (?, ?, ?, ?)")
                     ->execute([
                         $chantierId,
-                        $debourseId, // correspond à designation_id (le déboursé parent)
-                        $ligne['libelle'],
+                        $designationId, // correspond à la vraie désignation
+                        $ligne['designation'],
                         $ligne['montant']
                     ]);
             }

@@ -234,6 +234,11 @@ $precisions = $precisionModel->getByDevis($devisId);
                     </tbody>
                 </table>
             </div>
+
+            <!-- Champs cachés pour l'envoi POST -->
+            <input type="hidden" name="devis_id" value="<?= htmlspecialchars($devisId) ?>">
+            <input type="hidden" name="client_id" value="<?= htmlspecialchars($client['id_client']) ?>">
+
             <div class="stepper-btns mt-3">
                 <button type="button" class="btn btn-outline-dark" id="prevBtn" disabled><i class="fas fa-arrow-left"></i> Précédent</button>
                 <button type="button" class="btn btn-primary" id="nextBtn">Suivant <i class="fas fa-arrow-right"></i></button>
