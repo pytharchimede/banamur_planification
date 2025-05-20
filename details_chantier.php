@@ -161,6 +161,93 @@ if (!$chantier) die("Chantier introuvable.");
                 </div>
             </div>
         </div>
+        <!-- Section Fichiers générés -->
+        <div class="section-title"><i class="fas fa-folder-open"></i> Fichiers générés</div>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- Devis groupé -->
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center p-3 rounded bg-light border">
+                                    <i class="fas fa-file-pdf fa-2x text-danger me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold">Devis groupé (PDF)</div>
+                                        <a href="request/export_pdf_groupe.php?devisId=<?= $devis['id'] ?>" target="_blank" class="btn btn-sm btn-dark mt-1">
+                                            <i class="fas fa-download"></i> Télécharger
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Devis simple -->
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center p-3 rounded bg-light border">
+                                    <i class="fas fa-file-pdf fa-2x text-primary me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold">Devis simple (PDF)</div>
+                                        <a href="request/export_pdf.php?devisId=<?= $devis['id'] ?>" target="_blank" class="btn btn-sm btn-dark mt-1">
+                                            <i class="fas fa-download"></i> Télécharger
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Devis Excel -->
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center p-3 rounded bg-light border">
+                                    <i class="fas fa-file-excel fa-2x text-success me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold">Devis (Excel)</div>
+                                        <a href="request/export_excel.php?devisId=<?= $devis['id'] ?>" target="_blank" class="btn btn-sm btn-dark mt-1">
+                                            <i class="fas fa-download"></i> Télécharger
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Dossier complet -->
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center p-3 rounded bg-light border mt-3">
+                                    <i class="fas fa-folder-zipper fa-2x text-warning me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold">Dossier complet (ZIP)</div>
+                                        <a href="request/imprimer_dossier_complet.php?devisId=<?= $devis['id'] ?>" target="_blank" class="btn btn-sm btn-dark mt-1">
+                                            <i class="fas fa-download"></i> Télécharger
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Déboursé -->
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center p-3 rounded bg-light border mt-3">
+                                    <i class="fas fa-file-invoice-dollar fa-2x text-info me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold">Déboursé (Excel/PDF)</div>
+                                        <a href="request/export_debourse_excel.php?devisId=<?= $devis['id'] ?>" target="_blank" class="btn btn-sm btn-dark mt-1 me-1">
+                                            <i class="fas fa-file-excel"></i> Excel
+                                        </a>
+                                        <a href="request/export_debourse_pdf.php?devisId=<?= $devis['id'] ?>" target="_blank" class="btn btn-sm btn-dark mt-1">
+                                            <i class="fas fa-file-pdf"></i> PDF
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Planning -->
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center p-3 rounded bg-light border mt-3">
+                                    <i class="fas fa-calendar-alt fa-2x text-secondary me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold">Planning (PDF)</div>
+                                        <a href="request/export_planning_gantt.php?devisId=<?= $devis['id'] ?>" target="_blank" class="btn btn-sm btn-dark mt-1">
+                                            <i class="fas fa-download"></i> Télécharger
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- row -->
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="section-title"><i class="fas fa-list"></i> Opérations (Lignes Devis)</div>
         <div class="card mb-4">
             <div class="card-body p-0">
@@ -239,6 +326,7 @@ if (!$chantier) die("Chantier introuvable.");
                 </table>
             </div>
         </div>
+
     </div>
 </body>
 
