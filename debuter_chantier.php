@@ -160,7 +160,7 @@ $precisions = $precisionModel->getByDevis($devisId);
         <form id="wizardForm">
             <!-- Etape 1 -->
             <div class="form-section" id="step-1">
-                <h3 class="mb-4"><i class="fas fa-warehouse"></i> Étape 1 : Créer un chantier</h3>
+                <h3 class="mb-4"><i class="fas fa-warehouse"></i> Étape 1 : Créer un chantier (Devis)</h3>
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Titre du chantier</label>
@@ -184,7 +184,7 @@ $precisions = $precisionModel->getByDevis($devisId);
             </div>
             <!-- Etape 2 -->
             <div class="form-section d-none" id="step-2">
-                <h3 class="mb-4"><i class="fas fa-list"></i> Étape 2 : Intégration des opérations</h3>
+                <h3 class="mb-4"><i class="fas fa-list"></i> Étape 2 : Intégration des opérations (Lignes devis)</h3>
                 <table class="table table-bordered align-middle">
                     <thead>
                         <tr>
@@ -201,7 +201,7 @@ $precisions = $precisionModel->getByDevis($devisId);
             </div>
             <!-- Etape 3 -->
             <div class="form-section d-none" id="step-3">
-                <h3 class="mb-4"><i class="fas fa-coins"></i> Étape 3 : Intégration des déboursés</h3>
+                <h3 class="mb-4"><i class="fas fa-coins"></i> Étape 3 : Intégration des désignations (Titres déboursés)</h3>
                 <table class="table table-bordered align-middle">
                     <thead>
                         <tr>
@@ -216,13 +216,18 @@ $precisions = $precisionModel->getByDevis($devisId);
             </div>
             <!-- Etape 4 -->
             <div class="form-section d-none" id="step-4">
-                <h3 class="mb-4"><i class="fas fa-info-circle"></i> Étape 4 : Intégration des précisions</h3>
+                <h3 class="mb-4"><i class="fas fa-info-circle"></i> Étape 4 : Intégration des précisions (Lignes déboursés)</h3>
                 <table class="table table-bordered align-middle">
                     <thead>
                         <tr>
+                            <th>Catégorie</th>
                             <th>Précision</th>
                             <th>Montant</th>
-                            <th>Désignation liée</th>
+                            <th>Date début</th>
+                            <th>Date fin</th>
+                            <th>Ligne devis ID</th>
+                            <th>Désignation ligne devis</th>
+                            <th>Déboursé ID</th>
                         </tr>
                     </thead>
                     <tbody id="table-precisions">
@@ -287,12 +292,18 @@ $precisions = $precisionModel->getByDevis($devisId);
         }
 
         function fillPrecisions() {
+            console.log('Précisions :', precisions);
             document.getElementById('table-precisions').innerHTML = precisions.map(p =>
                 `<tr>
-                    <td>${p.libelle}</td>
-                    <td>${Number(p.montant).toLocaleString()}</td>
-                    <td>${p.designation_ligne}</td>
-                </tr>`
+            <td>${p.categorie}</td>
+            <td>${p.designation}</td>
+            <td>${Number(p.montant).toLocaleString()}</td>
+            <td>${p.date_debut ?? ''}</td>
+            <td>${p.date_fin ?? ''}</td>
+            <td>${p.ligne_devis_id}</td>
+            <td>${p.designation_ligne}</td>
+            <td>${p.debourse_id}</td>
+        </tr>`
             ).join('');
         }
 
@@ -314,12 +325,12 @@ $precisions = $precisionModel->getByDevis($devisId);
                 if (currentStep === 2) fillOperations();
             } else {
                 const formData = new FormData(document.getElementById('wizardForm'));
-                fetch('ajax/valider_chantier.php', {
+                fetch('request/creer_chantier.php', {
                     method: 'POST',
                     body: formData
                 }).then(r => r.json()).then(res => {
                     if (res.success) {
-                        window.location.href = 'chantier_fiche.php?id=' + res.chantierId;
+                        window.location.href = 'details_chantier.php?id=' + res.chantierId;
                     } else {
                         alert(res.message || 'Erreur lors de la validation.');
                     }
