@@ -31,13 +31,14 @@ DROP TABLE IF EXISTS `operation_banamur`;
 CREATE TABLE IF NOT EXISTS `operation_banamur` (
   `id` int NOT NULL AUTO_INCREMENT,
   `chantier_id` int NOT NULL,
-  `designation` varchar(255) NOT NULL,
+  `ligne_devis_id` int NOT NULL,
+  `designation` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `quantite` decimal(12,2) NOT NULL,
   `unite_id` int DEFAULT NULL,
   `prix` decimal(12,2) NOT NULL,
   `total` decimal(12,2) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
