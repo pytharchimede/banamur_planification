@@ -1,6 +1,9 @@
 <?php
 require_once 'model/Database.php';
 require_once 'model/Chantier.php';
+require_once 'model/Client.php';
+require_once 'model/Offre.php';
+require_once 'model/Devis.php';
 require_once 'model/Operation.php';
 require_once 'model/Designation.php';
 require_once 'model/Precision.php';
@@ -12,10 +15,30 @@ if ($chantierId <= 0) {
     die("ID de chantier invalide.");
 }
 
+
+
 $chantierModel = new Chantier($pdo);
 $chantier = $chantierModel->getById($chantierId);
 if (!$chantier) {
     die("Chantier introuvable.");
+}
+
+$clientModel = new Client($pdo);
+$client = $clientModel->getClientById($chantier['client_id']);
+if (!$client) {
+    die("Client introuvable.");
+}
+
+$devisModel = new Devis($pdo);
+$devis = $devisModel->getDevisById($chantier['devis_id']);
+if (!$devis) {
+    die("Devis introuvable.");
+}
+
+$offreModel = new Offre($pdo);
+$offre = $offreModel->getOffreById($devis['offre_id']);
+if (!$offre) {
+    die("Offre introuvable.");
 }
 
 $operationModel = new Operation($pdo);
@@ -106,8 +129,9 @@ if (!$chantier) die("Chantier introuvable.");
                 <div class="card mb-3">
                     <div class="card-header">Informations générales</div>
                     <div class="card-body">
-                        <p><b>Client :</b> <?= htmlspecialchars($chantier['client_id']) ?></p>
-                        <p><b>Devis :</b> <?= htmlspecialchars($chantier['devis_id']) ?></p>
+                        <p><b>Client :</b> <?= htmlspecialchars($client['nom_client']) ?></p>
+                        <p><b>Offre :</b> <?= htmlspecialchars($offre['num_offre']) ?></p>
+                        <p><b>Devis :</b> <?= htmlspecialchars($devis['numero_devis']) ?></p>
                         <p><b>Date création :</b> <?= htmlspecialchars($chantier['date_creation']) ?></p>
                     </div>
                 </div>
