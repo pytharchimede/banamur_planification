@@ -103,9 +103,9 @@ unset($deb);
                             </div>
                             <div class="card-body">
                                 <ul class="list-unstyled mb-3">
-                                    <li><i class="fas fa-calendar-day text-primary"></i> <b>Début :</b> <?= htmlspecialchars($deb['date_debut']) ?: '-' ?></li>
-                                    <li><i class="fas fa-calendar-check text-success"></i> <b>Fin :</b> <?= htmlspecialchars($deb['date_fin']) ?: '-' ?></li>
-                                    <li><i class="fas fa-money-bill-wave text-success"></i> <b>Montant :</b> <?= number_format($deb['montant_debourse'], 0, ',', ' ') ?> FCFA</li>
+                                    <li><i class="fas fa-calendar-day text-primary"></i> <b>Début :</b> <?= htmlspecialchars($deb['date_debut'] ?? '-') ?></li>
+                                    <li><i class="fas fa-calendar-check text-success"></i> <b>Fin :</b> <?= htmlspecialchars($deb['date_fin'] ?? '-') ?></li>
+                                    <li><i class="fas fa-money-bill-wave text-success"></i> <b>Montant :</b> <?= number_format($deb['montant_debourse'] ?? 0, 0, ',', ' ') ?> FCFA</li>
                                 </ul>
                             </div>
                             <div class="debours-footer d-flex justify-content-between debours-actions">

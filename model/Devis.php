@@ -482,4 +482,19 @@ class Devis
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getDevisSansChantier()
+    {
+        $sql = "SELECT * FROM devis_banamur d
+        WHERE NOT EXISTS (
+            SELECT 1 FROM chantier_banamur c WHERE c.devis_id = d.id
+        )
+        AND d.total_ttc > 0
+        AND d.client_id > 0
+        AND d.offre_id > 0
+        AND d.numero_devis IS NOT NULL
+        AND d.numero_devis != ''
+        ORDER BY d.created_at DESC";
+        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

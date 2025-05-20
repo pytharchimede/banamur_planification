@@ -114,18 +114,7 @@ if (!$chantier) die("Chantier introuvable.");
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="index.php"><i class="fas fa-hard-hat"></i> Banamur</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="liste_devis.php">Devis</a></li>
-                    <li class="nav-item"><a class="nav-link" href="liste_chantiers.php">Chantiers</a></li>
-                    <li class="nav-item"><a class="nav-link" href="logout.php">Déconnexion</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <?php include 'menu_decaissement.php'; ?>
     <div class="container">
         <div class="section-title"><i class="fas fa-warehouse"></i> Chantier : <?= htmlspecialchars($chantier['titre']) ?> (<?= htmlspecialchars($chantier['code']) ?>)</div>
         <div class="row mb-4">
